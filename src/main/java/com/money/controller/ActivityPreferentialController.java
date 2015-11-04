@@ -4,6 +4,7 @@ import com.money.MoneyServerMQ.MoneyServerMQManager;
 import com.money.MoneyServerMQ.MoneyServerMessage;
 import com.money.Service.activityPreferential.ActivityPreferentialService;
 import com.money.Service.user.UserService;
+import com.money.config.Config;
 import com.money.config.MoneyServerMQ_Topic;
 import com.money.config.ServerReturnValue;
 import com.money.job.ActivityPreferentialStartJob;
@@ -57,26 +58,30 @@ public class ActivityPreferentialController extends ControllerBase implements IC
 
     @RequestMapping("/JoinActivityPreferentialInfo")
     @ResponseBody
-    public int JoinActivityPreferentialInfo( HttpServletRequest request ){
+    public String JoinActivityPreferentialInfo( HttpServletRequest request ){
 
         String UserId = request.getParameter("userId");
         String ActivityId = request.getParameter("activityId").replace( ".0","" );
 
         UserModel userModel = userService.getUserInfo( UserId );
         if( userModel == null ){
-            return ServerReturnValue.SERVERRETURNERROR;
+            return Config.SERVICE_FAILED;
         }
 
         Map<String,String> map = new HashMap();
         map.put( "userId",UserId );
         map.put( "activityId",ActivityId );
         map.put( "uerExp",Integer.toString(userModel.getUserExp()));
-        String messageBody = GsonUntil.JavaClassToJson(map);
+/*        String messageBody = GsonUntil.JavaClassToJson(map);*/
 
-        MoneyServerMQManager.SendMessage(new MoneyServerMessage(MoneyServerMQ_Topic.MONEYSERVERMQ_JOINACTIVITYPREFERENTIAL_TOPIC,
-                MoneyServerMQ_Topic.MONEYSERVERMQ_JOINACTIVITYPREFERENTIAL_TAG, messageBody, UserId));
+        try {
+            return activityPreferentialService.JoinActivityPreferential( Integer.valueOf( ActivityId ), UserId, userModel.getUserExp() );
+        } catch (Exception e) {
+            return null;
+        }
 
-        return 1;
+        /*MoneyServerMQManager.SendMessage(new MoneyServerMessage(MoneyServerMQ_Topic.MONEYSERVERMQ_JOINACTIVITYPREFERENTIAL_TOPIC,
+                MoneyServerMQ_Topic.MONEYSERVERMQ_JOINACTIVITYPREFERENTIAL_TAG, messageBody, UserId));*/
     }
 
     @RequestMapping("/InsertActivityPreferential")
@@ -118,4 +123,5 @@ public class ActivityPreferentialController extends ControllerBase implements IC
         String ActivityCompeleteId = request.getParameter("activityCompeleteId");
        return activityPreferentialService.StopActivityPreferential( ActivityCompeleteId );
     }
+
 }

@@ -109,14 +109,14 @@ public class ServiceGroupActivity extends ServiceBase implements ServiceInterfac
     }
 
 
-    public void splitActivityByStage(int ntargetFund, String ActicityID, final int AdvanceNum, final int PurchaseNum) {
+    public void splitActivityByStage(int Lines,int LinePeoples, String ActicityID, final int AdvanceNum, final int PurchaseNum) {
 
         final ActivityVerifyCompleteModel completeModel = (ActivityVerifyCompleteModel) generaDAO.load(ActivityVerifyCompleteModel.class, ActicityID);
 
-        int srInvestProportion = completeModel.getTotalLines();
-        int brInvestProportion = completeModel.getTotalLinePeoples();
+        int srInvestProportion = Lines;
+        int brInvestProportion = LinePeoples;
 
-        final List list = CalculateActivityEarnings(ntargetFund, AdvanceNum * PurchaseNum, srInvestProportion, brInvestProportion);
+        final List list = CalculateActivityEarnings(Lines+LinePeoples, AdvanceNum * PurchaseNum, srInvestProportion, brInvestProportion);
 
         generaDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
             public boolean callback(Session session) throws Exception {

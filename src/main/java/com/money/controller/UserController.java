@@ -76,15 +76,11 @@ public class UserController extends ControllerBase implements IController {
 
     @RequestMapping("/perfectInfo")
     @ResponseBody
-    public String perfectInfo(HttpServletRequest request) {
+    public int perfectInfo(HttpServletRequest request) {
         String userID = request.getParameter("userID");
         String token = request.getParameter("token");
         String info = request.getParameter("info");
-        if( userService.perfectInfo(userID, token, info) == 1){
-            return info;
-        }else{
-            return "";
-        }
+        return userService.perfectInfo(userID, token, info);
     }
 
     @RequestMapping("/changeInfo")

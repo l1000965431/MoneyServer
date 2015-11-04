@@ -25,8 +25,43 @@ public class ServerStatistical extends ControllerBase implements IController {
     @RequestMapping("/TotalLotteryEveryDay")
     @ResponseBody
     public int getTotalLotteryEveryDay(HttpServletRequest httpServletRequest) {
-        String Date = httpServletRequest.getParameter("Date");
-        return serverStatisticalService.getTotlaLotterySum( Date );
+        String startDate = httpServletRequest.getParameter("startDate");
+        String endDate = httpServletRequest.getParameter("endDate");
+        return serverStatisticalService.getTotlaLotterySum(startDate,endDate);
+    }
+
+    /**
+     * 每日投资次数
+     * @return
+     */
+    @RequestMapping("/TotalBuySumEveryDay")
+    @ResponseBody
+    public int getTotalBuySumEveryDay(HttpServletRequest httpServletRequest) {
+        String startDate = httpServletRequest.getParameter("startDate");
+        String endDate = httpServletRequest.getParameter("endDate");
+        return serverStatisticalService.getTotalBuySum(startDate, endDate);
+    }
+
+    /**
+     * 每日投资额度
+     * @return
+     */
+    @RequestMapping("/TotalBuyLines")
+    @ResponseBody
+    public int getTotalBuyLinesEveryDay(HttpServletRequest httpServletRequest) {
+        String startDate = httpServletRequest.getParameter("startDate");
+        String endDate = httpServletRequest.getParameter("endDate");
+        return serverStatisticalService.getTotalBuyLines(startDate, endDate);
+    }
+
+    /**
+     * 总发布项目数量
+     * @return
+     */
+    @RequestMapping("/TotlaVerifyActivity")
+    @ResponseBody
+    public int getTotlaVerifyActivity() {
+        return serverStatisticalService.getTotlaVerifyActivity();
     }
 
     /**
@@ -76,8 +111,9 @@ public class ServerStatistical extends ControllerBase implements IController {
     @RequestMapping("/RevenueWallet")
     @ResponseBody
     public int getRevenueWallet( HttpServletRequest httpServletRequest ) {
-        String Date = httpServletRequest.getParameter("Date");
-        return serverStatisticalService.getRevenueWallet( Date );
+        String startDate = httpServletRequest.getParameter("startDate");
+        String endDate = httpServletRequest.getParameter("endDate");
+        return serverStatisticalService.getRevenueWallet(startDate,endDate);
     }
 
     /**
@@ -87,7 +123,9 @@ public class ServerStatistical extends ControllerBase implements IController {
     @RequestMapping("/ActivityVerify")
     @ResponseBody
     public int getActivityVerify( HttpServletRequest httpServletRequest ) {
-        String Date = httpServletRequest.getParameter("Date");
-        return serverStatisticalService.getActivityVerify(Date);
+        String startDate = httpServletRequest.getParameter("startDate");
+        String endDate = httpServletRequest.getParameter("endDate");
+        return serverStatisticalService.getActivityVerify(startDate,endDate);
     }
+
 }

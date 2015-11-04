@@ -14,9 +14,6 @@ public class RedisAOFJob implements Job {
         try {
             String[] cmdA = { "sh", "-c", "redis-cli -h 127.0.0.1 -p 6379 bgrewriteaof" };
             Runtime.getRuntime().exec(cmdA);
-
-            System.out.print( "quarz运行检查" );
-
         } catch (Exception e) {
             e.printStackTrace();
         }

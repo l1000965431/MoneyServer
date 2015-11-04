@@ -36,14 +36,14 @@ public class LotteryActivityPreferentialListener extends MoneyServerListener {
 
             activityPreferentialService.ActivityPreferentialLottery( ActivityId, Lines, userId);
 
-            Map<String,String> mapUmessagebody = new HashMap<>();
+/*            Map<String,String> mapUmessagebody = new HashMap<>();
             mapUmessagebody.put( "ActivityId",Integer.toString(ActivityId) );
             mapUmessagebody.put( "Lines",Integer.toString(Lines) );
             UMengMessage uMengMessage = new UMengMessage( userId,"activityPreferentialLottery",GsonUntil.JavaClassToJson( mapUmessagebody ),"特惠项目中奖" );
 
             String Json = GsonUntil.JavaClassToJson(uMengMessage);
             MoneyServerMQManager.SendMessage(new MoneyServerMessage(MoneyServerMQ_Topic.MONEYSERVERMQ_UMENGPUSHCUSTOMMESSAGE_TOPIC,
-                    MoneyServerMQ_Topic.MONEYSERVERMQ_UMENGPUSHCUSTOMMESSAGE_TAG, Json, "特惠项目购中奖"));
+                    MoneyServerMQ_Topic.MONEYSERVERMQ_UMENGPUSHCUSTOMMESSAGE_TAG, Json, "特惠项目购中奖"));*/
 
             return Action.CommitMessage;
         } catch (Exception e) {

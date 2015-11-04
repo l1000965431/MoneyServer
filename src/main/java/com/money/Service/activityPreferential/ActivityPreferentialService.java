@@ -90,10 +90,10 @@ public class ActivityPreferentialService extends ServiceBase implements ServiceI
      * @return
      * @throws Exception
      */
-    public int JoinActivityPreferential(int ActivityId, final String userId, int userExp) throws Exception {
+    public String JoinActivityPreferential(int ActivityId, final String userId, int userExp) throws Exception {
 
         if (userId == null || userId.length() == 0) {
-            return -1;
+            return "UserIDError";
         }
 
         String key = Config.PREFERENTIINFO + Integer.toString(ActivityId);
@@ -103,19 +103,21 @@ public class ActivityPreferentialService extends ServiceBase implements ServiceI
         }.getType());
 
         if (map == null) {
-            return 0;
+            return "MapError";
         }
 
         int Exp = Integer.valueOf(map.get("userEXP").toString().replace(".0", ""));
 
         if (userExp < Exp) {
-            return -1;
+            return "UserExpError";
         }
 
         int WinningChance = Integer.valueOf(map.get("winningChance").toString().replace(".0", ""));
 
         String lockKey = "lock_" + userId;
-        int Lines = 0;
+        int Lines;
+        Map<String, String> mapPush = new HashMap<>();
+
         //加锁10S
         if (MemCachService.isExistUpdate(lockKey, "10")) {
             if (IsJoinActivityPreferential(WinningChance)) {
@@ -139,7 +141,7 @@ public class ActivityPreferentialService extends ServiceBase implements ServiceI
                     }), Config.SENDCODE_FAILED)) {
                         activityPreferentialDAO.popActivityPreferentialBilled(ActivityId);
                         activityPreferentialDAO.pushActivityPreferentialUnBilled(ActivityId, temp);
-                        return -1;
+                        return "TransferError";
                     }
 
                     String ActivityBoundsKey = Config.PREFERENTIBOUNDS + Integer.toString(ActivityId);
@@ -150,7 +152,7 @@ public class ActivityPreferentialService extends ServiceBase implements ServiceI
                         EndActivityPreferential(ActivityId);
                     }
 
-                    Map<String, String> mapPush = new HashMap<>();
+
                     mapPush.put("Lines", Integer.toString(Lines));
                     mapPush.put("userId", userId);
                     mapPush.put("ActivityId", Integer.toString(ActivityId));
@@ -169,8 +171,13 @@ public class ActivityPreferentialService extends ServiceBase implements ServiceI
                             MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TAG, Json, "特惠项目购买结束"));
                 }
             } else {
+                String ActivityBoundsKey = Config.PREFERENTIBOUNDS + Integer.toString(ActivityId);
+                mapPush.put("Lines", "0");
+                mapPush.put("userId", userId);
+                mapPush.put("ActivityId", Integer.toString(ActivityId));
+                mapPush.put("RemainingBonus", new String( MemCachService.MemCachgGet( ActivityBoundsKey.getBytes() )));
                 //没有中奖
-                Lines = 0;
+/*                Lines = 0;
                 Map<String, String> mapUmessagebody = new HashMap<>();
                 mapUmessagebody.put("ActivityId", Integer.toString(ActivityId));
                 mapUmessagebody.put("Lines", Integer.toString(Lines));
@@ -178,17 +185,17 @@ public class ActivityPreferentialService extends ServiceBase implements ServiceI
 
                 String Json = GsonUntil.JavaClassToJson(uMengMessage);
                 MoneyServerMQManager.SendMessage(new MoneyServerMessage(MoneyServerMQ_Topic.MONEYSERVERMQ_UMENGPUSHCUSTOMMESSAGE_TOPIC,
-                        MoneyServerMQ_Topic.MONEYSERVERMQ_UMENGPUSHCUSTOMMESSAGE_TAG, Json, "特惠项目购中奖"));
+                        MoneyServerMQ_Topic.MONEYSERVERMQ_UMENGPUSHCUSTOMMESSAGE_TAG, Json, "特惠项目购中奖"));*/
             }
             MemCachService.unLockRedisKey(lockKey);
         } else {
-            return -1;
+            return "UserIsLock";
         }
 
-        return Lines;
+        return GsonUntil.JavaClassToJson( mapPush );
     }
 
-    public int JoinActivityPreferentialByList(List<Integer> list, String UserId, int userExp) throws Exception {
+/*    public int JoinActivityPreferentialByList(List<Integer> list, String UserId, int userExp) throws Exception {
 
 
         for (Integer ActivityId : list) {
@@ -198,7 +205,7 @@ public class ActivityPreferentialService extends ServiceBase implements ServiceI
             }
         }
         return 0;
-    }
+    }*/
 
     /**
      * 是否可以参加特惠项目

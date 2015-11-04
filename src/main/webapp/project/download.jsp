@@ -9,7 +9,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <html>
 <head>
 <title>微聚竞投下载</title>
-<link href="res/style.css" rel='stylesheet' type='text/css' />
+<link href="res/styledownload.css" rel='stylesheet' type='text/css' />
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="keywords" content="Nature Sign In Form,Login Forms,Sign up Forms,Registration Forms,News latter Forms,Elements"./>
@@ -23,8 +23,8 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 		<div class="app-nature">
 			<div class="nature"><img src="res/timer.png" class="img-responsive" alt="" /></div>
 			<form>
-				<div class="submit"><input type="submit" onclick="myFunction()" value="安卓版下载" ></div>
-                <div class="submit"><input type="submit" onclick="myFunction()" value="iOS版下载(敬请期待)" ></div>
+				<div class="submit"><input type="button" onclick="window.location.href='http://7xjewm.com1.z0.glb.clouddn.com/app-release.apk'" value="安卓版下载" ></div>
+                <div class="submit"><input type="button" onclick="myFunction()" value="iOS版下载(敬请期待)" ></div>
 				<div class="clear"></div>
 			</form>
 		</div>
@@ -34,4 +34,5 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 		</div>
 	<!--//end-copyright-->
 </body>
+
 </html>

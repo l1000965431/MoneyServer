@@ -76,7 +76,7 @@ form {
   .submit {
   margin: 1em 0;
   }
-.app-nature input[type="submit"]{
+.app-nature input[type="button"]{
 	font-size: 20px;
 	font-weight: 300;
 	color: #fff;
@@ -97,7 +97,7 @@ form {
 	-webkit-border-radius: 0.3em;
 	-moz-border-radius: 0.3em;
 }
-input[type="submit"]:hover{
+input[type="button"]:hover{
   border-left:6px solid #ffa800;
   border-right:6px solid #ffa800;
   color: #fff;
@@ -355,7 +355,7 @@ form {
   margin: 0 auto;
     padding: 3% 8% 10% 6%;
 }
-.app-nature input[type="submit"] {
+.app-nature input[type="button"] {
   font-size: 16px;
   padding: 13px 13px;
 }

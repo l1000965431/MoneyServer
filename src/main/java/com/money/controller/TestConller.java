@@ -59,6 +59,13 @@ public class TestConller extends ControllerBase implements IController {
         return "1";
     }
 
+    @RequestMapping("/TestDBTest")
+    @ResponseBody
+    String TestDBTest(HttpServletRequest request) throws Exception {
+        UserService userService = ServiceFactory.getService("UserService");
+        return userService.getUserInfoTest("18511583205").toString();
+    }
+
     @RequestMapping("/TestDB")
     @ResponseBody
     String TestDB(HttpServletRequest request) throws Exception {
@@ -326,7 +333,7 @@ public class TestConller extends ControllerBase implements IController {
 
     @RequestMapping("/TestActivityPreferentialJoin")
     @ResponseBody
-    int TestActivityPreferentialJoin(HttpServletRequest request) throws Exception {
+    String TestActivityPreferentialJoin(HttpServletRequest request) throws Exception {
 
         String ActivityID = request.getParameter("activityId");
         String UserId = request.getParameter("userId");

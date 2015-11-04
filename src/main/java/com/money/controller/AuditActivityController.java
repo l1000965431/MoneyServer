@@ -123,8 +123,9 @@ public class AuditActivityController extends ControllerBase implements IControll
         String ActivityID = request.getParameter("ActivityID");
         int AdvanceNum = Integer.valueOf(request.getParameter("AdvanceNum"));
         int PurchaseNum = Integer.valueOf(request.getParameter("PurchaseNum"));
-        int trageFund = Integer.valueOf(request.getParameter("trageFund"));
-        serviceGroupActivity.splitActivityByStage(trageFund,ActivityID, AdvanceNum, PurchaseNum);
+        int Lines = Integer.valueOf(request.getParameter("Lines"));
+        int LinePeoples = Integer.valueOf(request.getParameter("LinePeoples"));
+        serviceGroupActivity.splitActivityByStage(Lines,LinePeoples,ActivityID, AdvanceNum, PurchaseNum);
         return "1";
     }
 
@@ -149,7 +150,7 @@ public class AuditActivityController extends ControllerBase implements IControll
         String LinesEarnings = request.getParameter("LinesEarnings");
         String LinePeoplesEarnings = request.getParameter("LinePeoplesEarnings");
 
-        serviceGroupActivity.splitActivityByStage( Lines+LinePeoples,ActivityID,AdvanceNum,PurchaseNum );
+        serviceGroupActivity.splitActivityByStage( Lines,LinePeoples,ActivityID, AdvanceNum, PurchaseNum);
 
         serviceGroupActivity.SetActivityInformationEarnings(Lines, LinePeoples, ActivityID,
                 AdvanceNum, PurchaseNum, LinesEarnings, LinePeoplesEarnings);
@@ -173,9 +174,9 @@ public class AuditActivityController extends ControllerBase implements IControll
         String LinesEarnings = request.getParameter("LinesEarnings");
         String LinePeoplesEarnings = request.getParameter("LinePeoplesEarnings");
 
-        serviceGroupActivity.splitActivityByStage( Lines+LinePeoples,ActivityID,AdvanceNum,PurchaseNum );
+        serviceGroupActivity.splitActivityByStage( Lines,LinePeoples,ActivityID, AdvanceNum, PurchaseNum);
 
-        serviceGroupActivity.SetActivityInformationEarnings(Lines,LinePeoples,ActivityID,
+        serviceGroupActivity.SetActivityInformationEarnings(Lines, LinePeoples, ActivityID,
                 AdvanceNum, PurchaseNum, LinesEarnings, LinePeoplesEarnings);
 
         if( activityService.ActivityCompleteStartTest(ActivityID) ){

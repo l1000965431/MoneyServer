@@ -23,30 +23,27 @@ import java.util.Map;
 public class AuditActivityDao extends BaseDao {
     public ActivityVerifyModel getOldestActivity(){
         Session session = getNewSession();
+        Transaction t = session.beginTransaction();
         ActivityVerifyModel activityVerifyModel = (ActivityVerifyModel)session.createCriteria(ActivityVerifyModel.class)
                 .setMaxResults(1)
                 .addOrder(Order.asc("id"))
                 .add(Restrictions.eq("auditorStatus", ActivityVerifyModel.STATUS_FIRST_AUDITING))
                 .uniqueResult();
-
-        session.flush();
-        session.clear();
-        session.close();
-        return null;
+        t.commit();
+        return activityVerifyModel;
     }
 
     public ActivityVerifyModel getNewestActivity(){
         Session session = getNewSession();
+        Transaction t = session.beginTransaction();
         ActivityVerifyModel activityVerifyModel = (ActivityVerifyModel)session.createCriteria(ActivityVerifyModel.class)
                 .setMaxResults(1)
                 .addOrder(Order.desc("id"))
                 .add(Restrictions.eq("auditorStatus", ActivityVerifyModel.STATUS_FIRST_AUDITING))
                 .uniqueResult();
 
-        session.flush();
-        session.clear();
-        session.close();
-        return null;
+        t.commit();
+        return activityVerifyModel;
     }
 
     public boolean setActivityPass(final ActivityVerifyModel verifyModel, final ActivityVerifyCompleteModel completeModel){
@@ -65,14 +62,13 @@ public class AuditActivityDao extends BaseDao {
     @SuppressWarnings("unchecked")
     public List<ActivityVerifyModel> getAuditingActivityList(){
         Session session = getNewSession();
+        Transaction t = session.beginTransaction();
         List<ActivityVerifyModel> activityVerifyModels = session.createCriteria(ActivityVerifyModel.class)
                 .addOrder(Order.desc("id"))
                 .add(Restrictions.eq("auditorStatus", ActivityVerifyModel.STATUS_FIRST_AUDITING))
                 .list();
 
-        session.flush();
-        session.clear();
-        session.close();
+        t.commit();
         return activityVerifyModels;
     }
 
@@ -101,7 +97,7 @@ public class AuditActivityDao extends BaseDao {
                 .setFirstResult(pageIndex * pageNum)
                 .setMaxResults(pageNum)
                 .list();
-
+        t.commit();
         ArrayList<String> ids = new ArrayList();
         for(ActivityVerifyModel model : activityVerifyModels){
             if(model.getAuditorStatus() == ActivityVerifyModel.STATUS_AUDITOR_PASS_AND_KEEP){
@@ -122,7 +118,6 @@ public class AuditActivityDao extends BaseDao {
                     }
                 }
             }
-            t.commit();
         }
 
         return activityVerifyModels;

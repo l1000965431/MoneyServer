@@ -10,6 +10,7 @@ import com.money.dao.userDAO.UserDAO;
 import com.money.model.UserModel;
 import com.money.model.WalletModel;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -244,6 +245,14 @@ public class UserService extends ServiceBase implements ServiceInterface {
      */
     public UserModel getUserInfo(String UserID) {
         return userDAO.getUSerModel(UserID);
+    }
+
+    public UserModel getUserInfoTest(String UserID) {
+        Session session = userDAO.getNewSession();
+        Transaction t = session.beginTransaction();
+        UserModel userModel = userDAO.getUSerModelNoTransaction(UserID);
+        t.commit();
+        return userModel;
     }
 
     /**
