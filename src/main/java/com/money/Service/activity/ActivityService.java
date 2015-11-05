@@ -22,10 +22,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import until.GsonUntil;
+import until.MoneyServerDate;
 import until.UmengPush.UMengMessage;
 import until.UmengPush.UmengSendParameter;
 
 import javax.activation.CommandInfo;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -170,7 +172,7 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
      * @param ActivityID
      * @param Status
      */
-    public void SetActivityStatus(String ActivityID, final int Status) {
+    public void SetActivityStatus(String ActivityID, final int Status) throws ParseException {
         final ActivityVerifyCompleteModel activityVerifyCompleteModel = activityDao.getActivityVerifyCompleteModelNoTransaction(ActivityID);
 
         if (activityVerifyCompleteModel == null) {
@@ -178,6 +180,11 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
         }
 
         activityVerifyCompleteModel.setStatus(Status);
+
+        if( Status == ActivityVerifyModel.STATUS_START_RAISE ){
+            activityVerifyCompleteModel.setActivityStartTime(MoneyServerDate.getDateCurDate());
+        }
+
         activityDao.updateNoTransaction(activityVerifyCompleteModel);
 
     }
@@ -362,7 +369,7 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
      *
      * @param ActivityID
      */
-    public void SetActivityEnd(String ActivityID) {
+    public void SetActivityEnd(String ActivityID) throws ParseException {
         ActivityVerifyCompleteModel activityVerifyCompleteModel = activityDao.getActivityVerifyCompleteModelNoTransaction(ActivityID);
         if (activityVerifyCompleteModel.IsEnoughInstallmentNum()) {
             SetActivityStatus(ActivityID, ActivityVerifyModel.STATUS_RAISE_FINISH);
