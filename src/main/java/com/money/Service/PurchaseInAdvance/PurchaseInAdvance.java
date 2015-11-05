@@ -69,7 +69,7 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
                 String ActivityID = activityVerifyCompleteModel.getActivityId();
 
 
-                int OrderStartAndvance;
+                int OrderStartAndvance = 0;
                 int remainingNum = getInstallmentActivityRemainingTicket(InstallmentActivityID);
                 ActivityName[0] = activityVerifyCompleteModel.getName();
 
@@ -82,13 +82,21 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
                 }
 
                 int costLines = PurchaseNum * AdvanceNum;
-                int PurchaseInAdvanceNum;
+
+                if (!IsRemainingInstallment(ActivityID, AdvanceNum) ||
+                        activityVerifyCompleteModel.IsEnoughLines(costLines)) {
+                    return false;
+                }
+
+                if (!walletService.CostLines(UserID, costLines)) {
+                    return false;
+                }
+
+                int PurchaseInAdvanceNum = 0;
                 if (remainingNum < PurchaseNum) {
-                    if (!IsRemainingInstallment(ActivityID, AdvanceNum) ||
-                            activityVerifyCompleteModel.IsEnoughLines(costLines + remainingNum)) {
-                        return false;
-                    }
-                    PurchaseInAdvanceNum = AdvanceNum;
+                    return false;
+                    //修改如果购买的数量大于当前期的剩余  购买失败
+/*                    PurchaseInAdvanceNum = AdvanceNum;
 
                     if (activityDetailModel.getStageIndex() != activityVerifyCompleteModel.getTotalInstallmentNum()) {
                         int activityTotalLines = activityVerifyCompleteModel.getTotalLines();
@@ -105,19 +113,9 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
 
                     } else {
                         OrderStartAndvance = 1;
-                    }
+                    }*/
 
                 } else {
-                    if (!IsRemainingInstallment(ActivityID, AdvanceNum) ||
-                            activityVerifyCompleteModel.IsEnoughLines(costLines)) {
-                        return false;
-                    }
-
-                    if (!walletService.CostLines(UserID, costLines)) {
-                        return false;
-                    }
-
-
                     //购买当前期
                     int PurchaseResult = PurchaseActivity(InstallmentActivityID, UserID, PurchaseNum, PurchaseNum);
 
@@ -361,11 +359,18 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
                 int OrderStartAndvance;
                 int Lines = activityDynamicModel.getActivityTotalLinesPeoples() * AdvanceNum;
                 int TempAdvanceNum;
+
+                if (!activityVerifyCompleteModel.IsEnoughAdvance(AdvanceNum) ||
+                        activityVerifyCompleteModel.IsEnoughLinePoples(Lines)) {
+                    return false;
+                }
+
+                //钱包花费
+                if (!walletService.CostLines(UserID, Lines)) {
+                    return false;
+                }
+
                 if (!IsEnoughLocalTyrantsTickets(InstallmentActivityID)) {
-                    if (!activityVerifyCompleteModel.IsEnoughAdvance(AdvanceNum) ||
-                            activityVerifyCompleteModel.IsEnoughLinePoples(Lines + activityDynamicModel.getActivityTotalLinesPeoples())) {
-                        return false;
-                    }
                     TempAdvanceNum = AdvanceNum;
 
                     if (activityDetailModel.getStageIndex() != activityVerifyCompleteModel.getTotalInstallmentNum()) {
@@ -376,11 +381,6 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
                     }
 
                 } else {
-                    if (!activityVerifyCompleteModel.IsEnoughAdvance(AdvanceNum) ||
-                            activityVerifyCompleteModel.IsEnoughLinePoples(Lines)) {
-                        return false;
-                    }
-
                     int PurchaseResult = LocalTyrantsPurchase(InstallmentActivityID, UserID, activityDynamicModel.getActivityTotalLinesPeoples());
                     if (PurchaseResult == ServerReturnValue.SERVERRETURNERROR) {
                         return false;
@@ -393,22 +393,6 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
                     purchaseInAdvanceDAO.InsertPurchaseInAdvance(ActivityID, UserID, activityDynamicModel.getActivityTotalLinesPeoples(), TempAdvanceNum, Config.PURCHASELOCALTYRANTS, OrderID);
                 }
 
-                //刷新总购买额度
-/*                ActivityVerifyCompleteModel activityVerifyCompleteModel1 = activityDynamicModel.getActivityVerifyCompleteModel();
-                int curLines = activityVerifyCompleteModel1.getCurFund();
-                curLines += Lines;
-                activityVerifyCompleteModel1.setCurFund(curLines);
-                //刷新大R
-                int curLinePeoples = activityVerifyCompleteModel1.getCurLinePeoples();
-                curLinePeoples += Lines;
-                activityVerifyCompleteModel1.setCurLinePeoples(curLinePeoples);
-                purchaseInAdvanceDAO.updateNoTransaction(activityVerifyCompleteModel1);*/
-
-                //钱包花费
-                if (!walletService.CostLines(UserID, Lines)) {
-                    return false;
-                }
-
                 if (purchaseInAdvanceDAO.updateActivityLinesPeoples(ActivityID, Lines) == 0) {
                     return false;
                 }
@@ -418,15 +402,6 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
 
                 orderService.createOrder(UserID, InstallmentActivityID, Lines, activityDynamicModel.getActivityTotalLinesPeoples(),
                         AdvanceNum, Config.PURCHASELOCALTYRANTS, OrderID, OrderStartAndvance);
-
-/*                int a = activityVerifyCompleteModel1.getCurLinePeoples();
-
-                int b = orderService.TestLingTou();
-
-                if (a != b) {
-                    return false;
-                }*/
-
 
                 return true;
             }

@@ -58,9 +58,9 @@ public class ServerStatistical extends ControllerBase implements IController {
      * 总发布项目数量
      * @return
      */
-    @RequestMapping("/TotlaVerifyActivity")
+    @RequestMapping("/TotalVerifyActivity")
     @ResponseBody
-    public int getTotlaVerifyActivity() {
+    public int getTotalVerifyActivity() {
         return serverStatisticalService.getTotlaVerifyActivity();
     }
 

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transaction;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -27,14 +28,15 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
      * @return
      */
     public int getTotlaLotterySum(String startDate,String endDate) {
-        String sql = "select sum(earningsrecord.TotalPrize) as LotteryLinesSum from earningsrecord where earningsrecord.EndDate BETWEEN 'startDate' AND 'endDate';";
+        String sql = "select sum(earningsrecord.TotalPrize) as LotteryLinesSum from earningsrecord " +
+                "where date_format(earningsrecord.EndDate,'%Y-%m-%d') BETWEEN 'startDate' AND 'endDate';";
         sql = sql.replace("startDate", startDate).replace("endDate",endDate);
 
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        List<BigInteger> list =  session.createSQLQuery( sql ).list();
+        BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
         t.commit();
-        return list.get(0).intValue();
+        return result.intValue();
     }
 
     /**
@@ -44,14 +46,14 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
      * @return
      */
     public int getTotalBuySum( String startDate,String endDate ){
-        String sql = "SELECT count(*) FROM moneyserver.activityorder where OrderDate BETWEEN 'startDate' and 'endDate';";
+        String sql = "SELECT count(*) FROM moneyserver.activityorder where date_format(OrderDate,'%Y-%m-%d') BETWEEN 'startDate' and 'endDate';";
         sql = sql.replace("startDate", startDate).replace("endDate",endDate);
 
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        List<BigInteger> list =  session.createSQLQuery( sql ).list();
+        BigInteger result =  (BigInteger)session.createSQLQuery( sql ).uniqueResult();
         t.commit();
-        return list.get(0).intValue();
+        return result.intValue();
     }
 
 
@@ -62,14 +64,14 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
      * @return
      */
     public int getTotalBuyLines( String startDate,String endDate ){
-        String sql = "SELECT sum(orderLines) FROM moneyserver.activityorder where OrderDate BETWEEN 'startDate' and 'endDate';";
+        String sql = "SELECT sum(orderLines) FROM moneyserver.activityorder where date_format(OrderDate,'%Y-%m-%d') BETWEEN 'startDate' and 'endDate';";
         sql = sql.replace("startDate", startDate).replace("endDate",endDate);
 
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        List<BigInteger> list =  session.createSQLQuery( sql ).list();
+        BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
         t.commit();
-        return list.get(0).intValue();
+        return result.intValue();
     }
 
     /**
@@ -81,9 +83,9 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
 
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        List<BigInteger> list =  session.createSQLQuery( sql ).list();
+        BigInteger result =  (BigInteger)session.createSQLQuery( sql ).uniqueResult();
         t.commit();
-        return list.get(0).intValue();
+        return result.intValue();
     }
 
     /**
@@ -94,9 +96,9 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
         String sql = "select sum(userearnings.UserEarningLines)as UserLotterySum from userearnings;";
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        List<BigInteger> list =  session.createSQLQuery( sql ).list();
+        BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
         t.commit();
-        return list.get(0).intValue();
+        return result.intValue();
     }
 
     /**
@@ -107,9 +109,9 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
         String sql = "select COUNT(*) as BuyNum FROM activityorder;";
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        List<Integer> list =  session.createSQLQuery( sql ).list();
+        BigInteger result =  (BigInteger)session.createSQLQuery( sql ).uniqueResult();
         t.commit();
-        return list.get(0);
+        return result.intValue();
     }
 
     /**
@@ -120,9 +122,9 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
         String sql = "select sum(earningsrecord.TotalPrize) as LotteryLinesSum from earningsrecord;";
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        List<Integer> list =  session.createSQLQuery( sql ).list();
+        BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
         t.commit();
-        return list.get(0);
+        return result.intValue();
     }
 
 
@@ -134,9 +136,9 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
         String sql = "select (sum(walletorder.WalletLines)/ (SELECT COUNT(id) from user )) as AverageWallet from walletorder;";
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        List<Float> list =  session.createSQLQuery( sql ).list();
+        BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
         t.commit();
-        return list.get(0).floatValue();
+        return result.floatValue();
     }
 
     /**
@@ -145,13 +147,13 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
      */
     public int getRevenueWallet( String startDate,String endDate ){
         String sql = "select ( SUM(earningsrecord.TotalFund)- SUM(earningsrecord.TotalPrize) )" +
-                " from earningsrecord where earningsrecord.EndDate BETWEEN 'startDate' AND 'endDate' ;";
+                " from earningsrecord where date_format(earningsrecord.EndDate,'%Y-%m-%d') BETWEEN 'startDate' AND 'endDate' ;";
         sql = sql.replace( "startDate",startDate ).replace("endDate",endDate);
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        List<Integer> list =  session.createSQLQuery( sql ).list();
+        BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
         t.commit();
-        return list.get(0).intValue();
+        return result.intValue();
     }
 
 
@@ -161,13 +163,14 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
      * @return
      */
     public int getActivityVerify( String startDate,String endDate ){
-        String sql = "SELECT count(*) as VerifyNum from activityverify where activityverify.createDate BETWEEN 'startDate' AND 'endDate';";
+        String sql = "SELECT count(*) as VerifyNum from activityverify " +
+                "where date_format(activityverify.createDate,'%Y-%m-%d') BETWEEN 'startDate' AND 'endDate';";
         sql = sql.replace( "startDate",startDate ).replace("endDate",endDate);
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        List<BigInteger> list =  session.createSQLQuery( sql ).list();
+        BigInteger result =  (BigInteger)session.createSQLQuery( sql ).uniqueResult();
         t.commit();
-        return list.get(0).intValue();
+        return result.intValue();
     }
 
 }

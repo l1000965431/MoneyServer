@@ -74,9 +74,9 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
             return ServerReturnValue.PERFECTERROR;
         }
 
-        if (!this.UserIsLand(UserID, token)) {
+/*        if (!this.UserIsLand(UserID, token)) {
             return Config.LANDFAILED;
-        }
+        }*/
 
 
         if (!userService.IsPerfectInfo(UserID)) {
@@ -107,40 +107,33 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
                         case Config.PURCHASEPRICKSILK:
                             int remainingNum = purchaseInAdvance.getInstallmentActivityRemainingTicket(InstallmentActivityID);
                             costLines = PurchaseNum * AdvanceNum;
+
+                            if (!purchaseInAdvance.IsRemainingInstallment(ActivityID, AdvanceNum) ||
+                                    activityVerifyCompleteModel.IsEnoughLines(costLines)) {
+                                state[0] = 1;
+                                return false;
+                            }
+
                             if (remainingNum == PurchaseNum) {
                                 Refresh[0] = 1;
                             }
                             if (remainingNum < PurchaseNum && MessageType == 1) {
-                                state[0] = 3;
-                                if (!purchaseInAdvance.IsRemainingInstallment(ActivityID, AdvanceNum) ||
-                                        activityVerifyCompleteModel.IsEnoughLines(costLines + remainingNum)) {
-                                    state[0] = 1;
-                                }
+                                state[0] = ServerReturnValue.PERFECTREFRESH;
                                 return false;
-                            } else {
-                                state[0] = 0;
-                                if (!purchaseInAdvance.IsRemainingInstallment(ActivityID, AdvanceNum) ||
-                                        activityVerifyCompleteModel.IsEnoughLines(costLines)) {
-                                    state[0] = 1;
-                                    return false;
-                                }
-                                break;
                             }
+                            break;
+
                         case Config.PURCHASELOCALTYRANTS:
                             costLines = activityDynamicModel.getActivityTotalLinesPeoples() * AdvanceNum;
+                            if (!activityVerifyCompleteModel.IsEnoughAdvance(AdvanceNum) ||
+                                    activityVerifyCompleteModel.IsEnoughLinePoples(costLines)) {
+                                state[0] = 1;
+                                return false;
+                            }
+
                             if (MessageType == 1 && !purchaseInAdvance.IsEnoughLocalTyrantsTickets(InstallmentActivityID)) {
                                 state[0] = 3;
-                                if (!activityVerifyCompleteModel.IsEnoughAdvance(AdvanceNum) ||
-                                        activityVerifyCompleteModel.IsEnoughLinePoples(costLines + activityDynamicModel.getActivityTotalLinesPeoples())) {
-                                    state[0] = 1;
-                                }
                                 return false;
-                            } else {
-                                if (!activityVerifyCompleteModel.IsEnoughAdvance(AdvanceNum) ||
-                                        activityVerifyCompleteModel.IsEnoughLinePoples(costLines)) {
-                                    state[0] = 1;
-                                    return false;
-                                }
                             }
 
                             Refresh[0] = 1;
