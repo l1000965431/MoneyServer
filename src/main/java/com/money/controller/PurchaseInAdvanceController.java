@@ -96,6 +96,11 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
                     ActivityVerifyCompleteModel activityVerifyCompleteModel = activityDetailModel.getActivityVerifyCompleteModel();
                     String ActivityID = activityVerifyCompleteModel.getActivityId();
 
+                    if( activityDetailModel.getStatus() == ActivityDetailModel.ONLINE_ACTIVITY_COMPLETE ){
+                        state[0] = 1;
+                        return false;
+                    }
+
                     int costLines = 0;
 
                     switch (PurchaseType) {

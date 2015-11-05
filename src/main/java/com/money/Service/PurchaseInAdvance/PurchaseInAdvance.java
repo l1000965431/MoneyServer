@@ -67,9 +67,16 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
                 ActivityDetailModel activityDetailModel = activityInfoDAO.getActivityDetaillNoTransaction(InstallmentActivityID);
                 ActivityVerifyCompleteModel activityVerifyCompleteModel = activityDetailModel.getActivityVerifyCompleteModel();
                 String ActivityID = activityVerifyCompleteModel.getActivityId();
+
+
                 int OrderStartAndvance;
                 int remainingNum = getInstallmentActivityRemainingTicket(InstallmentActivityID);
                 ActivityName[0] = activityVerifyCompleteModel.getName();
+
+                if( activityDetailModel.getStatus() == ActivityDetailModel.ONLINE_ACTIVITY_COMPLETE ){
+                    return false;
+                }
+
                 if (remainingNum == 0) {
                     return false;
                 }
@@ -346,6 +353,11 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
                 String ActivityID = activityDynamicModel.getActivityVerifyCompleteModel().getActivityId();
 
                 ActivityName[0] = activityVerifyCompleteModel.getName();
+
+                if( activityDetailModel.getStatus() == ActivityDetailModel.ONLINE_ACTIVITY_COMPLETE ){
+                    return false;
+                }
+
                 int OrderStartAndvance;
                 int Lines = activityDynamicModel.getActivityTotalLinesPeoples() * AdvanceNum;
                 int TempAdvanceNum;

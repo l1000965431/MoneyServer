@@ -183,7 +183,7 @@ public class ServiceAuditActivity extends ServiceBase implements ServiceInterfac
         completeModel.setVideoUrl(activity.getVideoUrl());
         completeModel.setCreateDate(activity.getCreateDate());
         completeModel.setProfitMode(activity.getProfitMode());
-
+        completeModel.setActivityStartTime( activity.getCreateDate() );
         return completeModel;
     }
 }
