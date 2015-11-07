@@ -206,7 +206,7 @@ public class Config {
     //个人拥有的微劵最大值
     public static int MaxVirtualSecurities = 0;
 
-    //单次购买使用微劵的最小值
+    //单次购买使用微劵的最大值
     public static int MaxVirtualSecuritiesBuy = 0;
 
     //红点的消息提示:新普通项目项目
