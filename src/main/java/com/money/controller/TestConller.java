@@ -1,6 +1,5 @@
 package com.money.controller;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.money.Service.PurchaseInAdvance.PurchaseInAdvance;
 import com.money.Service.ServiceFactory;
@@ -8,6 +7,7 @@ import com.money.Service.activity.ActivityService;
 import com.money.Service.activityPreferential.ActivityPreferentialService;
 import com.money.Service.user.UserService;
 import com.money.config.Config;
+import com.money.dao.userDAO.UserDAO;
 import com.money.job.TestJob;
 import com.money.memcach.MemCachService;
 import com.money.model.PreferentiaLotteryModel;
@@ -15,6 +15,7 @@ import com.money.model.SREarningModel;
 import com.money.model.UserModel;
 import org.quartz.DateBuilder;
 import org.quartz.SchedulerException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -36,8 +37,8 @@ import java.util.regex.Pattern;
 @RequestMapping("/Test")
 public class TestConller extends ControllerBase implements IController {
 
-/*    @Autowired
-    private HttpClient client;*/
+    @Autowired
+    UserDAO userDAO;
 
     @RequestMapping("/TestHead")
     @ResponseBody
@@ -346,14 +347,23 @@ public class TestConller extends ControllerBase implements IController {
     @ResponseBody
     String TestGlobalConfig() throws Exception {
         Map<String, Integer> map = new HashMap<>();
-        map.put( "AddExpInvite",Config.AddExpInvite );
-        map.put( "AddVirtualSecuritiesInvite",Config.AddVirtualSecuritiesInvite );
-        map.put( "AddExpPurchase",Config.AddExpPurchase );
-        map.put( "AddVirtualSecuritiesSelf",Config.AddVirtualSecuritiesSelf );
-        map.put( "MaxVirtualSecurities",Config.MaxVirtualSecurities );
-        map.put( "MaxVirtualSecuritiesBuy",Config.MaxVirtualSecuritiesBuy );
+        map.put("AddExpInvite", Config.AddExpInvite);
+        map.put("AddVirtualSecuritiesInvite", Config.AddVirtualSecuritiesInvite);
+        map.put("AddExpPurchase", Config.AddExpPurchase);
+        map.put("AddVirtualSecuritiesSelf", Config.AddVirtualSecuritiesSelf);
+        map.put("MaxVirtualSecurities", Config.MaxVirtualSecurities);
+        map.put("MaxVirtualSecuritiesBuy", Config.MaxVirtualSecuritiesBuy);
 
-        return GsonUntil.JavaClassToJson( map );
+        return GsonUntil.JavaClassToJson(map);
+    }
+
+    @RequestMapping("/TestGetUserModelByIdCard")
+    @ResponseBody
+    String TestGetUserModelByIdCard( HttpServletRequest request ) throws Exception {
+        String mail = request.getParameter( "mail" );
+        String idcard = request.getParameter( "idcard" );
+        UserModel userModel = userDAO.getUserByMailOrIdCard( mail,idcard );
+        return userModel.toString();
     }
 
 }

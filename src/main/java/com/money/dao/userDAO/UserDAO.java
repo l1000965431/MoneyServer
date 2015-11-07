@@ -11,6 +11,8 @@ import com.money.model.UserModel;
 import com.money.model.WalletModel;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +37,7 @@ public class UserDAO extends BaseDao {
     private static Logger logger = LoggerFactory.getLogger(UserDAO.class);
 
 
-    //投资者完善个人信息,1，修改信息成功；2，信息不合法
+    //0未登录；1，修改信息成功；2，信息不合法;3，token不一致;4,userType有问题 5:身份证号重复 6:邮箱重复
     public int modifyInvestorInfo(String userId, String info) {
         //将信息转换为map形式
         Map<String, String> map = new HashMap<String, String>();
@@ -52,6 +54,16 @@ public class UserDAO extends BaseDao {
         }
         //查看用户昵称是否合法
         boolean userIsRight = userIsRight(userId);
+
+        UserModel userModel = getUserByMailOrIdCard( map.get("mail"),map.get("identity") );
+        if( userModel != null ){
+            if( userModel.getIdentityId().equals( map.get("identity") ) ){
+                return 5;
+            }
+            if( userModel.getMail().equals( map.get("mail") ) ){
+                return 6;
+            }
+        }
 
         if ((userIsRight) && (infoFlag)) {
             //写数据库信息
@@ -339,6 +351,24 @@ public class UserDAO extends BaseDao {
         userModel.setExpertise(goodAtField);
         userModel.setIsPerfect(true);
         this.update(userModel);
+    }
+
+
+    public UserModel getUserByMailOrIdCard( String Mail,String IdCard ){
+        if( Mail ==null || IdCard == null){
+            return null;
+        }
+
+        Session session = getNewSession();
+        Transaction t = session.beginTransaction();
+        UserModel userModel = (UserModel)session.createCriteria(UserModel.class)
+                .add(Restrictions.or(Restrictions.eq("mail", Mail), Restrictions.eq("identityId", IdCard)))
+                .uniqueResult();
+
+        t.commit();
+        return userModel;
+
+
     }
 
     //查看用户昵称是否合法

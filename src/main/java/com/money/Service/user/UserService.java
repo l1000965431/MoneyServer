@@ -134,7 +134,7 @@ public class UserService extends ServiceBase implements ServiceInterface {
 
     }
 
-    //完善信息 0未登录；1，修改信息成功；2，信息不合法;3，token不一致;4,userType有问题
+    //完善信息 0未登录；1，修改信息成功；2，信息不合法;3，token不一致;4,userType有问题 5:身份证号重复 6:邮箱重复
     public int perfectInfo(String username, String token, String info) {
         //查看缓存中是否含有token,且客户端参数是否与token一样
         int flag = tokenLand(username, token);

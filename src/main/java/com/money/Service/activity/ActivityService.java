@@ -574,16 +574,10 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
         int InstallmentPurchNum;
         int InstallmentAdvance;
         int LinePeoples;
-        if (CurInstallmentNum[0] >= TotalInstallmentNum[0]) {
-            InstallmentPurchNum = TotalLines[0] - CurLines[0];
-            InstallmentAdvance = 1;
-            LinePeoples = 1;
-        } else {
-            InstallmentPurchNum = TotalLines[0] - CurLines[0];
-            InstallmentAdvance = (TotalActivityLines[0] - CurActivityLine[0]) / TotalLines[0];
-            LinePeoples = (TotalLinePeoples[0] - CurLinePeoples[0]) / InstallmentTotalLinesPeoplse[0];
-        }
 
+        InstallmentPurchNum = TotalLines[0] - CurLines[0];
+        InstallmentAdvance = ((TotalActivityLines[0]-CurActivityLine[0])/TotalLines[0])==0?1:((TotalActivityLines[0] - CurActivityLine[0])/TotalLines[0]);
+        LinePeoples = (TotalLinePeoples[0] - CurLinePeoples[0]) / InstallmentTotalLinesPeoplse[0];
 
         List list = new ArrayList();
         list.add(InstallmentPurchNum);

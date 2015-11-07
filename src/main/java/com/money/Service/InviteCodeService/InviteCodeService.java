@@ -1,12 +1,16 @@
 package com.money.Service.InviteCodeService;
 
+import com.money.MoneyServerMQ.MoneyServerMQManager;
+import com.money.MoneyServerMQ.MoneyServerMessage;
 import com.money.Service.ServiceBase;
 import com.money.Service.ServiceInterface;
+import com.money.config.MoneyServerMQ_Topic;
 import com.money.dao.InviteCodeDAO.InviteCodeDAO;
 import com.money.dao.TransactionSessionCallback;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import until.MoneyServerDate;
 
 import java.text.ParseException;
 
@@ -53,11 +57,11 @@ public class InviteCodeService extends ServiceBase implements ServiceInterface {
         });
 
 
-/*        if( inviteCodeDAO.countInviteCodeNum() < 200 ){
+        if( inviteCodeDAO.countInviteCodeNum() < 200 ){
             //插入邀请码消息
-
-
-        }*/
+            MoneyServerMQManager.SendMessage(new MoneyServerMessage(MoneyServerMQ_Topic.MONEYSERVERMQ_INSERTINVITECODE_TOPIC,
+                    MoneyServerMQ_Topic.MONEYSERVERMQ_INSERTINVITECODE_TAG, "", "项目这邀请码插入"+ MoneyServerDate.getStringCurDate()));
+        }
 
         return state[0];
     }

@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import until.MoneyServerDate;
 
+import java.math.BigInteger;
 import java.text.ParseException;
 
 /**
@@ -84,8 +85,8 @@ public class InviteCodeDAO extends BaseDao {
     public int countInviteCodeNum() {
         String Sql = "select count(Id) from invitecode where userId='0';";
         Session session = this.getNewSession();
-        SQLQuery sqlQuery = session.createSQLQuery(Sql);
-        return Integer.valueOf(sqlQuery.uniqueResult().toString());
+        BigInteger re = (BigInteger)session.createSQLQuery(Sql).uniqueResult();
+        return re.intValue();
 
     }
 

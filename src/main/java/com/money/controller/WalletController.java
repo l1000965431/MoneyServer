@@ -221,14 +221,14 @@ public class WalletController extends ControllerBase {
         return Config.SERVICE_SUCCESS;
     }
 
-    @RequestMapping("/TestRechargeWallet")
+/*    @RequestMapping("/TestRechargeWallet")
     @ResponseBody
     public void TestRechargeWallet(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String userId = request.getParameter("userId");
         int lines = Integer.valueOf(request.getParameter("lines"));
 
         walletService.TestRechargeWallet(userId, lines);
-    }
+    }*/
 
     @RequestMapping("/GetAliTranserOrder")
     @ResponseBody
