@@ -55,6 +55,7 @@ public class UserDAO extends BaseDao {
         //查看用户昵称是否合法
         boolean userIsRight = userIsRight(userId);
 
+        //查找身份证或者邮箱是否有重复
         UserModel userModel = getUserByMailOrIdCard( map.get("mail"),map.get("identity") );
         if( userModel != null ){
             if( userModel.getIdentityId().equals( map.get("identity") ) ){
@@ -358,17 +359,25 @@ public class UserDAO extends BaseDao {
         if( Mail ==null || IdCard == null){
             return null;
         }
-
         Session session = getNewSession();
         Transaction t = session.beginTransaction();
-        UserModel userModel = (UserModel)session.createCriteria(UserModel.class)
-                .add(Restrictions.or(Restrictions.eq("mail", Mail), Restrictions.eq("identityId", IdCard)))
-                .uniqueResult();
+        try{
 
-        t.commit();
-        return userModel;
+            Object o = session.createCriteria(UserModel.class)
+                    .add(Restrictions.or(Restrictions.eq("mail", Mail), Restrictions.eq("identityId", IdCard)))
+                    .uniqueResult();
 
+            t.commit();
+            UserModel userModel = null;
+            if( o != null ){
+                userModel = (UserModel)o;
+            }
 
+            return userModel;
+        }catch ( Exception e ){
+            t.rollback();
+            return null;
+        }
     }
 
     //查看用户昵称是否合法

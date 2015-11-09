@@ -34,9 +34,15 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
 
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
-        t.commit();
-        return result.intValue();
+        try{
+            BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
+            t.commit();
+            return result.intValue();
+        }catch ( Exception e){
+            t.rollback();
+            return -1;
+        }
+
     }
 
     /**
@@ -51,9 +57,15 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
 
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        BigInteger result =  (BigInteger)session.createSQLQuery( sql ).uniqueResult();
-        t.commit();
-        return result.intValue();
+        try{
+            BigInteger result =  (BigInteger)session.createSQLQuery( sql ).uniqueResult();
+            t.commit();
+            return result.intValue();
+        }catch ( Exception e ){
+            t.rollback();
+            return -1;
+        }
+
     }
 
 
@@ -69,9 +81,15 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
 
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
-        t.commit();
-        return result.intValue();
+        try{
+            BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
+            t.commit();
+            return result.intValue();
+        }catch ( Exception e ){
+            t.rollback();
+            return -1;
+        }
+
     }
 
     /**
@@ -83,9 +101,15 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
 
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        BigInteger result =  (BigInteger)session.createSQLQuery( sql ).uniqueResult();
-        t.commit();
-        return result.intValue();
+        try{
+            BigInteger result =  (BigInteger)session.createSQLQuery( sql ).uniqueResult();
+            t.commit();
+            return result.intValue();
+        }catch ( Exception e ){
+            t.rollback();
+            return -1;
+        }
+
     }
 
     /**
@@ -96,9 +120,15 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
         String sql = "select sum(userearnings.UserEarningLines)as UserLotterySum from userearnings;";
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
-        t.commit();
-        return result.intValue();
+        try{
+            BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
+            t.commit();
+            return result.intValue();
+        }catch ( Exception e ){
+            t.rollback();
+            return -1;
+        }
+
     }
 
     /**
@@ -109,9 +139,15 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
         String sql = "select COUNT(*) as BuyNum FROM activityorder;";
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        BigInteger result =  (BigInteger)session.createSQLQuery( sql ).uniqueResult();
-        t.commit();
-        return result.intValue();
+        try{
+            BigInteger result =  (BigInteger)session.createSQLQuery( sql ).uniqueResult();
+            t.commit();
+            return result.intValue();
+        }catch ( Exception e ){
+            t.rollback();
+            return -1;
+        }
+
     }
 
     /**
@@ -122,9 +158,15 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
         String sql = "select sum(earningsrecord.TotalPrize) as LotteryLinesSum from earningsrecord;";
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
-        t.commit();
-        return result.intValue();
+        try{
+            BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
+            t.commit();
+            return result.intValue();
+        }catch ( Exception e ){
+            t.rollback();
+            return -1;
+        }
+
     }
 
 
@@ -136,9 +178,15 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
         String sql = "select (sum(walletorder.WalletLines)/ (SELECT COUNT(id) from user )) as AverageWallet from walletorder;";
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
-        t.commit();
-        return result.floatValue();
+        try{
+            BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
+            t.commit();
+            return result.floatValue();
+        }catch ( Exception e ){
+            t.rollback();
+            return -1.0f;
+        }
+
     }
 
     /**
@@ -151,9 +199,15 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
         sql = sql.replace( "startDate",startDate ).replace("endDate",endDate);
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
-        t.commit();
-        return result.intValue();
+        try{
+            BigDecimal result =  (BigDecimal)session.createSQLQuery( sql ).uniqueResult();
+            t.commit();
+            return result.intValue();
+        }catch ( Exception e ){
+            t.rollback();
+            return -1;
+        }
+
     }
 
 
@@ -168,9 +222,15 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
         sql = sql.replace( "startDate",startDate ).replace("endDate",endDate);
         Session session = generaDAO.getNewSession();
         org.hibernate.Transaction t = session.beginTransaction();
-        BigInteger result =  (BigInteger)session.createSQLQuery( sql ).uniqueResult();
-        t.commit();
-        return result.intValue();
+        try{
+            BigInteger result =  (BigInteger)session.createSQLQuery( sql ).uniqueResult();
+            t.commit();
+            return result.intValue();
+        }catch ( Exception e ){
+            t.rollback();
+            return -1;
+        }
+
     }
 
 }

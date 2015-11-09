@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import until.CallbackFunction;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -69,6 +70,7 @@ public class BaseDao {
             t.commit();
             return o;
         }catch ( Exception e ){
+            t.rollback();
             return null;
         }
     }
@@ -124,9 +126,14 @@ public class BaseDao {
         String hql = "from " + c.getName();
         Session session = getNewSession();
         Transaction t = session.beginTransaction();
-        List list = session.createQuery(hql).list();
-        t.commit();
-        return list;
+        try{
+            List list = session.createQuery(hql).list();
+            t.commit();
+            return list;
+        }catch ( Exception e ){
+            t.rollback();
+            return null;
+        }
     }
 
     /**
@@ -166,15 +173,15 @@ public class BaseDao {
     public Long getTotalCount(String name) {
         Session session = getNewSession();
         Transaction t = session.beginTransaction();
-        String hql = "select count(*) from " + name;
-        Long count = (Long) session.createQuery(hql).uniqueResult();
-        t.commit();
-
-        if (count == null) {
-            count = (long) 0;
+        try{
+            String hql = "select count(*) from " + name;
+            BigInteger count = (BigInteger) session.createQuery(hql).uniqueResult();
+            t.commit();
+            return count.longValue();
+        }catch ( Exception e ){
+            t.rollback();
+            return 0l;
         }
-
-        return count;
     }
 
     /**

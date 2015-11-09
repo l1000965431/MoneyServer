@@ -133,53 +133,45 @@ public class activityDAO extends BaseDao {
     public List<ActivityDetailModel> getActivityListActivity(int page, int pageNum) {
         Session session = getNewSession();
         Transaction t = session.beginTransaction();
-        List<ActivityDetailModel> list = session.createCriteria(ActivityDetailModel.class)
-                .add(Restrictions.eq("status", 1))
-                .setFirstResult(page * pageNum)
-                .setMaxResults(pageNum)
-                .list();
+        try{
+            List<ActivityDetailModel> list = session.createCriteria(ActivityDetailModel.class)
+                    .add(Restrictions.eq("status", 1))
+                    .setFirstResult(page * pageNum)
+                    .setMaxResults(pageNum)
+                    .list();
 
-//        String hql = "from " + ActivityDetailModel.class.getName();
-//        Session session = getNewSession();
-//        List<ActivityDetailModel> list =  session.createQuery(hql)
-//                .setFirstResult(pageNum * page)
-//                .setMaxResults(pageNum)
-//                .list();
-        for (ActivityDetailModel detailModel : list) {
-            detailModel.getActivityVerifyCompleteModel().getActivityId();
-            detailModel.getDynamicModel().getActivityCurLines();
+            for (ActivityDetailModel detailModel : list) {
+                detailModel.getActivityVerifyCompleteModel().getActivityId();
+                detailModel.getDynamicModel().getActivityCurLines();
+            }
+            t.commit();
+            return list;
+        }catch ( Exception e ){
+            t.rollback();
+            return null;
         }
-//        ActivityDetailModel activityDynamicModel = (ActivityDetailModel)session.get(ActivityDetailModel.class, "4_0");
-//        activityDynamicModel.getDynamicModel().getActivityCurLines();
-        t.commit();
-
-        return list;
     }
 
     public List<ActivityDetailModel> getActivityListActivityTest(int page, int pageNum) {
         Session session = getNewSession();
         Transaction t = session.beginTransaction();
-        List<ActivityDetailModel> list = session.createCriteria(ActivityDetailModel.class)
-                .add(Restrictions.eq("status", ActivityDetailModel.ONLINE_ACTIVITY_TEST))
-                .setFirstResult(page * pageNum)
-                .setMaxResults(pageNum)
-                .list();
+        try{
+            List<ActivityDetailModel> list = session.createCriteria(ActivityDetailModel.class)
+                    .add(Restrictions.eq("status", ActivityDetailModel.ONLINE_ACTIVITY_TEST))
+                    .setFirstResult(page * pageNum)
+                    .setMaxResults(pageNum)
+                    .list();
 
-//        String hql = "from " + ActivityDetailModel.class.getName();
-//        Session session = getNewSession();
-//        List<ActivityDetailModel> list =  session.createQuery(hql)
-//                .setFirstResult(pageNum * page)
-//                .setMaxResults(pageNum)
-//                .list();
-        for (ActivityDetailModel detailModel : list) {
-            detailModel.getActivityVerifyCompleteModel().getActivityId();
-            detailModel.getDynamicModel().getActivityCurLines();
+            for (ActivityDetailModel detailModel : list) {
+                detailModel.getActivityVerifyCompleteModel().getActivityId();
+                detailModel.getDynamicModel().getActivityCurLines();
+            }
+            t.commit();
+            return list;
+        }catch ( Exception e){
+            t.rollback();
+            return null;
         }
-//        ActivityDetailModel activityDynamicModel = (ActivityDetailModel)session.get(ActivityDetailModel.class, "4_0");
-//        activityDynamicModel.getDynamicModel().getActivityCurLines();
-        t.commit();
-
-        return list;
     }
 
     /**

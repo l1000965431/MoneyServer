@@ -250,9 +250,14 @@ public class UserService extends ServiceBase implements ServiceInterface {
     public UserModel getUserInfoTest(String UserID) {
         Session session = userDAO.getNewSession();
         Transaction t = session.beginTransaction();
-        UserModel userModel = userDAO.getUSerModelNoTransaction(UserID);
-        t.commit();
-        return userModel;
+        try{
+            UserModel userModel = userDAO.getUSerModelNoTransaction(UserID);
+            t.commit();
+            return userModel;
+        }catch ( Exception e ){
+            t.rollback();
+            return null;
+        }
     }
 
     /**
@@ -437,7 +442,7 @@ public class UserService extends ServiceBase implements ServiceInterface {
         }), Config.SERVICE_SUCCESS)) {
             return userAddExp;
         } else {
-            return 0;
+            return -1;
         }
 
 
