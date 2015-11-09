@@ -69,7 +69,7 @@
             <property name="readTimeout" value="30000"/>
         </bean>-->
 
-    <!-- 读取配置文件-->
+    <!-- 读取配置文件 生产环境 -->
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
@@ -79,11 +79,26 @@
         </property>
     </bean>
 
-    <!--<import resource="xml/Spring-*.xml"/>-->
-    <import resource="xml/Spring-db-config.xml"/>
-    <import resource="xml/Spring-MQ-Config.xml"/>
-    <import resource="xml/Spring-Redis-Config.xml"/>
-    <import resource="xml/Spring-Service-Config.xml"/>
-    <import resource="xml/Spring-Quartz-Config.xml"/>
+    <!--配置文件 生产环境-->
+    <import resource="xml/Spring-*.xml"/>
+
+<!--     &lt;!&ndash;读取配置文件  测试环境&ndash;&gt;
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>WEB-INF/classes/Test/conf/redis.properties</value>
+                <value>WEB-INF/classes/Test/conf/dataSource.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    &lt;!&ndash;配置文件 测试环境&ndash;&gt;
+    <import resource="Test/xml/Spring-*.xml"/>-->
+
+<!--    <import resource="Test/xml/Spring-db-config.xml"/>
+    <import resource="Test/xml/Spring-MQ-Config.xml"/>
+    <import resource="Test/xml/Spring-Redis-Config.xml"/>
+    <import resource="Test/xml/Spring-Service-Config.xml"/>
+    <import resource="Test/xml/Spring-Quartz-Config.xml"/>-->
 
 </beans>

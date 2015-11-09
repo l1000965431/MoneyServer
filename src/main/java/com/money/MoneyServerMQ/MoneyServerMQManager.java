@@ -5,6 +5,7 @@ import com.aliyun.openservices.ons.api.ONSFactory;
 import com.aliyun.openservices.ons.api.Producer;
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
 import com.money.config.Config;
+import com.money.config.MoneyServerMQ_Topic;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import until.GsonUntil;
@@ -42,14 +43,14 @@ public class MoneyServerMQManager {
 
     private void InitMoneyServerMQManager(){
         Properties propertiesproducer = new Properties();
-        propertiesproducer.put(PropertyKeyConst.ProducerId, Config.MESSAFE_PRODUCERID);
+        propertiesproducer.put(PropertyKeyConst.ProducerId, MoneyServerMQ_Topic.MESSAFE_PRODUCERID);
         propertiesproducer.put(PropertyKeyConst.AccessKey, Config.MESSAFE_ACCESSKEY);
         propertiesproducer.put(PropertyKeyConst.SecretKey, Config.MESSAFE_SECRETKEY);
         producer = ONSFactory.createProducer(propertiesproducer);
         producer.start();
 
         Properties propertiesconsumer = new Properties();
-        propertiesconsumer.put(PropertyKeyConst.ConsumerId, Config.MESSAFE_CONSUMERID);
+        propertiesconsumer.put(PropertyKeyConst.ConsumerId, MoneyServerMQ_Topic.MESSAFE_CONSUMERID);
         propertiesconsumer.put(PropertyKeyConst.AccessKey, Config.MESSAFE_ACCESSKEY);
         propertiesconsumer.put(PropertyKeyConst.SecretKey, Config.MESSAFE_SECRETKEY);
         consumer = ONSFactory.createConsumer(propertiesconsumer);
