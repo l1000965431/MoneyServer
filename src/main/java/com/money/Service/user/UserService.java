@@ -1,9 +1,12 @@
 package com.money.Service.user;
 
+import com.money.MoneyServerMQ.MoneyServerMQManager;
+import com.money.MoneyServerMQ.MoneyServerMessage;
 import com.money.Service.ServiceBase;
 import com.money.Service.ServiceInterface;
 import com.money.Service.Wallet.WalletService;
 import com.money.config.Config;
+import com.money.config.MoneyServerMQ_Topic;
 import com.money.config.ServerReturnValue;
 import com.money.dao.TransactionSessionCallback;
 import com.money.dao.userDAO.UserDAO;
@@ -16,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import until.GsonUntil;
+import until.UmengPush.UmengSendParameter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -409,6 +413,8 @@ public class UserService extends ServiceBase implements ServiceInterface {
      * @param InviteAddExp 邀请人增加的经验
      */
     public int addUserExp(final String userId, final int userAddExp, final String InviteCode, final int InviteAddExp) {
+        final String[] InvitedUserID = {""};
+        final String[] InviteUserName = {""};
         if (Objects.equals(userDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
             @Override
             public boolean callback(Session session) throws Exception {
@@ -428,6 +434,9 @@ public class UserService extends ServiceBase implements ServiceInterface {
                     return false;
                 }
 
+                InvitedUserID[0] = inviteUserModel.getUserId();
+                InviteUserName[0] = userModel.getUserName();
+
                 if (userDAO.AddUserExpByInviteCode(InviteCode, InviteAddExp) == 0 ||
                         userDAO.AddUserExpByUserId(userId, userAddExp) == 0 ||
                         userDAO.UpdateUserInvited(userId) == 0 ) {
@@ -440,6 +449,13 @@ public class UserService extends ServiceBase implements ServiceInterface {
                 return true;
             }
         }), Config.SERVICE_SUCCESS)) {
+            //给对方发送消息发送消息
+            UmengSendParameter umengSendParameter = new UmengSendParameter(InvitedUserID[0], "微距竞投", "推荐人奖励",
+                    InviteUserName+"用户将您填为推荐人,您获得了经验:"+Integer.toString(InviteAddExp), "填写推荐ID");
+            String Json = GsonUntil.JavaClassToJson(umengSendParameter);
+            MoneyServerMQManager.SendMessage(new MoneyServerMessage(MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TOPIC,
+                    MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TAG, Json, "填写推荐ID"));
+
             return userAddExp;
         } else {
             return -1;
