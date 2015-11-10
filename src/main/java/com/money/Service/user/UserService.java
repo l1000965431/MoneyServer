@@ -21,9 +21,7 @@ import org.springframework.stereotype.Service;
 import until.GsonUntil;
 import until.UmengPush.UmengSendParameter;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Created by fisher on 2015/7/6.
@@ -412,7 +410,7 @@ public class UserService extends ServiceBase implements ServiceInterface {
      * @param InviteCode
      * @param InviteAddExp 邀请人增加的经验
      */
-    public int addUserExp(final String userId, final int userAddExp, final String InviteCode, final int InviteAddExp) {
+    public List<Integer> addUserExp(final String userId, final int userAddExp, final String InviteCode, final int InviteAddExp) {
         final String[] InvitedUserID = {""};
         final String[] InviteUserName = {""};
         if (Objects.equals(userDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
@@ -455,10 +453,12 @@ public class UserService extends ServiceBase implements ServiceInterface {
             String Json = GsonUntil.JavaClassToJson(umengSendParameter);
             MoneyServerMQManager.SendMessage(new MoneyServerMessage(MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TOPIC,
                     MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TAG, Json, "填写推荐ID"));
-
-            return userAddExp;
+            List<Integer> list = new ArrayList<>();
+            list.add( userAddExp );
+            list.add( Config.AddVirtualSecuritiesSelf );
+            return list;
         } else {
-            return -1;
+            return null;
         }
 
 

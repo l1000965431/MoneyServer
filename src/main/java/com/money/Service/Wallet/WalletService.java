@@ -346,6 +346,10 @@ public class WalletService extends ServiceBase implements ServiceInterface {
      * @return
      */
     public int virtualSecuritiesCost(String UserId, int Lines) {
+        if( Lines <= 0 ){
+            return 0;
+        }
+
         String sql = "update wallet set virtualSecurities = virtualSecurities-? where UserID = ? and virtualSecurities-? >= 0";
         Session session = generaDAO.getNewSession();
         SQLQuery query = session.createSQLQuery(sql);
@@ -592,5 +596,19 @@ public class WalletService extends ServiceBase implements ServiceInterface {
         });
     }
 
+    /**
+     * 计算跟投花费
+     * @param Lines 实际金额
+     * @param AdvanceNum 购买期数
+     * @param VirtualSecurities 微卷使用
+     * @return
+     */
+    public int getCostLines( int Lines,int AdvanceNum,int VirtualSecurities ){
+         if( AdvanceNum > 1 ){
+             return Lines*AdvanceNum;
+         }else{
+             return Lines-VirtualSecurities>0?Lines-VirtualSecurities:0;
+         }
+    }
 
 }

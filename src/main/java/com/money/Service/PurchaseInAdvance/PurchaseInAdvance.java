@@ -81,7 +81,7 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
                     return false;
                 }
 
-                int costLines = PurchaseNum * AdvanceNum;
+                int costLines =  walletService.getCostLines( PurchaseNum,AdvanceNum,VirtualSecurities );
 
                 if (!IsRemainingInstallment(ActivityID, AdvanceNum) ||
                         activityVerifyCompleteModel.IsEnoughLines(costLines)) {
@@ -140,7 +140,6 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
                     walletService.virtualSecuritiesCost( UserID,VirtualSecurities );
                 }
 
-
                 if (purchaseInAdvanceDAO.updateActivityLines(ActivityID, costLines) == 0) {
                     return false;
                 }
@@ -148,8 +147,8 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
                 //增加任务经验
                 userDAO.AddUserExpByUserId( UserID,Config.AddExpPurchase*costLines );
 
-                orderService.createOrder(UserID, InstallmentActivityID, PurchaseNum * AdvanceNum, PurchaseNum,
-                        AdvanceNum, Config.PURCHASEPRICKSILK, OrderID, OrderStartAndvance);
+                orderService.createOrder(UserID, InstallmentActivityID, costLines, PurchaseNum,
+                        AdvanceNum, Config.PURCHASEPRICKSILK, OrderID, OrderStartAndvance,VirtualSecurities);
 
 
                 return true;
@@ -401,7 +400,7 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
                 userDAO.AddUserExpByUserId( UserID,Config.AddExpPurchase*Lines );
 
                 orderService.createOrder(UserID, InstallmentActivityID, Lines, activityDynamicModel.getActivityTotalLinesPeoples(),
-                        AdvanceNum, Config.PURCHASELOCALTYRANTS, OrderID, OrderStartAndvance);
+                        AdvanceNum, Config.PURCHASELOCALTYRANTS, OrderID, OrderStartAndvance,0);
 
                 return true;
             }

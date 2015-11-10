@@ -68,6 +68,11 @@ public class OrderModel extends BaseModel {
     /*@JoinColumn( name = "orderactivityId", referencedColumnName = "activityStageId")*/
     private ActivityDetailModel activityDetailModel;
 
+    /**
+     * 微卷使用量
+     */
+    private int VirtualSecurities=0;
+
     public String getOrderId() {
         return orderId;
     }
@@ -138,5 +143,13 @@ public class OrderModel extends BaseModel {
 
     public void setOrderStartAdvance(int orderStartAdvance) {
         this.orderStartAdvance = orderStartAdvance;
+    }
+
+    public int getVirtualSecurities() {
+        return VirtualSecurities;
+    }
+
+    public void setVirtualSecurities(int virtualSecurities) {
+        VirtualSecurities = virtualSecurities;
     }
 }

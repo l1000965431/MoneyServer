@@ -46,7 +46,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <h1>绑定微信</h1>
 
 <div class="app-nature">
-    <div class="nature"><img src="res/timer.png" class="img-responsive" alt=""/></div>
+    <div class="nature"><img src="http://7xo7qm.com1.z0.glb.clouddn.com/timer.png" class="img-responsive" alt=""/></div>
     <form action="./js/WxBindingFunction.jsp" method="get">
         <input type="text" class="text" value="输入账号手机号码" onfocus="this.value = '';"
                onblur="if (this.value == '') {this.value = '输入账号手机号码';}" id="username" name="username">

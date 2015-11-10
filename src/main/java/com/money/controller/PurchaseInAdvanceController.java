@@ -74,9 +74,9 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
             return ServerReturnValue.PERFECTERROR;
         }
 
-/*        if (!this.UserIsLand(UserID, token)) {
+        if (!this.UserIsLand(UserID, token)) {
             return Config.LANDFAILED;
-        }*/
+        }
 
 
         if (!userService.IsPerfectInfo(UserID)) {
@@ -106,8 +106,7 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
                     switch (PurchaseType) {
                         case Config.PURCHASEPRICKSILK:
                             int remainingNum = purchaseInAdvance.getInstallmentActivityRemainingTicket(InstallmentActivityID);
-                            costLines = PurchaseNum * AdvanceNum;
-
+                            costLines = walletService.getCostLines( PurchaseNum,AdvanceNum,VirtualSecurities );
                             if (!purchaseInAdvance.IsRemainingInstallment(ActivityID, AdvanceNum) ||
                                     activityVerifyCompleteModel.IsEnoughLines(costLines)) {
                                 state[0] = 1;
@@ -118,10 +117,10 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
                                 Refresh[0] = 1;
                             }
                             if (remainingNum < PurchaseNum && MessageType == 1) {
-                                state[0] = ServerReturnValue.PERFECTREFRESH;
-                                return false;
-                            }
-                            break;
+                            state[0] = ServerReturnValue.PERFECTREFRESH;
+                            return false;
+                        }
+                        break;
 
                         case Config.PURCHASELOCALTYRANTS:
                             costLines = activityDynamicModel.getActivityTotalLinesPeoples() * AdvanceNum;
@@ -145,7 +144,6 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
                         state[0] = 2;
                         return false;
                     }
-
 
                     return true;
                 }

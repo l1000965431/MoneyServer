@@ -1,5 +1,6 @@
 package com.money.controller;
 
+import com.google.gson.Gson;
 import com.money.config.Config;
 import com.money.config.ServerReturnValue;
 import org.apache.http.HttpException;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -278,12 +280,18 @@ public class UserController extends ControllerBase implements IController {
 
     @RequestMapping("/AddUserExp")
     @ResponseBody
-    public int addUserExp( HttpServletRequest request ) {
+    public int addUserExp( HttpServletRequest request,HttpServletResponse response ) {
 
         String userId = request.getParameter("userId");
         String inviteCode = request.getParameter("inviteCode");
 
-        return userService.addUserExp( userId,0,inviteCode,Config.AddExpInvite );
+        List<Integer> list = userService.addUserExp(userId, 0, inviteCode, Config.AddExpInvite);
+        if( list == null ){
+            return -1;
+        }else{
+            response.addHeader( "UserAddNum", GsonUntil.JavaClassToJson( list ));
+            return 1;
+        }
     }
 
     /**

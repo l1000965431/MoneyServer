@@ -51,7 +51,9 @@ public class OrderService extends ServiceBase implements ServiceInterface {
      *
      * @return
      */
-    public String createOrder( String userID,String activityID,int lines,int PurchaseNum,int AdvanceNum,int purchasType,String OrderID,int StartOrderAndvance ){
+    public String createOrder( String userID,String activityID,int lines,
+                               int PurchaseNum,int AdvanceNum,int purchasType,
+                               String OrderID,int StartOrderAndvance,int VirtualSecurities ){
         OrderModel orderModel = new OrderModel();
         ActivityDetailModel activityDetailModel =  activityDAO.getActivityDetaillNoTransaction(activityID);
         orderModel.setActivityDetailModel(activityDetailModel);
@@ -62,6 +64,7 @@ public class OrderService extends ServiceBase implements ServiceInterface {
         orderModel.setAdvanceNum( AdvanceNum );
         orderModel.setPurchaseType( purchasType );
         orderModel.setOrderStartAdvance( StartOrderAndvance );
+        orderModel.setVirtualSecurities( VirtualSecurities );
         try {
             orderModel.setOrderDate(MoneyServerDate.getDateCurDate());
             orderDAO.saveNoTransactionTest(orderModel);

@@ -58,10 +58,10 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 
 <div class="zhezhao" id="zhezhao"></div>
 <div class="pic" id="zhezhao_od">
-    <img src="res/dashed.png" alt="">
+    <img src="http://7xo7qm.com1.z0.glb.clouddn.com/dashed.png" alt="">
 </div>
 <div class="app-nature">
-    <div class="nature" id="nature"><img src="res/timer.png" class="img-responsive" alt=""/></div>
+    <div class="nature" id="nature"><img src="http://7xo7qm.com1.z0.glb.clouddn.com/timer.png" class="img-responsive" alt=""/></div>
     <div class="submit" id="android"><input type="button" value="安卓版下载"></div>
     <div class="submit"><input type="button" onclick="myFunction()" value="iOS版下载(敬请期待)" id="IOS"></div>
     <div class="clear"></div>

@@ -21,7 +21,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <body>
 	<h1></h1>
 		<div class="app-nature">
-			<div class="nature"><img src="res/timer.png" class="img-responsive" alt="" /></div>
+			<div class="nature"><img src="http://7xo7qm.com1.z0.glb.clouddn.com/timer.png" class="img-responsive" alt="" /></div>
 			<form>
             <h1>
 				<script type="text/javascript">
