@@ -46,29 +46,6 @@
                                 expression="org.springframework.stereotype.Service"/>
     </context:component-scan>
 
-    <!-- 配置RestTemplate -->
-    <!--    <bean id="pollingConnectionManager"
-              class="org.apache.http.impl.conn.PoolingHttpClientConnectionManager">
-            <property name="maxTotal" value="30"/>
-            <property name="defaultMaxPerRoute" value="10"/>
-        </bean>
-
-        <bean id="httpClientBuilder" class="org.apache.http.impl.client.HttpClientBuilder"
-              factory-method="create">
-            <property name="connectionManager" ref="pollingConnectionManager"/>
-        </bean>
-
-        <bean id="httpClient" factory-bean="httpClientBuilder"
-              factory-method="build"/>
-
-        &lt;!&ndash; &ndash;&gt;
-        <bean id="clientHttpRequestFactory"
-              class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory">
-            <constructor-arg ref="httpClient"/>
-            <property name="connectTimeout" value="30000"/>
-            <property name="readTimeout" value="30000"/>
-        </bean>-->
-
     <!-- 读取配置文件 生产环境 -->
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
@@ -94,11 +71,5 @@
 
     &lt;!&ndash;配置文件 测试环境&ndash;&gt;
     <import resource="Test/xml/Spring-*.xml"/>-->
-
-<!--    <import resource="Test/xml/Spring-db-config.xml"/>
-    <import resource="Test/xml/Spring-MQ-Config.xml"/>
-    <import resource="Test/xml/Spring-Redis-Config.xml"/>
-    <import resource="Test/xml/Spring-Service-Config.xml"/>
-    <import resource="Test/xml/Spring-Quartz-Config.xml"/>-->
 
 </beans>
