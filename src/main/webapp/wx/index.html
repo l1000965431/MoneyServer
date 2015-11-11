@@ -11,11 +11,45 @@
     <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic'
           rel='stylesheet' type='text/css'/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style>
+        .zhezhao {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            background: #000;
+            opacity: 0.4;
+            display: none;
+            z-index:9998;
+        }
+
+        .pic {
+            right: 10px;
+            display: none;
+            position:fixed;
+            _position:absolute;
+            top: 0px;
+            right:0px;
+            z-index:9999;
+        }
+
+        .pic img {
+            width: 235px;
+        }
+
+    </style>
 </head>
 <body>
 <a href="#" class="scrolltop">
     <span>up</span>
 </a>
+<div class="zhezhao" id="zhezhao"></div>
+<div class="pic" id="zhezhao_od">
+    <img src="http://7xo7qm.com1.z0.glb.clouddn.com/dashed.png" alt="">
+</div>
+
 <!-- begins navbar -->
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
@@ -204,7 +238,7 @@
             </div>
 
 
-            <div class="span4 feature">
+            <div class="span4 feature" id="android">
                 <img src="http://7xo7qm.com1.z0.glb.clouddn.com/wxfeature6.jpg" alt="feature2" class="thumb"/>
 
                 <h3>
@@ -215,7 +249,7 @@
                     手机扫码下载APP,参与到我们的活动当中；<br>
                     或者直接点击下面按钮下载微聚竞投APP!
                 </p>
-                <a href="http://7xjewm.com1.z0.glb.clouddn.com/app-release.apk" class="btn btn-success btn-large">
+                <a class="btn btn-success btn-large">
                     下载APP
                 </a>
             </div>
@@ -310,8 +344,32 @@
 
         $('#container2').css("fontSize", 28);
         $('#container2').css("font-weight", "bold")
-        $('#container2').text("我的ID是:"+decodeURI(result));
+        $('#container2').text("我的ID是"+decodeURI(result));
     }
 
+    function is_weixn() {
+        var ua = navigator.userAgent.toLowerCase();
+        if (ua.match(/MicroMessenger/i) == "micromessenger") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    $('#android').on('click',function (){
+        var url = "http://7xjewm.com1.z0.glb.clouddn.com/app-release.apk";
+        var isweixin = is_weixn();
+        if (isweixin) {
+            $('#zhezhao').show();
+            $('#zhezhao_od').show();
+        }else{
+            window.location.href = url;
+        }
+    });
+
+    $('#zhezhao').on('click',function(){
+        $('#zhezhao').hide();
+        $('#zhezhao_od').hide();
+    })
 </script>
 </html>
