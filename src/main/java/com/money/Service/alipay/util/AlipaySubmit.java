@@ -58,7 +58,7 @@ public class AlipaySubmit {
      * @param sParaTemp 请求前的参数数组
      * @return 要请求的参数数组
      */
-    private static Map<String, String> buildRequestPara(Map<String, String> sParaTemp) {
+    public static Map<String, String> buildRequestPara(Map<String, String> sParaTemp) {
         //除去数组中的空值和签名参数
         Map<String, String> sPara = AlipayCore.paraFilter(sParaTemp);
         //生成签名结果
@@ -114,7 +114,7 @@ public class AlipaySubmit {
     public static String buildRequest(Map<String, String> sParaTemp, String strMethod, String strButtonName, String strParaFileName) {
         //待请求参数数组
         Map<String, String> sPara = buildRequestPara(sParaTemp);
-        List<String> keys = new ArrayList<String>(sPara.keySet());
+        List<String> keys = new ArrayList<>(sPara.keySet());
 
         StringBuffer sbHtml = new StringBuffer();
 
@@ -175,7 +175,7 @@ public class AlipaySubmit {
      * @param properties  MAP类型数组
      * @return NameValuePair类型数组
      */
-    private static List<NameValuePair> generatNameValuePair(Map<String, String> properties) {
+    public static List<NameValuePair> generatNameValuePair(Map<String, String> properties) {
         List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>();
         for (Map.Entry<String, String> entry : properties.entrySet()) {
             nameValuePair.add( new BasicNameValuePair(entry.getKey(), entry.getValue()));

@@ -105,6 +105,6 @@ public class AlitransferModel extends BaseModel {
     public String toAlipayTransFormat(){
         DecimalFormat df   =   new   DecimalFormat("#####0.00");
         return Integer.toString( Id ) + "^" + AliEmail + "^" + RealName + "^"
-                + df.format(TransferLines) + "^" + "微距竞投中奖打款";
+                + df.format(TransferLines) + "^" + "微聚竞投提现打款";
     }
 }

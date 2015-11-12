@@ -7,10 +7,12 @@ import com.money.Service.alipay.util.AlipayCore;
 import com.money.Service.alipay.util.AlipaySubmit;
 import com.money.Service.alipay.util.UtilDate;
 import com.money.model.AlitransferModel;
+import org.apache.http.HttpException;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -24,47 +26,24 @@ public class AlipayService extends ServiceBase implements ServiceInterface {
     /**
      * 支付宝提供给商户的服务接入网关URL(新)
      */
-    private static final String ALIPAY_GATEWAY_NEW = "https://mapi.alipay.com/gateway.do";
+    private static final String ALIPAY_GATEWAY_NEW = "https://mapi.alipay.com/gateway.do?";
 
 /*    @Autowired
     private HttpProtocolHandler client;*/
 
-    public String requestTransaction(List<AlitransferModel> dataList) {
-        if( dataList == null || dataList.size() == 0 ){
+    public String requestTransaction(List<AlitransferModel> dataList) throws IOException, HttpException {
+        if (dataList == null || dataList.size() == 0) {
             return "无支付宝提现记录";
         }
 
-//        String param = buildParam(dataList);
+        //待请求参数数组
         Map<String, String> paramsMap = buildParam(dataList);
-
-/*        MoneyHttpRequest moneyHttpRequest = new MoneyHttpRequest(HttpResultType.STRING);
-
-        try {
-            List<NameValuePair> pairs = generateNameValuePair(paramsMap, "UTF-8");
-
-            moneyHttpRequest.setMethod(MoneyHttpRequest.METHOD_POST);
-            moneyHttpRequest.setUrl(ALIPAY_GATEWAY_NEW);
-            moneyHttpRequest.setParameters(pairs);
-            MoneyHttpResponse moneyHttpResponse = client.execute(moneyHttpRequest, "", "");
-            if( moneyHttpResponse == null ){
-                return "SUCCESS";
-            }else{
-
-            }return "FAILED";
-
-        } catch (HttpException e) {
-            return "FAILED";
-        } catch (IOException e) {
-            return "FAILED";
-        } catch (Exception e) {
-            return "FAILED";
-        }*/
         return buildForm(paramsMap);
     }
 
 
     public Map<String, String> buildParam(List<AlitransferModel> dataList) {
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
 
         // j接口名称
         map.put("service", "batch_trans_notify");
@@ -176,19 +155,18 @@ public class AlipayService extends ServiceBase implements ServiceInterface {
 
     /**
      * 解析支付宝通知的付款结果信息
+     *
      * @param Param
      * @return
      */
-    public static List<List<String>> ParsingNotifyParam( String Param ){
+    public static List<List<String>> ParsingNotifyParam(String Param) {
         List<List<String>> result = new ArrayList<List<String>>();
-        String[] parpaminfo = Param.split( "\\|" );
-        for( int i = 0; i < parpaminfo.length; i++ ){
+        String[] parpaminfo = Param.split("\\|");
+        for (int i = 0; i < parpaminfo.length; i++) {
             List<String> childParam = Arrays.asList(parpaminfo[i].split("\\^"));
             result.add(childParam);
         }
 
         return result;
     }
-
-
 }

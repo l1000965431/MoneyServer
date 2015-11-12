@@ -3,14 +3,17 @@ package com.money.controller;
 import com.google.gson.reflect.TypeToken;
 import com.money.Service.Wallet.WalletService;
 import com.money.Service.alipay.AlipayService;
+import com.money.Service.alipay.TransactionData;
 import com.money.Service.alipay.util.AlipayNotify;
 import com.money.Service.user.UserService;
 import com.money.config.Config;
+import com.money.model.AlitransferModel;
 import com.money.model.UserModel;
 import com.pingplusplus.exception.APIConnectionException;
 import com.pingplusplus.exception.APIException;
 import com.pingplusplus.exception.AuthenticationException;
 import com.pingplusplus.exception.InvalidRequestException;
+import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -261,19 +265,9 @@ public class WalletController extends ControllerBase {
      */
     @RequestMapping("/TestTransaction")
     @ResponseBody
-    public String TestTransaction(HttpServletRequest request) {
-/*        TransactionData transactionData = new TransactionData();
-        List<TransactionData> dataList = new ArrayList<TransactionData>();
-        transactionData.setAccountId("l1000965431@126.com");
-        transactionData.setAccountName("刘旻");
-        transactionData.setComment("测试测试");
-        transactionData.setPrice(0.01f);
-        transactionData.setSerialNumber(String.valueOf(System.currentTimeMillis()));
-        dataList.add(transactionData);*/
-
+    public String TestTransaction(HttpServletRequest request) throws IOException, HttpException {
         int page = Integer.valueOf(request.getParameter("page"));
         List dataList = walletService.GetAliTranserInfo(page);
-
         return alipayService.requestTransaction(dataList);
     }
 
@@ -293,11 +287,6 @@ public class WalletController extends ControllerBase {
         }else {
             return "fail";
         }
-
-/*        //批量付款数据中转账成功的详细信息
-        String success_details = new String(request.getParameter("success_details").getBytes("ISO-8859-1"),"UTF-8");
-        //批量付款数据中转账失败的详细信息
-        String fail_details = new String(request.getParameter("fail_details").getBytes("ISO-8859-1"),"UTF-8");*/
 
     }
 

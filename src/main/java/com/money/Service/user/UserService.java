@@ -252,11 +252,11 @@ public class UserService extends ServiceBase implements ServiceInterface {
     public UserModel getUserInfoTest(String UserID) {
         Session session = userDAO.getNewSession();
         Transaction t = session.beginTransaction();
-        try{
+        try {
             UserModel userModel = userDAO.getUSerModelNoTransaction(UserID);
             t.commit();
             return userModel;
-        }catch ( Exception e ){
+        } catch (Exception e) {
             t.rollback();
             return null;
         }
@@ -418,13 +418,13 @@ public class UserService extends ServiceBase implements ServiceInterface {
             public boolean callback(Session session) throws Exception {
 
                 UserModel inviteUserModel = userDAO.getUSerModelByInviteCodeNoTransaction(InviteCode);
-                UserModel userModel = userDAO.getUSerModelNoTransaction( userId );
+                UserModel userModel = userDAO.getUSerModelNoTransaction(userId);
 
                 if (inviteUserModel == null) {
                     return false;
                 }
 
-                if( userModel.isInvited() ){
+                if (userModel.isInvited()) {
                     return false;
                 }
 
@@ -437,7 +437,7 @@ public class UserService extends ServiceBase implements ServiceInterface {
 
                 if (userDAO.AddUserExpByInviteCode(InviteCode, InviteAddExp) == 0 ||
                         userDAO.AddUserExpByUserId(userId, userAddExp) == 0 ||
-                        userDAO.UpdateUserInvited(userId) == 0 ) {
+                        userDAO.UpdateUserInvited(userId) == 0) {
                     return false;
                 }
 
@@ -449,13 +449,13 @@ public class UserService extends ServiceBase implements ServiceInterface {
         }), Config.SERVICE_SUCCESS)) {
             //给对方发送消息发送消息
             UmengSendParameter umengSendParameter = new UmengSendParameter(InvitedUserID[0], "微距竞投", "推荐人奖励",
-                    InviteUserName+"用户将您填为推荐人,您获得了经验:"+Integer.toString(InviteAddExp), "填写推荐ID");
+                    InviteUserName + "用户将您填为推荐人,您获得了经验:" + Integer.toString(InviteAddExp), "填写推荐ID");
             String Json = GsonUntil.JavaClassToJson(umengSendParameter);
             MoneyServerMQManager.SendMessage(new MoneyServerMessage(MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TOPIC,
                     MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TAG, Json, "填写推荐ID"));
             List<Integer> list = new ArrayList<>();
-            list.add( userAddExp );
-            list.add( Config.AddVirtualSecuritiesSelf );
+            list.add(userAddExp);
+            list.add(Config.AddVirtualSecuritiesSelf);
             return list;
         } else {
             return null;

@@ -14,7 +14,7 @@
                 <property name="writeAcceptCharset" value="false"/>
                 <property name="supportedMediaTypes">
                     <list>
-                        <value>text/plain;charset=UTF-8</value>
+                        <value>text/html;charset=UTF-8</value>
                     </list>
                 </property>
                 <constructor-arg value="UTF-8"/>
@@ -46,6 +46,7 @@
                                 expression="org.springframework.stereotype.Service"/>
     </context:component-scan>
 
+
     <!-- 读取配置文件 生产环境 -->
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
@@ -57,7 +58,11 @@
     </bean>
 
     <!--配置文件 生产环境-->
-    <import resource="xml/Spring-*.xml"/>
+    <import resource="xml/Spring-db-config.xml"/>
+    <import resource="xml/Spring-MQ-Config.xml"/>
+    <import resource="xml/Spring-Redis-Config.xml"/>
+    <import resource="xml/Spring-Service-Config.xml"/>
+    <import resource="xml/Spring-Quartz-Config.xml"/>
 
 <!--     &lt;!&ndash;读取配置文件  测试环境&ndash;&gt;
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

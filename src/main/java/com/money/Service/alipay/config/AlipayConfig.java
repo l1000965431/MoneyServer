@@ -20,7 +20,6 @@ package com.money.Service.alipay.config;
  *1、检查浏览器配置，不让浏览器做弹框屏蔽设置
  *2、更换浏览器或电脑，重新登录查询。
  */
-
 public class AlipayConfig {
 	
 	//↓↓↓↓↓↓↓↓↓↓请在这里配置您的基本信息↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
@@ -28,6 +27,7 @@ public class AlipayConfig {
 	public static String partner = "2088021064802142";
 	// 商户名称
 	public static String account_name = "北京龙眼科技有限公司";
+
 	// 商户邮箱
 	public static String account_email = "beijinglongyankeji@163.com";
 	// 商户的私钥
@@ -37,7 +37,7 @@ public class AlipayConfig {
 	
 
 	// 调试用，创建TXT日志文件夹路径
-	public static String log_path = "D:\\";
+	public static String log_path = "/mnt/logs/";
 
 	// 字符编码格式 目前支持 gbk 或 utf-8
 	public static String input_charset = "utf-8";
