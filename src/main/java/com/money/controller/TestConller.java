@@ -366,5 +366,30 @@ public class TestConller extends ControllerBase implements IController {
         return userModel.toString();
     }
 
+    @RequestMapping("/TestUserLogin")
+    @ResponseBody
+    void TestUserLogin( HttpServletRequest request ) throws Exception {
+        Map<String, String> mapData = DecryptionDataToMapByUserId(request.getParameter("data"),
+                this.initDesKey(request.getHeader("userId")));
+
+        if (mapData == null) {
+            return;
+        }
+
+
+        String UserName = mapData.get("userId");
+        String PassWord = mapData.get("password");
+
+        userService.userLand(UserName, PassWord);
+        Long orderTime = System.currentTimeMillis();
+        String time = Long.toString(orderTime);
+        Map<String, String> map = new HashMap<>();
+        map.put("token", UserName);
+        map.put("time", time);
+        //存入缓存
+        MemCachService.MemCachSetMap(UserName, Config.FAILUER_TIME, map);
+
+    }
+
 }
 
