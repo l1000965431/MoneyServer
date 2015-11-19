@@ -92,7 +92,7 @@ public class LotteryService extends ServiceBase implements ServiceInterface {
 
                 listPeoples[0] = StartLottery(InstallmentActivityID, srEarningModelSet);
                 if (listPeoples[0] == null) {
-                    LOGGER.error("中奖列表位空", InstallmentActivityID);
+                    LOGGER.error("中奖列表位空{}", InstallmentActivityID);
                     return false;
                 }
 
@@ -126,7 +126,7 @@ public class LotteryService extends ServiceBase implements ServiceInterface {
         List<LotteryPeoples> listPeoples = lotteryDAO.GetRandNotLottery(InstallmentActivityID, srEarningModelSet);
 
         if (listPeoples == null) {
-            LOGGER.error( "中奖人物列表位空",InstallmentActivityID,srEarningModelSet );
+            LOGGER.error( "中奖人物列表位空{}{}",InstallmentActivityID,srEarningModelSet );
             return null;
         }
 
@@ -149,7 +149,7 @@ public class LotteryService extends ServiceBase implements ServiceInterface {
             } else {
                 for (int i = 0; i < PeoplesLines; ++i) {
                     if (Index >= listPeoples.size()) {
-                        LOGGER.error( "发奖Index >= listPeoples.size()",Index,listPeoples.size() );
+                        LOGGER.error( "发奖Index >= listPeoples.size(){}{}",Index,listPeoples.size() );
                         return null;
                     }
 
@@ -166,7 +166,7 @@ public class LotteryService extends ServiceBase implements ServiceInterface {
 
         //刷新个人的收益记录
         if (!updateEarnings(listPeoples)) {
-            LOGGER.error( "刷新个人中奖记录错误",listPeoples );
+            LOGGER.error( "刷新个人中奖记录错误{}",listPeoples );
             return null;
         }
 

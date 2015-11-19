@@ -48,8 +48,6 @@ public class MemCachService {
                 shardedJedis.close();
             }
         }
-
-        //shardedPool.returnResourceObject( shardedJedis );
     }
 
     public static void MemCachSet(byte[] Key, byte[] Vaule) {
@@ -178,6 +176,24 @@ public class MemCachService {
      * 删除一对键值对
      */
     public static void RemoveValue(String Key) {
+        ShardedJedis shardedJedis = null;
+        try {
+            shardedJedis = redisService.getShareJedisPoolConnection();
+            if (shardedJedis.exists(Key)) {
+                shardedJedis.del(Key);
+            }
+        } catch (Exception e) {
+
+        } finally {
+            if (shardedJedis != null) {
+                shardedJedis.close();
+            }
+        }
+
+        //shardedPool.returnResourceObject( shardedJedis );
+    }
+
+    public static void RemoveValue(byte[] Key) {
         ShardedJedis shardedJedis = null;
         try {
             shardedJedis = redisService.getShareJedisPoolConnection();
@@ -502,6 +518,32 @@ public class MemCachService {
         ShardedJedis shardedJedis = redisService.getShareJedisPoolConnection();
         try {
             return shardedJedis.rpop(key);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        } finally {
+            shardedJedis.close();
+        }
+
+        return null;
+    }
+
+    public static List<byte[]> lrang( byte[] key,int startIndex,int endIndex ){
+        ShardedJedis shardedJedis = redisService.getShareJedisPoolConnection();
+        try {
+            return shardedJedis.lrange(key,startIndex,endIndex);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        } finally {
+            shardedJedis.close();
+        }
+
+        return null;
+    }
+
+    public static List<String> lrang( String key,int startIndex,int endIndex ){
+        ShardedJedis shardedJedis = redisService.getShareJedisPoolConnection();
+        try {
+            return shardedJedis.lrange(key,startIndex,endIndex);
         } catch (Throwable e) {
             e.printStackTrace();
         } finally {

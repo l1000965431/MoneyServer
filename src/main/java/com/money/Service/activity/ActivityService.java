@@ -210,7 +210,7 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
             }
 
             if (activityDynamicModel.getActivityState() != ActivityDetailModel.ONLINE_ACTIVITY_COMPLETE) {
-                LOGGER.error("本期项目的上一期状态错误", ActivityID, activityDynamicModel.getActivityState());
+                LOGGER.error("本期项目的上一期状态错误{}{}", ActivityID, activityDynamicModel.getActivityState());
                 return false;
             }
         }
@@ -227,7 +227,7 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
         //预购项目
         if (purchaseInAdvance.PurchaseActivityFromPurchaseInAdvance(ActivityID, InstallmentActivityID) == -1) {
             //购买错误
-            LOGGER.error("项目分期预购错误", ActivityID, InstallmentActivityID);
+            LOGGER.error("项目分期预购错误{}{}", ActivityID, InstallmentActivityID);
             return false;
         }
 

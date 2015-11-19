@@ -70,7 +70,7 @@ public class MoneyServerMQManager {
             producer.send( Message );
             return  Config.SENDCODE_SUCESS;
         }catch ( Exception e ){
-            LOGGER.error( e.toString() );
+            LOGGER.error( "阿里ONS发送消息错误:",e );
             return Config.SENDCODE_FAILED;
         }
     }

@@ -64,7 +64,7 @@ public class WalletListener extends MoneyServerListener {
             if(generaDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
                 public boolean callback(Session session) throws Exception {
                     if(walletService.RechargeWallet(finalUserID, Lines) == 0){
-                        LOGGER.error( "充值失败RechargeWallet",mapdata);
+                        LOGGER.error( "充值失败RechargeWallet{}",mapdata);
                         return false;
                     }
                     walletService.InsertWalletOrder(OrderID, Lines, ChannelID);

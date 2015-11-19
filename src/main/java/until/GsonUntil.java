@@ -93,6 +93,7 @@ public class GsonUntil {
         })
                 .registerTypeAdapter(SREarningModel.class, new InvestInfoAdapter())
                 .registerTypeAdapter(UMengMessage.class, new UmessageAdpter())
+                .setDateFormat("yyyy-MM-dd HH:mm:ss")
                 .create();
     }
 
@@ -101,7 +102,6 @@ public class GsonUntil {
      *
      * @param <T>   返回类型
      * @param json  字符串
-     * @param clazz 需要转换成的类
      * @return
      */
     public static <T> List<T> jsonListToJavaClass(String json, Type type) {
@@ -121,7 +121,6 @@ public class GsonUntil {
      *
      * @param <T>   返回类型
      * @param json  字符串
-     * @param clazz 需要转换成的类
      * @return
      */
     public static <T> T jsonToJavaClass(String json, Type type) {

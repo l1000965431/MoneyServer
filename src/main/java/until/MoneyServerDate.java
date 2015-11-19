@@ -10,30 +10,32 @@ import java.util.Locale;
  */
 public class MoneyServerDate {
 
+    static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
      public static String getStringCurDate(){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         String timeStr = sdf.format(new Date());
 
         return timeStr;
     }
 
     public static Date getDateCurDate() throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String timeStr = sdf.format(new Date());
         return sdf.parse( timeStr );
     }
 
     public static Date StrToDate(String str) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = null;
         try {
-            date = format.parse(str);
+            date = sdf.parse(str);
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return date;
     }
 
-
+    public static SimpleDateFormat getSdf(){
+        return sdf;
+    }
 
 }

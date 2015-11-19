@@ -40,7 +40,7 @@ public class TransListener extends MoneyServerListener {
             String openId = mapobject.get( "recipient" ).toString();
             String orderId = mapobject.get( "transaction_no" ).toString();
             if( status.equals( "paid" ) ){
-                walletService.TransferLines( orderId,openId,(int)ammont,status );
+                walletService.TransferLines( orderId,openId,(int)ammont,status,"" );
             }
 
             return Action.CommitMessage;

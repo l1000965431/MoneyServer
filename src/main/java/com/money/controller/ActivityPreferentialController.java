@@ -1,28 +1,20 @@
 package com.money.controller;
 
-import com.money.MoneyServerMQ.MoneyServerMQManager;
-import com.money.MoneyServerMQ.MoneyServerMessage;
 import com.money.Service.activityPreferential.ActivityPreferentialService;
 import com.money.Service.user.UserService;
 import com.money.config.Config;
-import com.money.config.MoneyServerMQ_Topic;
-import com.money.config.ServerReturnValue;
 import com.money.job.ActivityPreferentialStartJob;
-import com.money.job.TestJob;
 import com.money.model.UserModel;
-import org.quartz.DateBuilder;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import until.GsonUntil;
 import until.MoneyServerDate;
 import until.QuartzUntil;
 import until.ScheduleJob;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.InterruptedIOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;

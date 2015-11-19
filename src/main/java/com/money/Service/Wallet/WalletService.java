@@ -5,27 +5,30 @@ import com.money.MoneyServerMQ.MoneyServerMQManager;
 import com.money.MoneyServerMQ.MoneyServerMessage;
 import com.money.Service.ServiceBase;
 import com.money.Service.ServiceInterface;
-import com.money.Service.alipay.AlipayService;
+import com.money.Service.alipay.PayService;
 import com.money.config.Config;
 import com.money.config.MoneyServerMQ_Topic;
 import com.money.dao.TransactionSessionCallback;
-import com.money.dao.alitarnsferDAO.AlitransferDAO;
+import com.money.dao.alitarnsferDAO.TransferDAO;
 import com.money.dao.userDAO.UserDAO;
+import com.money.job.ActivityPreferentialStartJob;
+import com.money.job.WxTransferJob;
+import com.money.memcach.MemCachService;
 import com.money.model.*;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.quartz.SchedulerException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import until.GsonUntil;
-import until.MoneyServerDate;
-import until.MoneyServerOrderID;
+import until.*;
 import until.UmengPush.UmengSendParameter;
 
 import java.text.ParseException;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 
 /**
  * 钱包服务
@@ -41,8 +44,9 @@ public class WalletService extends ServiceBase implements ServiceInterface {
     UserDAO generaDAO;
 
     @Autowired
-    AlitransferDAO alitransferDAO;
+    TransferDAO transferDAO;
 
+    CountDownLatch countdown;
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(WalletService.class);
 
@@ -204,16 +208,26 @@ public class WalletService extends ServiceBase implements ServiceInterface {
         double ammont = Double.valueOf(mapobject.get("amount").toString()) / 100.0;
         String openId = mapobject.get("recipient").toString();
         String orderId = mapobject.get("transaction_no").toString();
+        String description = mapobject.get("description").toString();
         if (status.equals("paid")) {
-            TransferLines(orderId, openId, (int) ammont, status);
+            TransferLines(orderId, openId, (int) ammont, status,description);
+        }else{
+            String temp[] = description.split( "_" );
+            String BatchId = temp[0];
+            String Id = temp[1];
+            String key = "wxTransferFailList"+BatchId;
+            MemCachService.lpush( key.getBytes(),Id.getBytes() );
         }
+
+        countdown.countDown();
 
         return Config.SENDCODE_SUCESS;
     }
 
-    public boolean TransferLines(final String OrderId, final String OpenId, final int Lines, final String status) throws ParseException {
+    public boolean TransferLines(final String OrderId, final String OpenId, final int Lines, final String status ,String description){
 
-        if (Objects.equals(generaDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
+        //修改为更改内存内容 最后在一个job里完成所有的插入操作和修改操作
+/*        if (Objects.equals(generaDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
             public boolean callback(Session session) throws Exception {
                 UserModel userModel = generaDAO.getUSerModelByOpenIdNoTransaction(OpenId);
                 if (userModel == null) {
@@ -238,8 +252,15 @@ public class WalletService extends ServiceBase implements ServiceInterface {
 
                 return true;
             }
-        }), Config.SERVICE_SUCCESS)) ;
-
+        }), Config.SERVICE_SUCCESS)) ;*/
+        List<String> list  = new ArrayList();
+        String temp[] = description.split( "_" );
+        String BatchId = temp[0];
+        String Id = temp[1];
+        String key = "wxtransferWinList::"+BatchId;
+        list.add( Id );
+        String json = GsonUntil.JavaClassToJson( list );
+        MemCachService.lpush( key.getBytes(),json.getBytes() );
         return false;
     }
 
@@ -385,9 +406,9 @@ public class WalletService extends ServiceBase implements ServiceInterface {
     public List GetAliTranserOrder() {
 
         final List[] list = new List[1];
-        alitransferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
+        transferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
             public boolean callback(Session session) throws Exception {
-                list[0] = alitransferDAO.GetAliTransferOdrer();
+                list[0] = transferDAO.GetAliTransferOdrer();
                 return true;
             }
         });
@@ -401,11 +422,11 @@ public class WalletService extends ServiceBase implements ServiceInterface {
      *
      * @return
      */
-    public List<AlitransferDAO> GetAliTranserInfo(final int page) {
+    public List<AlitransferModel> GetAliTranserInfo(final int page) {
         final List[] list = new List[1];
-        alitransferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
+        transferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
             public boolean callback(Session session) throws Exception {
-                list[0] = alitransferDAO.GetAliTransferInfo(page);
+                list[0] = transferDAO.GetAliTransferInfo(page);
                 return true;
             }
         });
@@ -414,8 +435,59 @@ public class WalletService extends ServiceBase implements ServiceInterface {
         return list[0];
     }
 
+
+    /**
+     * 获得微信提现详细信息
+     * @param page
+     * @return
+     */
+    public List<WxTranferModel> GetWxTranserInfo(final int page,StringBuffer Out_BatchId ) {
+        final List<WxTranferModel>[] list = new List[1];
+        transferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
+            public boolean callback(Session session) throws Exception {
+                list[0] = transferDAO.GetWxTransferInfo(page);
+                return true;
+            }
+        });
+
+        //缓存提现列表
+        Out_BatchId.append( MoneyServerOrderID.GetOrderID( Integer.toString(MoneySeverRandom.getRandomNum( 0,100 ))));
+        String key = "wxTransferPass"+"::"+Out_BatchId;
+        for (WxTranferModel wxTranferModel : list[0]) {
+            List listTemp = new ArrayList();
+            listTemp.add( wxTranferModel.getId() );
+            listTemp.add( wxTranferModel.getLines() );
+            listTemp.add( wxTranferModel.getOpenId() );
+            listTemp.add( wxTranferModel.getUserId() );
+            listTemp.add( MoneyServerOrderID.GetOrderID( wxTranferModel.getUserId() ) );
+            String json = GsonUntil.JavaClassToJson( listTemp );
+
+            MemCachService.lpush( key.getBytes(),json.getBytes() );
+        }
+
+        MemCachService.SetTimeOfKey( key.getBytes(),1800 );
+        return list[0];
+    }
+
+    /**
+     * 获得微信提现申请数量
+     * @return
+     */
+    public int GetWxTranserNum() {
+        final int[] Num = {0};
+        transferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
+            public boolean callback(Session session) throws Exception {
+                Num[0] = transferDAO.GetWxTransferNum();
+                return true;
+            }
+        });
+
+        return Num[0];
+    }
+
+
     public String BindingalipayId(final String UserId, final String AlipayId, final String RealName) {
-        return alitransferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
+        return transferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
             public boolean callback(Session session) throws Exception {
                 UserModel userModel = generaDAO.getUSerModelNoTransaction(UserId);
                 if (userModel == null) {
@@ -442,7 +514,7 @@ public class WalletService extends ServiceBase implements ServiceInterface {
      */
     public String ClearalipayId(final String UserId) {
 
-        return alitransferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
+        return transferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
             public boolean callback(Session session) throws Exception {
                 UserModel userModel = generaDAO.getUSerModelNoTransaction(UserId);
 
@@ -481,7 +553,7 @@ public class WalletService extends ServiceBase implements ServiceInterface {
         final int costLines = Lines + (int) poundageResult;
 
         final int[] state = {1};
-        alitransferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
+        transferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
             public boolean callback(Session session) throws Exception {
 
                 UserModel userModel = generaDAO.getUSerModelNoTransaction(UserId);
@@ -496,7 +568,7 @@ public class WalletService extends ServiceBase implements ServiceInterface {
                     return false;
                 }
 
-                if (alitransferDAO.Submitalitansfer(userModel.getUserId(), Lines, userModel.getAlipayRealName(), userModel.getAlipayId()) == 0) {
+                if (transferDAO.Submitalitansfer(userModel.getUserId(), Lines, userModel.getAlipayRealName(), userModel.getAlipayId()) == 0) {
                     state[0] = -1;
                     Object[] objects = new Object[3];
                     objects[0] = userModel;
@@ -508,8 +580,6 @@ public class WalletService extends ServiceBase implements ServiceInterface {
 
 
                 InsertTransferOrder(userModel, MoneyServerOrderID.GetOrderID(UserId), userModel.getAlipayId(), costLines, "alipay");
-
-
                 return true;
             }
         });
@@ -518,6 +588,54 @@ public class WalletService extends ServiceBase implements ServiceInterface {
         return state[0];
     }
 
+
+    /**
+     * 微信提现
+     *
+     * @param UserId
+     * @param Lines
+     * @return
+     */
+    //0:失败 1:提交成功 2:余额不足
+    public int WxpayTransfer(final String UserId, int Lines) {
+
+        //计算支付宝的手续费
+        final int costLines = Lines;
+
+        final int[] state = {1};
+        transferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
+            public boolean callback(Session session) throws Exception {
+
+                UserModel userModel = generaDAO.getUSerModelNoTransaction(UserId);
+
+                if (userModel == null) {
+                    state[0] = 0;
+                    return false;
+                }
+
+                if (!CostLines(UserId, costLines)) {
+                    state[0] = 2;
+                    return false;
+                }
+
+                if (transferDAO.SubmitaliWxtansfer(userModel.getUserId(), costLines, userModel.getAlipayRealName(), userModel.getAlipayId()) == 0) {
+                    state[0] = -1;
+                    Object[] objects = new Object[3];
+                    objects[0] = userModel;
+                    objects[1] = costLines;
+                    objects[2] = MoneyServerDate.getDateCurDate();
+                    LOGGER.error("提交提现申请失败", objects);
+                    return false;
+                }
+
+                InsertTransferOrder(userModel, MoneyServerOrderID.GetOrderID(UserId), userModel.getWxOpenId(), costLines, "wxpay");
+                return true;
+            }
+        });
+
+
+        return state[0];
+    }
 
     /**
      * 支付宝批量付款通知
@@ -531,7 +649,7 @@ public class WalletService extends ServiceBase implements ServiceInterface {
         final String Faildetails = NotifyInfo.get("fail_details");
         final String Successdetails = NotifyInfo.get("success_details");
 
-        return alitransferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
+        return transferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
             public boolean callback(Session session) throws Exception {
                 AliTransferNotifyModel aliTransferNotifyModel = new AliTransferNotifyModel();
                 aliTransferNotifyModel.setBatchno(Batchno);
@@ -544,14 +662,14 @@ public class WalletService extends ServiceBase implements ServiceInterface {
                 List<List<String>> FaildetailsList;
                 List<List<String>> SuccessdetailsList;
                 if (Faildetails != null) {
-                    FaildetailsList = AlipayService.ParsingNotifyParam(Faildetails);
+                    FaildetailsList = PayService.ParsingNotifyParam(Faildetails);
 
                     if (FaildetailsList == null) {
                         LOGGER.error("FaildetailsList == null");
                         return false;
                     }
                     for (List<String> aFaildetailsList : FaildetailsList) {
-                        AlitransferModel alitransferModel = (AlitransferModel) alitransferDAO.loadNoTransaction(AlitransferModel.class, Integer.valueOf(aFaildetailsList.get(0)));
+                        AlitransferModel alitransferModel = (AlitransferModel) transferDAO.loadNoTransaction(AlitransferModel.class, Integer.valueOf(aFaildetailsList.get(0)));
                         if (alitransferModel == null) {
                             continue;
                         }
@@ -567,7 +685,7 @@ public class WalletService extends ServiceBase implements ServiceInterface {
                 }
 
                 if (Successdetails != null) {
-                    SuccessdetailsList = AlipayService.ParsingNotifyParam(Successdetails);
+                    SuccessdetailsList = PayService.ParsingNotifyParam(Successdetails);
 
                     if (SuccessdetailsList == null) {
                         LOGGER.error("SuccessdetailsList == null");
@@ -575,7 +693,7 @@ public class WalletService extends ServiceBase implements ServiceInterface {
                     }
 
                     for (List<String> aSuccessdetailsList : SuccessdetailsList) {
-                        AlitransferModel alitransferModel = (AlitransferModel) alitransferDAO.loadNoTransaction(AlitransferModel.class, Integer.valueOf(aSuccessdetailsList.get(0)));
+                        AlitransferModel alitransferModel = (AlitransferModel) transferDAO.loadNoTransaction(AlitransferModel.class, Integer.valueOf(aSuccessdetailsList.get(0)));
                         if (alitransferModel == null) {
                             continue;
                         }
@@ -611,4 +729,129 @@ public class WalletService extends ServiceBase implements ServiceInterface {
          }
     }
 
+    /**
+     * 微信开始打款
+     * @param BatchId 打款流水号
+     * @return
+     */
+    public String WxStartTransfer(final String BatchId ) throws InterruptedException {
+        String key = "wxTransferPass::"+BatchId;
+
+        if( !MemCachService.isExistUpdate(key,"10000") ){
+            return "重复提交提现列表";
+        }
+
+        int len = (int)MemCachService.getLen( key.getBytes() );
+        if( len == 0 ){
+            return "提现列表不存在";
+        }
+
+        //线程数量
+        int threadNum = len%200==0?len/200:len/200+1;
+        int sleepTime = MoneySeverRandom.getRandomNum( 0,10 );
+        countdown = new CountDownLatch( len );
+        List<WxTransfer> listThread = new ArrayList<>();
+        for( int i = 0; i < threadNum;++i ){
+            WxTransfer wxTransfer = new WxTransfer( sleepTime*100,BatchId,i,countdown );
+            listThread.add( wxTransfer );
+            wxTransfer.start();
+        }
+
+        countdown.await();
+
+        String state;
+
+        wxTransferWinList( BatchId );
+        if( FailTransfer( BatchId ) ){
+            state = listThread.get(0).getRe().toString();
+        }else{
+            state = "提现成功";
+        }
+
+        //清理键值
+        String passKey = "wxTransferPass::" + BatchId;
+        MemCachService.unLockRedisKey(passKey);
+        MemCachService.RemoveValue(passKey.getBytes());
+
+        return state;
+    }
+
+    void wxTransferWinList( String BatchId ){
+        String winKey = "wxtransferWinList::" + BatchId;
+        int winLen = (int) MemCachService.getLen(winKey.getBytes());
+        List<byte[]> winList = MemCachService.lrang(winKey.getBytes(), 0, winLen - 1);
+
+        StringBuffer sqlWin = new StringBuffer("delete from wxtransfer where Id in (WinId)");
+        StringBuffer FailId = new StringBuffer();
+        int WinIndex = 0;
+        int sqlNum = 0;
+        for (byte[] temp : winList) {
+            String id = new String(temp);
+            WinIndex++;
+            FailId.append(id);
+            FailId.append(",");
+            if (WinIndex == 100 || winList.size() == sqlNum) {
+                WinIndex = 0;
+                int last = FailId.lastIndexOf(",");
+                FailId.replace(last, FailId.length() - 1, "");
+                String sql = sqlWin.toString().replace("WinId", FailId);
+
+                Session session = generaDAO.getNewSession();
+                Transaction t = session.beginTransaction();
+                try {
+                    session.createSQLQuery(sql).executeUpdate();
+                    t.commit();
+                } catch (Exception e) {
+                    t.rollback();
+                    break;
+                }
+                FailId.replace(0, FailId.length() - 1, "");
+            }
+
+        }
+        MemCachService.RemoveValue(winKey.getBytes());
+    }
+
+    boolean FailTransfer(String BatchId) {
+        String failKey = "wxTransferFailList::" + BatchId;
+        int failLen = (int) MemCachService.getLen(failKey.getBytes());
+        List<byte[]> failList = MemCachService.lrang(failKey.getBytes(), 0, failLen - 1);
+
+        if( failList == null || failList.size() == 0 ){
+            return false;
+        }
+
+        StringBuffer sqlFail = new StringBuffer("update wxtransfer set IsFaliled=TRUE where Id in (FailedId)");
+        StringBuffer FailId = new StringBuffer();
+        int FaliIndex = 0;
+        int sqlNum = 0;
+        for (byte[] temp : failList) {
+            String id = new String(temp);
+            FaliIndex++;
+            sqlNum++;
+            FailId.append(id);
+            FailId.append(",");
+            if (FaliIndex == 100 || failList.size() == sqlNum ) {
+                FaliIndex = 0;
+                FailId.deleteCharAt(FailId.length()-1);
+
+                String sql = sqlFail.toString().replace("FailedId", FailId);
+
+                Session session = generaDAO.getNewSession();
+                Transaction t = session.beginTransaction();
+                try {
+                    session.createSQLQuery(sql).executeUpdate();
+                    t.commit();
+                } catch (Exception e) {
+                    t.rollback();
+                    break;
+                }
+                FailId.setLength(0);
+            }
+
+        }
+
+        MemCachService.RemoveValue(failKey.getBytes());
+        return true;
+    }
 }

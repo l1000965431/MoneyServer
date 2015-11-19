@@ -2,17 +2,11 @@ package com.money.controller;
 
 import com.google.gson.reflect.TypeToken;
 import com.money.Service.Wallet.WalletService;
-import com.money.Service.alipay.AlipayService;
-import com.money.Service.alipay.TransactionData;
+import com.money.Service.alipay.PayService;
 import com.money.Service.alipay.util.AlipayNotify;
 import com.money.Service.user.UserService;
 import com.money.config.Config;
-import com.money.model.AlitransferModel;
 import com.money.model.UserModel;
-import com.pingplusplus.exception.APIConnectionException;
-import com.pingplusplus.exception.APIException;
-import com.pingplusplus.exception.AuthenticationException;
-import com.pingplusplus.exception.InvalidRequestException;
 import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,7 +38,7 @@ public class WalletController extends ControllerBase {
     UserService userService;
 
     @Autowired
-    AlipayService alipayService;
+    PayService payService;
 
     /**
      * 获取钱包余额
@@ -171,7 +164,10 @@ public class WalletController extends ControllerBase {
             return 4;
         }
 
-        try {
+        return walletService.WxpayTransfer( userId,Lines );
+
+        //改为提交提现申请
+/*        try {
             PingPlus.CreateTransferMap(Lines, openId, userId, orderId);
             return 1;
         } catch (UnsupportedEncodingException e) {
@@ -184,7 +180,7 @@ public class WalletController extends ControllerBase {
             return 0;
         } catch (AuthenticationException e) {
             return 0;
-        }
+        }*/
 
 
     }
@@ -236,7 +232,7 @@ public class WalletController extends ControllerBase {
 
     @RequestMapping("/GetAliTranserOrder")
     @ResponseBody
-    public String GetAliTranserOrder(HttpServletRequest request, HttpServletResponse response) {
+    public String GetAliTranserOrder() {
 
         List list = walletService.GetAliTranserOrder();
 
@@ -249,7 +245,7 @@ public class WalletController extends ControllerBase {
 
     @RequestMapping("/GetAliTranserInfo")
     @ResponseBody
-    public String GetAliTranserInfo(HttpServletRequest request, HttpServletResponse response) {
+    public String GetAliTranserInfo(HttpServletRequest request) {
         int page = Integer.valueOf(request.getParameter("page"));
         List list = walletService.GetAliTranserInfo(page);
 
@@ -260,6 +256,37 @@ public class WalletController extends ControllerBase {
         }
     }
 
+    @RequestMapping("/GetWxTranserInfo")
+    @ResponseBody
+    public String GetWxTranserInfo(HttpServletRequest request,HttpServletResponse response ) {
+        int page = Integer.valueOf(request.getParameter("page"));
+        StringBuffer out_BatchId = new StringBuffer();
+        List list = walletService.GetWxTranserInfo(page,out_BatchId);
+
+        if (list == null) {
+            return "";
+        } else {
+            int Num = walletService.GetWxTranserNum();
+            String BatchId = out_BatchId.toString();
+            response.setHeader( "transfernum",Integer.toString( Num ) );
+            response.setHeader( "BatchId",BatchId );
+            return GsonUntil.JavaClassToJson(list);
+        }
+    }
+
+    /**
+     * 微信开始提现
+     * @param request
+     * @return
+     */
+    @RequestMapping("/StartWxTranser")
+    @ResponseBody
+    public String StartWxTranser(HttpServletRequest request ) throws InterruptedException {
+        String BatchId = request.getParameter( "BatchId" );
+        return walletService.WxStartTransfer( BatchId );
+    }
+
+
     /**
      * 测试提款
      */
@@ -268,7 +295,7 @@ public class WalletController extends ControllerBase {
     public String TestTransaction(HttpServletRequest request) throws IOException, HttpException {
         int page = Integer.valueOf(request.getParameter("page"));
         List dataList = walletService.GetAliTranserInfo(page);
-        return alipayService.requestTransaction(dataList);
+        return payService.requestTransaction(dataList);
     }
 
     /**
@@ -329,13 +356,12 @@ public class WalletController extends ControllerBase {
     /**
      * 支付宝提现
      * @param request
-     * @param response
      * @return
      */
     @RequestMapping("/alipayTransfer")
     @ResponseBody
     //0:提现错误 1:提现申请已经提交 2:提现现金不足 3:没有绑定微信帐号 4:密码不正确
-    public int alipayTransfer(HttpServletRequest request, HttpServletResponse response) {
+    public int alipayTransfer(HttpServletRequest request) {
         Map<String, String> mapData = DecryptionDataToMapByUserId(request.getParameter("data"),
                 this.initDesKey(request.getHeader("userId")));
         if (mapData == null) {

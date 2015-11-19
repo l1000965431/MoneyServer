@@ -3,6 +3,7 @@ package com.money.controller;
 import com.google.gson.reflect.TypeToken;
 import com.money.Service.PurchaseInAdvance.PurchaseInAdvance;
 import com.money.Service.ServiceFactory;
+import com.money.Service.Wallet.WalletService;
 import com.money.Service.activity.ActivityService;
 import com.money.Service.activityPreferential.ActivityPreferentialService;
 import com.money.Service.user.UserService;
@@ -76,11 +77,9 @@ public class TestConller extends ControllerBase implements IController {
 
     @RequestMapping("/TestRedis")
     @ResponseBody
-    String TestRedis(HttpServletRequest request) throws Exception {
-
-        String userId = request.getParameter("userId");
-
-        return MemCachService.MemCachgGet(userId);
+    String TestRedis() throws Exception {
+        String a = MemCachService.MemCachgGet("db1ws");
+        return a;
     }
 
     @RequestMapping("/TestPing")
@@ -390,6 +389,18 @@ public class TestConller extends ControllerBase implements IController {
         MemCachService.MemCachSetMap(UserName, Config.FAILUER_TIME, map);
 
     }
+
+    @RequestMapping("/TestRedisList")
+    @ResponseBody
+    int TestRedisList( HttpServletRequest request ){
+        int ThreadId = Integer.valueOf(request.getParameter( "threadId" ));
+        int len = (int) MemCachService.getLen("wxTransferPass2015111705373972".getBytes());
+        int enIndex = len<200 ? len-1 : ThreadId * 200+200-1;
+        List<byte[]> list = MemCachService.lrang("wxTransferPass2015111705373972".getBytes(), ThreadId*200, 100);
+
+        return 1;
+    }
+
 
 }
 
