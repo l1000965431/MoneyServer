@@ -128,4 +128,12 @@ public class ServerStatistical extends ControllerBase implements IController {
         return serverStatisticalService.getActivityVerify(startDate,endDate);
     }
 
+    @RequestMapping("/BatchTransfer")
+    @ResponseBody
+    public String getBatchTransfer( HttpServletRequest httpServletRequest ) {
+        String startDate = httpServletRequest.getParameter("startDate");
+        String endDate = httpServletRequest.getParameter("endDate");
+        return serverStatisticalService.getBatchTransferList(startDate,endDate);
+    }
+
 }

@@ -159,11 +159,7 @@ public class UserDAO extends BaseDao {
         userModel.setWxOpenId(userID);
         userModel.setAlipayId("0");
         userModel.setUserInvitecode(ShareCodeUtil.toSerialCode(ShareCodeUtil.codeToId(userID)));
-        try {
-            userModel.setCreateTime( MoneyServerDate.getDateCurDate() );
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        userModel.setCreateTime( MoneyServerDate.getDateCurDate() );
         saveNoTransaction(userModel);
 
         if (userType == Config.INVESTOR) {

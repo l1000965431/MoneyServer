@@ -175,21 +175,14 @@ public class LotteryService extends ServiceBase implements ServiceInterface {
         prizeListModel.setActivityIID(InstallmentActivityID);
         prizeListModel.setIsPrize(false);
         prizeListModel.setPrizeSituation(json);
-        try {
-            prizeListModel.setPrizeDate(MoneyServerDate.getDateCurDate());
-        } catch (ParseException ignored) {
+        prizeListModel.setPrizeDate(MoneyServerDate.getDateCurDate());
 
-        }
         lotteryDAO.saveOrupdateNoTransaction(prizeListModel);
 
         //刷新领奖的记录
         EarningsRecordModel earningsRecordModel = new EarningsRecordModel();
         earningsRecordModel.setActivityStageId(InstallmentActivityID);
-        try {
-            earningsRecordModel.setEndDate(MoneyServerDate.getDateCurDate());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        earningsRecordModel.setEndDate(MoneyServerDate.getDateCurDate());
 
         ActivityDetailModel activityDetailModel = activityDAO.getActivityDetaillNoTransaction(InstallmentActivityID);
 
@@ -284,10 +277,7 @@ public class LotteryService extends ServiceBase implements ServiceInterface {
             userEarningsModel.setUserEarningLines(itLotteryPeoples.getLotteryLines());
             userEarningsModel.setUserEarningsType(UserEarningsModel.ACTIVITYTYPE);
             userEarningsModel.setPurchaseType( itLotteryPeoples.getPurchaseType() );
-            try {
-                userEarningsModel.setUserEarningsDate(MoneyServerDate.getDateCurDate());
-            } catch (ParseException ignored) {
-            }
+            userEarningsModel.setUserEarningsDate(MoneyServerDate.getDateCurDate());
             userEarningsModel.setActivityStageId(itLotteryPeoples.getActivityID());
 
             userDAO.saveNoTransaction(userEarningsModel);

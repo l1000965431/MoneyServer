@@ -3,9 +3,11 @@ package com.money.Service.ServerStatisticalService;
 import com.money.Service.ServiceBase;
 import com.money.Service.ServiceInterface;
 import com.money.dao.GeneraDAO;
+import com.money.model.BatchTransferModel;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import until.GsonUntil;
 
 import javax.transaction.Transaction;
 import java.math.BigDecimal;
@@ -232,5 +234,28 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
         }
 
     }
+
+    /**
+     * 获取批量提现的列表
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public String getBatchTransferList( String startDate,String endDate ){
+        String sql = "SELECT * as from batchtransfer " +
+                "where date_format(batchtransfer.TransferDate,'%Y-%m-%d') BETWEEN 'startDate' AND 'endDate';";
+        sql = sql.replace( "startDate",startDate ).replace("endDate",endDate);
+        Session session = generaDAO.getNewSession();
+        org.hibernate.Transaction t = session.beginTransaction();
+        try{
+            List<BatchTransferModel> result = session.createSQLQuery( sql ).list();
+            t.commit();
+            return GsonUntil.JavaClassToJson( result );
+        }catch ( Exception e ){
+            t.rollback();
+            return "";
+        }
+    }
+
 
 }

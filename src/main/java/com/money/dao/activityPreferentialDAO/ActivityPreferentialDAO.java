@@ -201,11 +201,7 @@ public class ActivityPreferentialDAO extends BaseDao {
         activityPreferentialModel.setActivityState(State);
 
         if (State == ActivityVerifyModel.STATUS_RAISE_FINISH) {
-            try {
-                activityPreferentialModel.setActivityEndTime(MoneyServerDate.getDateCurDate());
-            } catch (ParseException e) {
-
-            }
+            activityPreferentialModel.setActivityEndTime(MoneyServerDate.getDateCurDate());
         }
 
 

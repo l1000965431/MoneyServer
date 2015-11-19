@@ -44,11 +44,7 @@ public class TransferDAO extends BaseDao {
             NewalitransferModel.setAliEmail(AliName);
             NewalitransferModel.setRealName(RealName);
             NewalitransferModel.setLines(Lines);
-            try {
-                NewalitransferModel.setAlitransferDate( MoneyServerDate.getDateCurDate() );
-            } catch (ParseException e) {
-                return 0;
-            }
+            NewalitransferModel.setAlitransferDate( MoneyServerDate.getDateCurDate() );
             this.saveNoTransaction(NewalitransferModel);
             return 1;
         } else {
@@ -86,11 +82,7 @@ public class TransferDAO extends BaseDao {
             NewwxTranferModel.setOpenId(AliName);
             NewwxTranferModel.setRealName(RealName);
             NewwxTranferModel.setLines(Lines);
-            try {
-                NewwxTranferModel.setWxtransferDate( MoneyServerDate.getDateCurDate() );
-            } catch (ParseException e) {
-                return 0;
-            }
+            NewwxTranferModel.setWxtransferDate( MoneyServerDate.getDateCurDate() );
             this.saveNoTransaction(NewwxTranferModel);
             return 1;
         } else {

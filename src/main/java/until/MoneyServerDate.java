@@ -19,9 +19,13 @@ public class MoneyServerDate {
         return timeStr;
     }
 
-    public static Date getDateCurDate() throws ParseException {
+    public static Date getDateCurDate() {
         String timeStr = sdf.format(new Date());
-        return sdf.parse( timeStr );
+        try {
+            return sdf.parse( timeStr );
+        } catch (ParseException e) {
+            return new Date();
+        }
     }
 
     public static Date StrToDate(String str) {

@@ -65,12 +65,10 @@ public class OrderService extends ServiceBase implements ServiceInterface {
         orderModel.setPurchaseType( purchasType );
         orderModel.setOrderStartAdvance( StartOrderAndvance );
         orderModel.setVirtualSecurities( VirtualSecurities );
+        orderModel.setOrderDate(MoneyServerDate.getDateCurDate());
         try {
-            orderModel.setOrderDate(MoneyServerDate.getDateCurDate());
             orderDAO.saveNoTransactionTest(orderModel);
-        } catch (ParseException e) {
-            return Config.SERVICE_FAILED;
-        }catch( StaleObjectStateException e ){
+        } catch( StaleObjectStateException e ){
             return Config.SERVICE_FAILED;
         }
 

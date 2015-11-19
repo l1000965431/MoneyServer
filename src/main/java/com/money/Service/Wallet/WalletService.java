@@ -259,6 +259,7 @@ public class WalletService extends ServiceBase implements ServiceInterface {
         String Id = temp[1];
         String key = "wxtransferWinList::"+BatchId;
         list.add( Id );
+        list.add( Integer.toString( Lines ) );
         String json = GsonUntil.JavaClassToJson( list );
         MemCachService.lpush( key.getBytes(),json.getBytes() );
         return false;
@@ -692,6 +693,8 @@ public class WalletService extends ServiceBase implements ServiceInterface {
                         return false;
                     }
 
+                    int TotalLines = 0;
+
                     for (List<String> aSuccessdetailsList : SuccessdetailsList) {
                         AlitransferModel alitransferModel = (AlitransferModel) transferDAO.loadNoTransaction(AlitransferModel.class, Integer.valueOf(aSuccessdetailsList.get(0)));
                         if (alitransferModel == null) {
@@ -705,9 +708,18 @@ public class WalletService extends ServiceBase implements ServiceInterface {
                             session.delete(alitransferModel);
                         }
 
+                        //计算该批次的提现总金额
+                        TotalLines += linestemp;
                     }
-                }
 
+                    //写入提现批次记录表
+                    BatchTransferModel batchTransferModel = new BatchTransferModel();
+                    batchTransferModel.setBatchId( Batchno );
+                    batchTransferModel.setTransferchannel( "支付宝" );
+                    batchTransferModel.setTransferDate( MoneyServerDate.getDateCurDate() );
+                    batchTransferModel.setTransferLines( TotalLines );
+                    generaDAO.updateNoTransaction( batchTransferModel );
+                }
 
                 return true;
             }
@@ -773,10 +785,11 @@ public class WalletService extends ServiceBase implements ServiceInterface {
         MemCachService.unLockRedisKey(passKey);
         MemCachService.RemoveValue(passKey.getBytes());
 
+
         return state;
     }
 
-    void wxTransferWinList( String BatchId ){
+    void wxTransferWinList( String BatchId ) {
         String winKey = "wxtransferWinList::" + BatchId;
         int winLen = (int) MemCachService.getLen(winKey.getBytes());
         List<byte[]> winList = MemCachService.lrang(winKey.getBytes(), 0, winLen - 1);
@@ -785,11 +798,19 @@ public class WalletService extends ServiceBase implements ServiceInterface {
         StringBuffer FailId = new StringBuffer();
         int WinIndex = 0;
         int sqlNum = 0;
+        int TotalLines = 0;
         for (byte[] temp : winList) {
-            String id = new String(temp);
+            String json = new String(temp);
+            List<String> List = GsonUntil.jsonListToJavaClass( json,new TypeToken<List<String>>(){}.getType() );
+
+
             WinIndex++;
-            FailId.append(id);
+            FailId.append(List.get(0));
             FailId.append(",");
+
+            //计算该批次总得提现金额
+            TotalLines += Integer.valueOf(List.get(1).replace( ".00","" ).toString());
+
             if (WinIndex == 100 || winList.size() == sqlNum) {
                 WinIndex = 0;
                 int last = FailId.lastIndexOf(",");
@@ -809,6 +830,16 @@ public class WalletService extends ServiceBase implements ServiceInterface {
             }
 
         }
+
+        //计算该批次的总提现金额并写入该批次的总提现金额
+        BatchTransferModel batchTransferModel = new BatchTransferModel();
+        batchTransferModel.setBatchId( BatchId );
+        batchTransferModel.setTransferchannel( "微信" );
+        batchTransferModel.setTransferDate( MoneyServerDate.getDateCurDate() );
+        batchTransferModel.setTransferLines( TotalLines );
+        generaDAO.update( batchTransferModel );
+
+
         MemCachService.RemoveValue(winKey.getBytes());
     }
 
