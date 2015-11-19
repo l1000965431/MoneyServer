@@ -69,39 +69,41 @@ public class PingPlus {
         try {
             charge = Charge.create(chargeParams);
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            LOGGER.error( "ping++创建参数错误:",e );
             return null;
         } catch (InvalidRequestException e) {
-            e.printStackTrace();
+            LOGGER.error( "ping++创建参数错误:",e );
             return null;
         } catch (APIConnectionException e) {
-            e.printStackTrace();
+            LOGGER.error( "ping++创建参数错误:",e );
             return null;
         } catch (APIException e) {
-            e.printStackTrace();
+            LOGGER.error( "ping++创建参数错误:",e );
             return null;
         }
         return charge.toString();
     }
 
-    public static String CreateTransferMap(int amount, String opneId, String userId, String Orderno) throws UnsupportedEncodingException, InvalidRequestException, APIException, APIConnectionException, AuthenticationException {
+    public static String CreateTransferMap(int amount, String opneId, String userId, String Orderno,String BatchId ) throws UnsupportedEncodingException, InvalidRequestException, APIException, APIConnectionException, AuthenticationException {
         Pingpp.apiKey = Config.PINGPLUSLIVEID;
-        Map<String, Object> transferMap = new HashMap<String, Object>();
+        Map<String, Object> transferMap = new HashMap();
         transferMap.put("amount", amount*100);
         transferMap.put("currency", "cny");
         transferMap.put("type", "b2c");
         transferMap.put("order_no", Orderno);
         transferMap.put("channel", "wx_pub");
         transferMap.put("recipient", opneId);
-        transferMap.put("description", userId + "提款");
+        transferMap.put("description", BatchId);
         Map<String, String> app = new HashMap();
         app.put("id", Config.PINGPLUSLAPPID);
         transferMap.put("app", app);
+
         Transfer transfer = Transfer.create(transferMap);
 
         if (transfer != null) {
             return transfer.toString();
         } else {
+            LOGGER.error( "ping++_CreateTransferMap transfer is null" );
             return null;
         }
 
@@ -125,6 +127,7 @@ public class PingPlus {
             if( pingPlus.walletService.RechargeWalletService( body )==Config.SENDCODE_SUCESS){
                 response.setStatus(200);
             }else{
+                LOGGER.error( "Webhooks_charge.succeeded_error" );
                 response.setStatus(500);
             }
         } else if ("transfer.succeeded".equals(event.getType())) {
@@ -132,6 +135,7 @@ public class PingPlus {
             if(pingPlus.walletService.TranferLinesService( body )==Config.SENDCODE_SUCESS){
                 response.setStatus(200);
             }else{
+                LOGGER.error( "Webhooks_transfer.succeeded_error" );
                 response.setStatus(500);
             }
         } else {

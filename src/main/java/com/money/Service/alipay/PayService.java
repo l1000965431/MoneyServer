@@ -20,8 +20,8 @@ import java.util.*;
 /**
  * Created by happysky on 15-9-23.
  */
-@Service("AlipayService")
-public class AlipayService extends ServiceBase implements ServiceInterface {
+@Service("PayService")
+public class PayService extends ServiceBase implements ServiceInterface {
 
     /**
      * 支付宝提供给商户的服务接入网关URL(新)

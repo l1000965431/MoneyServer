@@ -165,16 +165,16 @@ public class Config {
      */
 
     //未发的红包队列
-    public static final String PREFERENTIUNBLLLED = "PreferentialUnbilled_";
+    public static final String PREFERENTIUNBLLLED = "PreferentialUnbilled::";
 
     //已发的红包队列
-    public static final String PREFERENTIBLLLED = "PreferentialBilled_";
+    public static final String PREFERENTIBLLLED = "PreferentialBilled::";
 
     //特惠项目信息
-    public static final String PREFERENTIINFO= "PreferentialInfo_";
+    public static final String PREFERENTIINFO= "PreferentialInfo::";
 
     //特惠项目奖金总数
-    public static final String PREFERENTIBOUNDS= "PreferentialBonus_";
+    public static final String PREFERENTIBOUNDS= "PreferentialBonus::";
 
     //填写邀请ID时给邀请人的经验值
     public static int AddExpInvite = 0;
@@ -205,6 +205,8 @@ public class Config {
 
     //红点的消息提示:新投资项目
     public static String RedPointNewJoinActivity = "RedPointNewJoinActivity";
+
+    public static String UserLoginToken = "UserLoginToken::";
 }
 
 

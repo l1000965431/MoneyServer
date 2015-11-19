@@ -238,7 +238,7 @@ public class UserDAO extends BaseDao {
         map.put("token", tokenData);
         map.put("time", time);
         //存入缓存
-        MemCachService.MemCachSetMap(userName, Config.FAILUER_TIME, map);
+        MemCachService.MemCachSetMap( Config.UserLoginToken+userName, Config.FAILUER_TIME, map);
         return tokenData;
 
     }
@@ -283,7 +283,7 @@ public class UserDAO extends BaseDao {
 
     //根据userName查找缓存中上次token更新时间,判断是否为登录状态
     public boolean tokenTime(String userName, Long time) {
-        String tokenTime = MemCachService.GetMemCachMapByMapKey(userName, "time");
+        String tokenTime = MemCachService.GetMemCachMapByMapKey(Config.UserLoginToken+userName, "time");
         Long tokenUpdTime = Long.parseLong(tokenTime);
         //在登录状态
         if ((time - tokenUpdTime) / 1000 < 3600)
@@ -295,13 +295,11 @@ public class UserDAO extends BaseDao {
 
     //查询缓存中是否有token字符串,并验证token字符串是否与客户端传来的相等
     public boolean isTokenExist(String userID, String token) {
-        boolean tokenIsExist = MemCachService.KeyIsExists(userID);
-
-        Map map = MemCachService.GetMemCachMap(userID);
+        boolean tokenIsExist = MemCachService.KeyIsExists(Config.UserLoginToken+userID);
 
         //若存在
         if (tokenIsExist) {
-            String memToken = MemCachService.GetMemCachMapByMapKey(userID, "token");
+            String memToken = MemCachService.GetMemCachMapByMapKey(Config.UserLoginToken+userID, "token");
             if (token.equals(memToken))
                 return true;
             else
@@ -313,7 +311,7 @@ public class UserDAO extends BaseDao {
     //退出登录
     public boolean quitTokenLand(String userId) {
         //清楚缓存中token
-        MemCachService.RemoveValue(userId);
+        MemCachService.RemoveValue(Config.UserLoginToken+userId);
         return true;
     }
 

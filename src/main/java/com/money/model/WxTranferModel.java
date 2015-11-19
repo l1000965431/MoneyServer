@@ -1,17 +1,19 @@
-package com.money.model;
-
-import javax.persistence.*;
-import java.text.DecimalFormat;
-import java.util.Date;
-
 /**
- * Created by liumin on 15/9/25.
+ * Created by liumin on 15/11/16.
  */
 
-@Entity(name = "alitransfer")
+package com.money.model;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Table;
+import java.util.Date;
+
+@Entity(name = "wxtransfer")
 @Table
-public class AlitransferModel extends BaseModel {
-    @Id
+public class WxTranferModel {
+    @javax.persistence.Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int Id;
 
@@ -33,7 +35,7 @@ public class AlitransferModel extends BaseModel {
     /**
      * 付款最后时间
      */
-    Date  AlitransferDate;
+    Date WxtransferDate;
 
     /**
      * 真实姓名
@@ -41,9 +43,9 @@ public class AlitransferModel extends BaseModel {
     String RealName;
 
     /**
-     * 支付宝帐号
+     * 微信提现Id
      */
-    String AliEmail;
+    String OpenId;
 
     /**
      * 是否锁定
@@ -82,12 +84,33 @@ public class AlitransferModel extends BaseModel {
         TransferLines = lines;
     }
 
-    public Date getAlitransferDate() {
-        return AlitransferDate;
+
+    public Date getWxtransferDate() {
+        return WxtransferDate;
     }
 
-    public void setAlitransferDate(Date alitransferDate) {
-        AlitransferDate = alitransferDate;
+    public void setWxtransferDate(Date wxtransferDate) {
+        WxtransferDate = wxtransferDate;
+    }
+
+    public String getOpenId() {
+        return OpenId;
+    }
+
+    public void setOpenId(String openId) {
+        OpenId = openId;
+    }
+
+    public void setFaliled(boolean faliled) {
+        IsFaliled = faliled;
+    }
+
+    public int getTransferLines() {
+        return TransferLines;
+    }
+
+    public void setTransferLines(int transferLines) {
+        TransferLines = transferLines;
     }
 
     public String getRealName() {
@@ -96,19 +119,5 @@ public class AlitransferModel extends BaseModel {
 
     public void setRealName(String realName) {
         RealName = realName;
-    }
-
-    public String getAliEmail() {
-        return AliEmail;
-    }
-
-    public void setAliEmail(String aliEmail) {
-        AliEmail = aliEmail;
-    }
-
-    public String toAlipayTransFormat(){
-        DecimalFormat df   =   new   DecimalFormat("#####0.00");
-        return Integer.toString( Id ) + "^" + AliEmail + "^" + RealName + "^"
-                + df.format(TransferLines) + "^" + "微聚竞投提现打款";
     }
 }

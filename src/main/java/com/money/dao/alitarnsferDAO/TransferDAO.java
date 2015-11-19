@@ -3,6 +3,7 @@ package com.money.dao.alitarnsferDAO;
 import com.money.dao.BaseDao;
 import com.money.model.AliTransferInfo;
 import com.money.model.AlitransferModel;
+import com.money.model.WxTranferModel;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -21,7 +22,7 @@ import java.util.List;
  */
 
 @Repository
-public class AlitransferDAO extends BaseDao {
+public class TransferDAO extends BaseDao {
 
     /**
      * 提交提现申请
@@ -51,7 +52,7 @@ public class AlitransferDAO extends BaseDao {
             this.saveNoTransaction(NewalitransferModel);
             return 1;
         } else {
-            String sql = "update alitransfer set TransferLines = TransferLines+?, AlitransferDate=?1 where UserId = ?";
+            String sql = "update alitransfer set TransferLines = TransferLines+?, AlitransferDate=? where UserId = ?";
             Session session = this.getNewSession();
             SQLQuery query = session.createSQLQuery(sql);
             query.setParameter(0, Lines);
@@ -61,7 +62,6 @@ public class AlitransferDAO extends BaseDao {
         }
     }
 
-
     public AlitransferModel GetAliTransfer(String UserId) {
 
         final AlitransferModel alitransferModel;
@@ -69,9 +69,52 @@ public class AlitransferDAO extends BaseDao {
         alitransferModel = (AlitransferModel) getNewSession().createCriteria(AlitransferModel.class)
                 .setMaxResults(1)
                 .add(Restrictions.eq("UserId", UserId))
+                .add(Restrictions.eq("IsLock", 0))
                 .uniqueResult();
 
         return alitransferModel;
+
+    }
+
+    public int SubmitaliWxtansfer( String UserId, int Lines, String RealName, String AliName ){
+        WxTranferModel wxTranferModel = GetWxTransfer(UserId);
+
+        if (wxTranferModel == null) {
+
+            WxTranferModel NewwxTranferModel = new WxTranferModel();
+            NewwxTranferModel.setUserId(UserId);
+            NewwxTranferModel.setOpenId(AliName);
+            NewwxTranferModel.setRealName(RealName);
+            NewwxTranferModel.setLines(Lines);
+            try {
+                NewwxTranferModel.setWxtransferDate( MoneyServerDate.getDateCurDate() );
+            } catch (ParseException e) {
+                return 0;
+            }
+            this.saveNoTransaction(NewwxTranferModel);
+            return 1;
+        } else {
+            String sql = "update wxtransfer set TransferLines = TransferLines+?, AlitransferDate=? where UserId = ?";
+            Session session = this.getNewSession();
+            SQLQuery query = session.createSQLQuery(sql);
+            query.setParameter(0, Lines);
+            query.setParameter(1, MoneyServerDate.getStringCurDate());
+            query.setParameter(2, UserId);
+            return query.executeUpdate();
+        }
+    }
+
+    public WxTranferModel GetWxTransfer(String UserId) {
+
+        final WxTranferModel wxTranferModel;
+
+        wxTranferModel = (WxTranferModel) getNewSession().createCriteria(WxTranferModel.class)
+                .setMaxResults(1)
+                .add(Restrictions.eq("UserId", UserId))
+                .add(Restrictions.eq("IsLock", 0))
+                .uniqueResult();
+
+        return wxTranferModel;
 
     }
 
@@ -148,15 +191,57 @@ public class AlitransferDAO extends BaseDao {
      * @param page 获取的页数
      * @return 此次批次的列表
      */
-    public List<AlitransferDAO> GetAliTransferInfo(int page) {
+    public List<AlitransferModel> GetAliTransferInfo(int page) {
         Session session = this.getNewSession();
         String sql = "select * from alitransfer where TransferLines != 0 and IsFaliled != true limit ? ,3000;";
         Query query = session.createSQLQuery(sql).addEntity(AlitransferModel.class);
 
         query.setParameter(0, page);
-        List<AlitransferDAO> Sqllist = (List<AlitransferDAO>)query.list();
+        List<AlitransferModel> Sqllist = (List<AlitransferModel>)query.list();
+
+        //锁定列表
+        String sql1 = "update alitransfer INNER JOIN"
+                +"(select * from alitransfer where TransferLines != 0 and IsFaliled != true limit ? ,3000)as ali set alitransfer.IsLock=1;";
+        query = session.createSQLQuery(sql1);
+        query.setParameter(0, page);
+        query.executeUpdate();
 
         return Sqllist;
+    }
+
+    /**
+     * 获得对应的批次信息
+     *
+     * @param page 获取的页数
+     * @return 此次批次的列表
+     */
+    public List<WxTranferModel> GetWxTransferInfo(int page) {
+        Session session = this.getNewSession();
+        String sql = "select * from wxtransfer where TransferLines != 0 and IsFaliled != true limit ? ,1000;";
+        Query query = session.createSQLQuery(sql).addEntity(WxTranferModel.class);
+
+        query.setParameter(0, page);
+        List<WxTranferModel> Sqllist = (List<WxTranferModel>)query.list();
+
+        //锁定列表
+        String sql1 = "update wxtransfer INNER JOIN " +
+                "(select * from wxtransfer where TransferLines != 0 and IsFaliled != true limit ? ,1000)as wx set wxtransfer.IsLock=1;";
+        query = session.createSQLQuery(sql1);
+        query.setParameter(0, page);
+        query.executeUpdate();
+        return Sqllist;
+    }
+
+    /**
+     * 获取微信提现申请人数
+     * @return
+     */
+    public int GetWxTransferNum(){
+        Session session = this.getNewSession();
+        String sql = "select count(Id) from wxtransfer";
+        Query query = session.createSQLQuery(sql);
+        BigInteger re = (BigInteger) query.uniqueResult();
+        return re.intValue();
     }
 
 }

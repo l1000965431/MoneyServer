@@ -120,10 +120,8 @@ public class TicketDAO extends BaseDao {
             insertSql += ValueSql;
             CurNum += index;
             if( session.createSQLQuery(insertSql).executeUpdate() == 0 ){
-                LOGGER.error( "创建票表错误",insertSql );
+                LOGGER.error( "创建票表错误{}",insertSql );
             }
         }
-
-
     }
 }
