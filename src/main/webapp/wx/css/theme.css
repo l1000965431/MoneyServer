@@ -271,6 +271,7 @@ input[type="color"]:focus,
 #hero .carousel-inner .item.slide3 img {
 	display: block;
 	margin: 0 auto;
+	height: 271px;
 }
 #hero .item h1 {
 	font-size: 24px;

@@ -239,7 +239,9 @@ a:hover {
   border-radius: 500px;
 }
 .row {
-  margin-left: -20px;
+  text-align:center;
+  margin-left: auto;
+  margin-right:auto;
   *zoom: 1;
 }
 .row:before,
@@ -254,7 +256,7 @@ a:hover {
 [class*="span"] {
   float: left;
   min-height: 1px;
-  margin-left: 20px;
+  margin-left: auto;
 }
 .container,
 .navbar-static-top .container,
@@ -262,6 +264,7 @@ a:hover {
 .navbar-fixed-bottom .container {
   width: 940px;
 }
+
 .span12 {
   width: 940px;
 }
@@ -519,6 +522,7 @@ a:hover {
 .container {
   margin-right: auto;
   margin-left: auto;
+  width: auto;
   *zoom: 1;
 }
 .container:before,
@@ -544,6 +548,7 @@ a:hover {
 .container-fluid:after {
   clear: both;
 }
+
 p {
   margin: 0 0 10px;
 }
@@ -3392,6 +3397,8 @@ input[type="submit"].btn.btn-mini {
 .navbar .container {
   width: auto;
 }
+
+
 .nav-collapse.collapse {
   height: auto;
   overflow: visible;
@@ -3523,11 +3530,13 @@ input[type="submit"].btn.btn-mini {
   -moz-border-radius: 0;
   border-radius: 0;
 }
+
 .navbar-static-top .container,
 .navbar-fixed-top .container,
 .navbar-fixed-bottom .container {
   width: 940px;
 }
+
 .navbar-fixed-top {
   top: 0;
 }
@@ -4928,8 +4937,10 @@ a.thumbnail:hover {
 .carousel-inner {
   overflow: hidden;
   width: 100%;
+  height: 350px;
   position: relative;
 }
+
 .carousel-inner > .item {
   display: none;
   position: relative;
@@ -5173,6 +5184,7 @@ button.close {
   .container-fluid {
     padding: 0;
   }
+
   .dl-horizontal dt {
     float: none;
     clear: none;
@@ -5185,6 +5197,7 @@ button.close {
   .container {
     width: auto;
   }
+
   .row-fluid {
     width: 100%;
   }
@@ -5324,14 +5337,16 @@ button.close {
   [class*="span"] {
     float: left;
     min-height: 1px;
-    margin-left: 20px;
+    margin-left: 100px;
   }
-  .container,
+
+  .container
   .navbar-static-top .container,
   .navbar-fixed-top .container,
   .navbar-fixed-bottom .container {
     width: 724px;
   }
+
   .span12 {
     width: 724px;
   }
@@ -5625,7 +5640,7 @@ button.close {
 }
 @media (min-width: 1200px) {
   .row {
-    margin-left: -30px;
+    margin-left: auto;
     *zoom: 1;
   }
   .row:before,
@@ -5648,6 +5663,7 @@ button.close {
   .navbar-fixed-bottom .container {
     width: 1170px;
   }
+
   .span12 {
     width: 1170px;
   }
@@ -5970,6 +5986,7 @@ button.close {
     width: auto;
     padding: 0;
   }
+
   .navbar .brand {
     padding-left: 10px;
     padding-right: 10px;

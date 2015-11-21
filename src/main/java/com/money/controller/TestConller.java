@@ -8,6 +8,7 @@ import com.money.Service.activity.ActivityService;
 import com.money.Service.activityPreferential.ActivityPreferentialService;
 import com.money.Service.user.UserService;
 import com.money.config.Config;
+import com.money.config.ServerReturnValue;
 import com.money.dao.userDAO.UserDAO;
 import com.money.job.TestJob;
 import com.money.memcach.MemCachService;
@@ -401,6 +402,58 @@ public class TestConller extends ControllerBase implements IController {
         return 1;
     }
 
+    @RequestMapping("/TestPasswordLogin")
+    @ResponseBody
+    String TestPasswordLogin( HttpServletRequest request ){
+        String UserName = request.getParameter("userId");
+        String PassWord = request.getParameter("password");
+
+        String LoginResult = userService.userLand(UserName, PassWord);
+
+        Map<String, Object> map = new HashMap();
+        map.put("token", LoginResult);
+
+        if (LoginResult.length() >= 8) {
+            map.put("LoginResult", ServerReturnValue.LANDSUCCESS);
+            map.put("UserResponse", userService.getUserInfo(UserName));
+        } else {
+            map.put("LoginResult", LoginResult);
+            map.put("UserResponse", "");
+        }
+
+        return GsonUntil.JavaClassToJson(map);
+    }
+
+    @RequestMapping("/TestRewallet")
+    @ResponseBody
+    String TestRewallet( HttpServletRequest request ){
+        String UserID = request.getParameter("userId");
+        int Lines = Integer.valueOf(request.getParameter("lines"));
+        String ChannelID = request.getParameter("channelid");
+
+        return PingPlus.CreateChargeParams(UserID,Lines, ChannelID, "", "充值", "null", Long.toString( System.currentTimeMillis()));
+    }
+
+    @RequestMapping("/TestPrefactInfo")
+    @ResponseBody
+    int TestPrefactInfo( HttpServletRequest request ){
+        String userID = request.getParameter("userID");
+        String token = request.getParameter("token");
+        String info = request.getParameter("info");
+        return userService.perfectInfo(userID, token, info);
+    }
+
+    @RequestMapping("/TestRig")
+    @ResponseBody
+    int TestRig( HttpServletRequest request ){
+        String userName = request.getParameter("userId");
+        //String code = request.getParameter( "code" );
+        String password = request.getParameter("password");
+        int userType = Integer.valueOf(request.getParameter("userType"));
+        String inviteCode = request.getParameter("inviteCode");
+
+        return userService.userRegister(userName, "", password, userType, inviteCode);
+    }
 
 }
 

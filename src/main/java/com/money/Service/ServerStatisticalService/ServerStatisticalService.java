@@ -242,7 +242,7 @@ public class ServerStatisticalService extends ServiceBase implements ServiceInte
      * @return
      */
     public String getBatchTransferList( String startDate,String endDate ){
-        String sql = "SELECT * as from batchtransfer " +
+        String sql = "SELECT * from batchtransfer " +
                 "where date_format(batchtransfer.TransferDate,'%Y-%m-%d') BETWEEN 'startDate' AND 'endDate';";
         sql = sql.replace( "startDate",startDate ).replace("endDate",endDate);
         Session session = generaDAO.getNewSession();

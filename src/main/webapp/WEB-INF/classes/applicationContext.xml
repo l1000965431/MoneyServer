@@ -64,17 +64,17 @@
     <import resource="xml/Spring-Service-Config.xml"/>
     <import resource="xml/Spring-Quartz-Config.xml"/>
 
-<!--     &lt;!&ndash;读取配置文件  测试环境&ndash;&gt;
-    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+     <!--读取配置文件  测试环境-->
+<!--    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
                 <value>WEB-INF/classes/Test/conf/redis.properties</value>
                 <value>WEB-INF/classes/Test/conf/dataSource.properties</value>
             </list>
         </property>
-    </bean>
+    </bean>-->
 
-    &lt;!&ndash;配置文件 测试环境&ndash;&gt;
-    <import resource="Test/xml/Spring-*.xml"/>-->
+    <!--配置文件 测试环境-->
+    <import resource="Test/xml/Spring-*.xml"/>
 
 </beans>
