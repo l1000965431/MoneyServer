@@ -239,9 +239,7 @@ a:hover {
   border-radius: 500px;
 }
 .row {
-  text-align:center;
-  margin-left: auto;
-  margin-right:auto;
+  margin-left: -20px;
   *zoom: 1;
 }
 .row:before,
@@ -5337,7 +5335,7 @@ button.close {
   [class*="span"] {
     float: left;
     min-height: 1px;
-    margin-left: 100px;
+    margin-left: 20px;
   }
 
   .container
@@ -5640,7 +5638,7 @@ button.close {
 }
 @media (min-width: 1200px) {
   .row {
-    margin-left: auto;
+    margin-left: -30px;
     *zoom: 1;
   }
   .row:before,

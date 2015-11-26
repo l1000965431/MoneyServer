@@ -6,6 +6,7 @@ import com.money.Service.ServiceFactory;
 import com.money.Service.Wallet.WalletService;
 import com.money.Service.activity.ActivityService;
 import com.money.Service.activityPreferential.ActivityPreferentialService;
+import com.money.Service.user.Token;
 import com.money.Service.user.UserService;
 import com.money.config.Config;
 import com.money.config.ServerReturnValue;
@@ -15,8 +16,12 @@ import com.money.memcach.MemCachService;
 import com.money.model.PreferentiaLotteryModel;
 import com.money.model.SREarningModel;
 import com.money.model.UserModel;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.quartz.DateBuilder;
 import org.quartz.SchedulerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +43,8 @@ import java.util.regex.Pattern;
 @Controller
 @RequestMapping("/Test")
 public class TestConller extends ControllerBase implements IController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestConller.class);
 
     @Autowired
     UserDAO userDAO;
@@ -410,6 +417,15 @@ public class TestConller extends ControllerBase implements IController {
 
         String LoginResult = userService.userLand(UserName, PassWord);
 
+        String tokenData = Token.create(UserName);
+        Long orderTime = System.currentTimeMillis();
+        String time = Long.toString(orderTime);
+        Map<String, String> mapToken = new HashMap<>();
+        mapToken.put("token", UserName);
+        mapToken.put("time", time);
+        //存入缓存
+        MemCachService.MemCachSetMap( Config.UserLoginToken+UserName, Config.FAILUER_TIME, mapToken);
+
         Map<String, Object> map = new HashMap();
         map.put("token", LoginResult);
 
@@ -455,5 +471,142 @@ public class TestConller extends ControllerBase implements IController {
         return userService.userRegister(userName, "", password, userType, inviteCode);
     }
 
+    @RequestMapping("/TestInsertWxTransferInfo")
+    @ResponseBody
+    int TestInsertWxTransferInfo( HttpServletRequest request ){
+        int insertNum = Integer.valueOf(request.getParameter("insertNum"));
+
+        StringBuffer stringBuffer =  new StringBuffer("(FALSE,'1','刘旻',2,'15810356658','2015-11-23 16:03:08',1),");
+
+        for( int i = 0; i < insertNum-1;++i ){
+            stringBuffer.append( "(FALSE,'1','刘旻',2,'15810356658','2015-11-23 16:03:08',1)," );
+        }
+        stringBuffer.deleteCharAt( stringBuffer.length()-1 );
+        Session session = userDAO.getNewSession();
+        String sql = "insert into wxtransfer (IsFaliled,OpenId,RealName,TransferLines,UserId,WxtransferDate,IsLock)" +
+                "values" + stringBuffer.toString();
+        Transaction t = session.beginTransaction();
+        session.createSQLQuery( sql ).executeUpdate();
+        t.commit();
+
+        return 1;
+    }
+
+    @RequestMapping("/TestInsertAliTransferInfo")
+    @ResponseBody
+    int TestInsertAliTransferInfo( HttpServletRequest request ){
+        int insertNum = Integer.valueOf(request.getParameter("insertNum"));
+
+        StringBuffer stringBuffer =  new StringBuffer("(FALSE,'1','刘旻',2,'15810356658','2015-11-23 16:03:08',1),");
+
+        for( int i = 0; i < insertNum-1;++i ){
+            stringBuffer.append( "(FALSE,'1','刘旻',2,'15810356658','2015-11-23 16:03:08',1)," );
+        }
+        stringBuffer.deleteCharAt( stringBuffer.length()-1 );
+        Session session = userDAO.getNewSession();
+        String sql = "insert into alitransfer (IsFaliled,AliEmail,RealName,TransferLines,UserId,AlitransferDate,IsLock)" +
+                "values" + stringBuffer.toString();
+        Transaction t = session.beginTransaction();
+        session.createSQLQuery( sql ).executeUpdate();
+        t.commit();
+
+        return 1;
+    }
+
+
+    @RequestMapping("/TestCreateWxWinTransferList")
+    @ResponseBody
+    int TestCreateWxWinTransferList( HttpServletRequest request ){
+        String BatchId = request.getParameter( "BatchId" );
+        String key = "wxtransferWinList::" + BatchId;
+        String key1 = "wxTransferPass::" + BatchId;
+        int len = (int) MemCachService.getLen(key1.getBytes());
+        List<byte[]> list = MemCachService.lrang(key1.getBytes(), 0, len-1);
+
+        for (byte[] tempbyte : list) {
+            String json = new String(tempbyte);
+            List<String> transferInfo = GsonUntil.jsonListToJavaClass(json, new TypeToken<List<String>>() {
+            }.getType());
+
+
+            int lines = Integer.valueOf(transferInfo.get(1));
+            List<String> list1 = new ArrayList<>();
+            list1.add(transferInfo.get(0));
+            list1.add(Integer.toString(lines));
+            String json1 = GsonUntil.JavaClassToJson(list1);
+            MemCachService.lpush(key.getBytes(), json1.getBytes());
+        }
+
+        return 1;
+    }
+
+
+    @RequestMapping("/TestBatchWinList")
+    @ResponseBody
+    int TestBatchWinList( HttpServletRequest request ){
+        String BachList = request.getParameter("BatchWinList");
+        //String code = request.getParameter( "code" );
+        WalletService walletService = ServiceFactory.getService( "WalletService" );
+        walletService.wxTransferWinList( BachList );
+        return 1;
+    }
+
+    @RequestMapping("/TestBatchFailList")
+    @ResponseBody
+    int TestBatchFailList( HttpServletRequest request ){
+        String BachList = request.getParameter("BatchWinList");
+        //String code = request.getParameter( "code" );
+        WalletService walletService = ServiceFactory.getService( "WalletService" );
+        walletService.FailTransfer( BachList );
+        return 1;
+    }
+
+    @RequestMapping("/TestLogs")
+    @ResponseBody
+    int TestLogs(){
+        LOGGER.error( "测试log error" );
+        LOGGER.info( "测试log info" );
+
+        List<Integer> listInt = new ArrayList<>();
+        listInt.add( 1 );
+        listInt.add( 2 );
+        listInt.add( 3 );
+        listInt.add( 4 );
+
+        List<String> listString = new ArrayList<>();
+        listString.add( "10" );
+        listString.add( "20" );
+        listString.add( "30" );
+        listString.add( "40" );
+
+        Map<Integer,String> mapIS = new HashMap<>();
+        mapIS.put( 1,"1" );
+        mapIS.put( 2,"2" );
+        mapIS.put( 3,"3" );
+        mapIS.put( 4,"4" );
+
+        Map<String,String> mapSS = new HashMap<>();
+        mapSS.put( "10","1" );
+        mapSS.put( "20","2" );
+        mapSS.put( "30","3" );
+        mapSS.put( "40","4" );
+
+        Map<String,List<String>> mapSL = new HashMap<>();
+        mapSL.put( "19",listString );
+        mapSL.put( "29",listString );
+        mapSL.put( "39",listString );
+        mapSL.put( "49",listString );
+
+        LOGGER.error( "测试log error List{}",listInt );
+        LOGGER.info( "测试log info List{}",listString );
+
+        LOGGER.error( "测试log error map{}",mapIS );
+        LOGGER.info( "测试log info map{}",mapSS );
+
+        LOGGER.error( "测试log error mapO{}",mapSL );
+        LOGGER.info( "测试log info mapO{}",mapSL );
+
+        return 1;
+    }
 }
 

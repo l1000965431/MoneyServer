@@ -50,6 +50,11 @@ public class AlitransferModel extends BaseModel {
      */
     int IsLock = 0;
 
+    /**
+     * 错误信息
+     */
+    String ErrorInfo = "";
+
     public int getId() {
         return Id;
     }
@@ -110,5 +115,13 @@ public class AlitransferModel extends BaseModel {
         DecimalFormat df   =   new   DecimalFormat("#####0.00");
         return Integer.toString( Id ) + "^" + AliEmail + "^" + RealName + "^"
                 + df.format(TransferLines) + "^" + "微聚竞投提现打款";
+    }
+
+    public String getErrorInfo() {
+        return ErrorInfo;
+    }
+
+    public void setErrorInfo(String errorInfo) {
+        ErrorInfo = errorInfo;
     }
 }

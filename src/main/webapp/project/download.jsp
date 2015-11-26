@@ -84,7 +84,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
     }
 
     $('#android').on('click',function (){
-        var url = "http://7xjewm.com1.z0.glb.clouddn.com/app-release.apk";
+        var url = "./downloadskip.jsp";
         var isweixin = is_weixn();
         if (isweixin) {
             $('#zhezhao').show();

@@ -1,9 +1,6 @@
 package com.money.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -14,6 +11,7 @@ import java.util.Date;
 @Table
 public class BatchTransferModel extends BaseModel {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int Id;
 
     /**

@@ -52,6 +52,11 @@ public class WxTranferModel {
      */
     int IsLock = 0;
 
+    /**
+     * 错误信息
+     */
+    String ErrorInfo = "";
+
     public int getId() {
         return Id;
     }
@@ -119,5 +124,13 @@ public class WxTranferModel {
 
     public void setRealName(String realName) {
         RealName = realName;
+    }
+
+    public String getErrorInfo() {
+        return ErrorInfo;
+    }
+
+    public void setErrorInfo(String errorInfo) {
+        ErrorInfo = errorInfo;
     }
 }

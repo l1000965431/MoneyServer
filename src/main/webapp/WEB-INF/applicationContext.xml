@@ -58,11 +58,11 @@
     </bean>
 
     <!--配置文件 生产环境-->
-    <import resource="xml/Spring-db-config.xml"/>
-    <import resource="xml/Spring-MQ-Config.xml"/>
-    <import resource="xml/Spring-Redis-Config.xml"/>
-    <import resource="xml/Spring-Service-Config.xml"/>
-    <import resource="xml/Spring-Quartz-Config.xml"/>
+    <import resource="classes/xml/Spring-db-config.xml"/>
+    <import resource="classes/xml/Spring-MQ-Config.xml"/>
+    <import resource="classes/xml/Spring-Redis-Config.xml"/>
+    <import resource="classes/xml/Spring-Service-Config.xml"/>
+    <import resource="classes/xml/Spring-Quartz-Config.xml"/>
 
      <!--读取配置文件  测试环境-->
 <!--    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -72,9 +72,9 @@
                 <value>WEB-INF/classes/Test/conf/dataSource.properties</value>
             </list>
         </property>
-    </bean>-->
+    </bean>
 
-    <!--配置文件 测试环境-->
-    <import resource="Test/xml/Spring-*.xml"/>
+    &lt;!&ndash;配置文件 测试环境&ndash;&gt;
+    <import resource="classes/Test/xml/Spring-*.xml"/>-->
 
 </beans>

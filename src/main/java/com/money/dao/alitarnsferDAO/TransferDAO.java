@@ -86,7 +86,7 @@ public class TransferDAO extends BaseDao {
             this.saveNoTransaction(NewwxTranferModel);
             return 1;
         } else {
-            String sql = "update wxtransfer set TransferLines = TransferLines+?, AlitransferDate=? where UserId = ?";
+            String sql = "update wxtransfer set TransferLines = TransferLines+?, WxtransferDate=? where UserId = ?";
             Session session = this.getNewSession();
             SQLQuery query = session.createSQLQuery(sql);
             query.setParameter(0, Lines);
@@ -164,6 +164,11 @@ public class TransferDAO extends BaseDao {
                 "FROM (select TransferLines,Id from alitransfer where TransferLines != 0 and IsFaliled != true limit ? ,3000) as TransferTemp;";
         Query query = session.createSQLQuery(sql).setResultTransformer(Transformers.aliasToBean(AliTransferInfo.class));
 
+        //锁定列表
+        String sql1 = "update alitransfer set alitransfer.IsLock=1;";
+        Query query1 = session.createSQLQuery(sql1);
+        query1.executeUpdate();
+
         while (true) {
             query.setParameter(0, page);
             List<AliTransferInfo> Sqllist = (List<AliTransferInfo>)query.list();
@@ -230,10 +235,45 @@ public class TransferDAO extends BaseDao {
      */
     public int GetWxTransferNum(){
         Session session = this.getNewSession();
-        String sql = "select count(Id) from wxtransfer";
+        String sql = "select count(Id) from wxtransfer where IsFaliled=FALSE ";
         Query query = session.createSQLQuery(sql);
         BigInteger re = (BigInteger) query.uniqueResult();
         return re.intValue();
     }
 
+    /**
+     * 获取微信提现申请失败订单数
+     * @return
+     */
+    public int GetWxFailTransferNum(){
+        Session session = this.getNewSession();
+        String sql = "select count(Id) from wxtransfer where IsFaliled=TRUE ";
+        Query query = session.createSQLQuery(sql);
+        BigInteger re = (BigInteger) query.uniqueResult();
+        return re.intValue();
+    }
+
+    /**
+     * 获取支付宝提现申请人数
+     * @return
+     */
+    public int GetAliTransferNum(){
+        Session session = this.getNewSession();
+        String sql = "select count(Id) from alitransfer where IsFaliled=FALSE ";
+        Query query = session.createSQLQuery(sql);
+        BigInteger re = (BigInteger) query.uniqueResult();
+        return re.intValue();
+    }
+
+    /**
+     * 获取支付宝提现申请失败订单数
+     * @return
+     */
+    public int GetAliFailTransferNum(){
+        Session session = this.getNewSession();
+        String sql = "select count(Id) from alitransfer where IsFaliled=TRUE ";
+        Query query = session.createSQLQuery(sql);
+        BigInteger re = (BigInteger) query.uniqueResult();
+        return re.intValue();
+    }
 }

@@ -15,6 +15,7 @@ import org.hibernate.engine.spi.TypedValue;
 import org.springframework.stereotype.Repository;
 import until.GsonUntil;
 
+import java.lang.annotation.Documented;
 import java.util.List;
 
 /**

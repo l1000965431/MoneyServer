@@ -1,5 +1,6 @@
 package com.money.dao.userDAO;
 
+import com.google.gson.reflect.TypeToken;
 import com.money.Service.user.Token;
 import com.money.config.Config;
 import com.money.config.ServerReturnValue;
@@ -40,8 +41,7 @@ public class UserDAO extends BaseDao {
     //0未登录；1，修改信息成功；2，信息不合法;3，token不一致;4,userType有问题 5:身份证号重复 6:邮箱重复
     public int modifyInvestorInfo(String userId, String info) {
         //将信息转换为map形式
-        Map<String, String> map = new HashMap<String, String>();
-        map = GsonUntil.jsonToJavaClass(info, map.getClass());
+        Map<String, String> map = GsonUntil.jsonToJavaClass(info, new TypeToken<Map<String, String>>(){}.getType());
         //有空信息标志位
         boolean infoFlag = true;
         //获取MAP的第一个值，开始遍历，判断信息是否为空

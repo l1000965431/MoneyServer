@@ -232,26 +232,34 @@ public class WalletController extends ControllerBase {
 
     @RequestMapping("/GetAliTranserOrder")
     @ResponseBody
-    public String GetAliTranserOrder() {
+    public String GetAliTranserOrder(HttpServletResponse response) {
 
         List list = walletService.GetAliTranserOrder();
 
         if (list == null) {
             return "";
         } else {
+            int Num = walletService.GetAliTranserNum();
+            int FailNum = walletService.GetAliFailTranserNum();
+            response.setHeader( "transfernum",Integer.toString( Num ) );
+            response.setHeader( "failedNum",Integer.toString( FailNum ) );
             return GsonUntil.JavaClassToJson(list);
         }
     }
 
     @RequestMapping("/GetAliTranserInfo")
     @ResponseBody
-    public String GetAliTranserInfo(HttpServletRequest request) {
+    public String GetAliTranserInfo(HttpServletRequest request,HttpServletResponse response) {
         int page = Integer.valueOf(request.getParameter("page"));
         List list = walletService.GetAliTranserInfo(page);
 
         if (list == null) {
             return "";
         } else {
+            int Num = walletService.GetAliTranserNum();
+            int FailNum = walletService.GetAliFailTranserNum();
+            response.setHeader( "transfernum",Integer.toString( Num ) );
+            response.setHeader( "failedNum",Integer.toString( FailNum ) );
             return GsonUntil.JavaClassToJson(list);
         }
     }
@@ -267,8 +275,10 @@ public class WalletController extends ControllerBase {
             return "";
         } else {
             int Num = walletService.GetWxTranserNum();
+            int FailNum = walletService.GetWxFailTranserNum();
             String BatchId = out_BatchId.toString();
             response.setHeader( "transfernum",Integer.toString( Num ) );
+            response.setHeader( "failedNum",Integer.toString( FailNum ) );
             response.setHeader( "BatchId",BatchId );
             return GsonUntil.JavaClassToJson(list);
         }
