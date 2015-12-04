@@ -106,7 +106,8 @@ public class PurchaseInAdvanceDAO extends BaseDao {
      * @param PurchaseNum 当前的次数
      * @return
      */
-    public int PurchaseActivity(String InstallmentActivityID, String UserID, int PurchaseNum, int PurchaseType,int Lines ) throws Exception {
+    public int PurchaseActivity(String InstallmentActivityID,
+                                String UserID, int PurchaseNum, int PurchaseType,int Lines,int AdvanceType ) throws Exception {
         //刷新项目票的表 票的所有者
         String DBNmae = Config.ACTIVITYGROUPTICKETNAME + InstallmentActivityID;
 
@@ -121,12 +122,14 @@ public class PurchaseInAdvanceDAO extends BaseDao {
             return ServerReturnValue.SERVERRETURNERROR;
         }
 
-        String sql = "update " + DBNmae + " set userId=? where userId='0' and PurchaseType=? limit ?";
+        String sql = "update " + DBNmae + " set UserId=?,PurchaseDate=?,AdvanceType=? where userId='0' and PurchaseType=? limit ?";
 
         SQLQuery query = session.createSQLQuery(sql);
         query.setParameter(0, UserID);
-        query.setParameter(1, PurchaseType);
-        query.setParameter(2, PurchaseNum);
+        query.setParameter(1, MoneyServerDate.getStringCurDate());
+        query.setParameter(2,AdvanceType);
+        query.setParameter(3, PurchaseType);
+        query.setParameter(4, PurchaseNum);
         int result = query.executeUpdate();
         if( result == 0 || PurchaseNum != result ){
             return ServerReturnValue.SERVERRETURNERROR;

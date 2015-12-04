@@ -120,6 +120,10 @@ public class ServerReturnValue {
      */
     public static final int PERFECTREFRESH = 103;
 
+    /**
+     * 购买刷新
+     */
+    public static final int RETURNVALUES = 106;
 
     /**
      * 微劵小与系统的最小值
@@ -150,4 +154,5 @@ public class ServerReturnValue {
      * 获取项目投资详情失败
      */
     public static final String ACTIVITY_INVEST_INFO_FAILED = "101";
+
 }

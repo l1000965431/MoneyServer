@@ -117,7 +117,7 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
 
                 } else {
                     //购买当前期
-                    int PurchaseResult = PurchaseActivity(InstallmentActivityID, UserID, PurchaseNum, PurchaseNum);
+                    int PurchaseResult = PurchaseActivity(InstallmentActivityID, UserID, PurchaseNum, PurchaseNum,Config.ADVANCETYPE_BUY);
 
                     switch (PurchaseResult) {
                         case ServerReturnValue.SERVERRETURNERROR:
@@ -172,12 +172,12 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
      * @return
      */
 
-    public int PurchaseActivity(String InstallmentActivityID, String UserID, int PurchaseNum, int Lines) throws Exception {
+    public int PurchaseActivity(String InstallmentActivityID, String UserID, int PurchaseNum, int Lines,int AdvanceType) throws Exception {
         if (PurchaseNum > getInstallmentActivityRemainingTicket(InstallmentActivityID)) {
             return ServerReturnValue.SERVERRETURNERROR;
         }
 
-        return purchaseInAdvanceDAO.PurchaseActivity(InstallmentActivityID, UserID, PurchaseNum, Config.PURCHASEPRICKSILK,Lines);
+        return purchaseInAdvanceDAO.PurchaseActivity(InstallmentActivityID, UserID, PurchaseNum, Config.PURCHASEPRICKSILK,Lines,AdvanceType);
 
     }
 
@@ -188,11 +188,11 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
      * @param UserID
      * @return
      */
-    public int LocalTyrantsPurchase(String InstallmentActivityID, String UserID, int Lines) throws Exception {
+    public int LocalTyrantsPurchase(String InstallmentActivityID, String UserID, int Lines,int AdvanceType) throws Exception {
         if (!IsEnoughLocalTyrantsTickets(InstallmentActivityID)) {
             return ServerReturnValue.SERVERRETURNCONDITIONS;
         }
-        return purchaseInAdvanceDAO.PurchaseActivity(InstallmentActivityID, UserID, 1, Config.PURCHASELOCALTYRANTS,Lines);
+        return purchaseInAdvanceDAO.PurchaseActivity(InstallmentActivityID, UserID, 1, Config.PURCHASELOCALTYRANTS,Lines,AdvanceType);
         //orderService.createOrder(UserID, InstallmentActivityID, TotalLinePeoples, 0, 0, Config.PURCHASELOCALTYRANTS, OrderID);
     }
 
@@ -218,10 +218,10 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
             int Result = 0;
             switch (it.getPurchaseType()) {
                 case Config.PURCHASEPRICKSILK:
-                    Result = this.PurchaseActivity(InstallmentActivityID, it.getUserID(), PurchaseNum, PurchaseNum);
+                    Result = this.PurchaseActivity(InstallmentActivityID, it.getUserID(), PurchaseNum, PurchaseNum,Config.ADVANCETYPE_ADVANCE);
                     break;
                 case Config.PURCHASELOCALTYRANTS:
-                    Result = this.LocalTyrantsPurchase(InstallmentActivityID, it.getUserID(),activityDynamicModel.getActivityTotalLinesPeoples() );
+                    Result = this.LocalTyrantsPurchase(InstallmentActivityID, it.getUserID(),activityDynamicModel.getActivityTotalLinesPeoples(),Config.ADVANCETYPE_ADVANCE );
                     break;
             }
 
@@ -380,7 +380,7 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
                     }
 
                 } else {
-                    int PurchaseResult = LocalTyrantsPurchase(InstallmentActivityID, UserID, activityDynamicModel.getActivityTotalLinesPeoples());
+                    int PurchaseResult = LocalTyrantsPurchase(InstallmentActivityID, UserID, activityDynamicModel.getActivityTotalLinesPeoples(),Config.ADVANCETYPE_BUY);
                     if (PurchaseResult == ServerReturnValue.SERVERRETURNERROR) {
                         return false;
                     }

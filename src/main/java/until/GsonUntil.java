@@ -40,6 +40,9 @@ public class GsonUntil {
                 o.addProperty("currentFund", src.getDynamicModel().getActivityCurLines() + src.getDynamicModel().getActivityCurLinesPeoples());
                 o.addProperty("currentStage", src.getStageIndex());
                 o.addProperty("totalStage", src.getActivityVerifyCompleteModel().getTotalInstallmentNum());
+                int CurLinesPeoplesAndvance = src.getActivityVerifyCompleteModel().getCurLinePeoples()/
+                        (src.getActivityVerifyCompleteModel().getTotalLinePeoples()/
+                                src.getActivityVerifyCompleteModel().getTotalInstallmentNum());
                 return o;
             }
         }).registerTypeAdapter(ActivityVerifyCompleteModel.class, new JsonSerializer<ActivityVerifyCompleteModel>() {
@@ -73,6 +76,7 @@ public class GsonUntil {
                 o.addProperty("purchaseType", src.getPurchaseType());
                 o.addProperty("OrderStartAndvance", src.getOrderStartAdvance());
                 o.addProperty("Id", src.getOrderId());
+                o.addProperty("VirtualSecurities", src.getVirtualSecurities());
                 JsonObject object = new JsonObject();
                 object.addProperty("activityName", src.getActivityDetailModel().getActivityVerifyCompleteModel().getName());
                 object.addProperty("activityStageId", src.getActivityDetailModel().getActivityStageId());

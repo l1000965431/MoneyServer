@@ -48,7 +48,7 @@
 
 
     <!-- 读取配置文件 生产环境 -->
-    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+<!--    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
                 <value>WEB-INF/classes/conf/redis.properties</value>
@@ -57,15 +57,15 @@
         </property>
     </bean>
 
-    <!--配置文件 生产环境-->
+    &lt;!&ndash;配置文件 生产环境&ndash;&gt;
     <import resource="classes/xml/Spring-db-config.xml"/>
     <import resource="classes/xml/Spring-MQ-Config.xml"/>
     <import resource="classes/xml/Spring-Redis-Config.xml"/>
     <import resource="classes/xml/Spring-Service-Config.xml"/>
-    <import resource="classes/xml/Spring-Quartz-Config.xml"/>
+    <import resource="classes/xml/Spring-Quartz-Config.xml"/>-->
 
      <!--读取配置文件  测试环境-->
-<!--    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
                 <value>WEB-INF/classes/Test/conf/redis.properties</value>
@@ -74,7 +74,7 @@
         </property>
     </bean>
 
-    &lt;!&ndash;配置文件 测试环境&ndash;&gt;
-    <import resource="classes/Test/xml/Spring-*.xml"/>-->
+    <!--配置文件 测试环境-->
+    <import resource="classes/Test/xml/Spring-*.xml"/>
 
 </beans>

@@ -101,9 +101,9 @@ public class LotteryService extends ServiceBase implements ServiceInterface {
                     SomeFarmByPrizeList(InstallmentActivityID);
                 }
 
-                //删除本期的购买表
-                String DBName = Config.ACTIVITYGROUPTICKETNAME + InstallmentActivityID;
-                lotteryDAO.DropList(DBName);
+                //删除本期的购买表(取消删除,先保留该表以便查询使用 注意定期维护)
+/*                String DBName = Config.ACTIVITYGROUPTICKETNAME + InstallmentActivityID;
+                lotteryDAO.DropList(DBName);*/
 
                 return true;
             }

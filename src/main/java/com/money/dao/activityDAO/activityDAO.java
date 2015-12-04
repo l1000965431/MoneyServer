@@ -291,7 +291,8 @@ public class activityDAO extends BaseDao {
     public void CreateTicketDB(final String InstallmentActivityID,int TotalLinePeoples, int TotalLines) {
         Session session = this.getNewSession();
         String DBName = Config.ACTIVITYGROUPTICKETNAME + InstallmentActivityID;
-        String Sql = "CREATE TABLE " + DBName + " ( TickID VARCHAR(45) NOT NULL,UserId VARCHAR(45) NULL DEFAULT 0,PurchaseType INT(2) NOT NULL,PRIMARY KEY (TickID));";
+        String Sql = "CREATE TABLE " + DBName + " ( TickID VARCHAR(45) NOT NULL,UserId VARCHAR(45) NULL DEFAULT 0,PurchaseType INT(2) NOT NULL,PurchaseDate datetime DEFAULT NULL," +
+                "AdvanceType int(2) DEFAULT NULL,PRIMARY KEY (TickID));";
         //String Sql = "{call CreateTicketDB(?,?,?)}";
         SQLQuery sqlQuery = session.createSQLQuery(Sql);
 /*        sqlQuery.setParameter( 0,1 );

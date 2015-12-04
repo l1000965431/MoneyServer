@@ -58,8 +58,9 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
 
     @RequestMapping("/PurchaseActivity")
     @ResponseBody
-    //-1:重新登录 1:期或票不够 2:钱不够 3:本期不够 预购后边的期 100:支付成功 103:支付成功客户端需要刷新104:微卷不够 105:错误 MessageType:1:判断本期 2:不判断本期
-    public int PurchaseActivity(HttpServletRequest request) {
+    //-1:重新登录 1:期或票不够 2:钱不够 3:本期不够 预购后边的期 100:支付成功 103:支付成功客户端需要刷新104:微卷不够 105:错误 106:返回当前剩余值
+    //  MessageType:1:判断本期 2:不判断本期
+    public int PurchaseActivity(HttpServletRequest request,HttpServletResponse response) {
         final String UserID = request.getParameter("UserID");
         final String token = request.getParameter("token");
         final String InstallmentActivityID = request.getParameter("InstallmentActivityID");
@@ -69,8 +70,12 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
         final int MessageType = Integer.valueOf(request.getParameter("MessageType"));
         final int VirtualSecurities = Integer.valueOf(request.getParameter("VirtualSecurities"));
         final int[] Refresh = {0};
-
+        final int[] remainingNum = {0};
         if (PurchaseNum == 0 || AdvanceNum == 0) {
+            return ServerReturnValue.PERFECTERROR;
+        }
+
+        if( PurchaseNum%AdvanceNum != 0 ){
             return ServerReturnValue.PERFECTERROR;
         }
 
@@ -105,7 +110,7 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
 
                     switch (PurchaseType) {
                         case Config.PURCHASEPRICKSILK:
-                            int remainingNum = purchaseInAdvance.getInstallmentActivityRemainingTicket(InstallmentActivityID);
+                            remainingNum[0] = purchaseInAdvance.getInstallmentActivityRemainingTicket(InstallmentActivityID);
                             costLines = walletService.getCostLines( PurchaseNum,AdvanceNum,VirtualSecurities );
                             if (!purchaseInAdvance.IsRemainingInstallment(ActivityID, AdvanceNum) ||
                                     activityVerifyCompleteModel.IsEnoughLines(costLines)) {
@@ -113,11 +118,11 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
                                 return false;
                             }
 
-                            if (remainingNum == PurchaseNum) {
+                            if (remainingNum[0] == PurchaseNum) {
                                 Refresh[0] = 1;
                             }
-                            if (remainingNum < PurchaseNum && MessageType == 1) {
-                            state[0] = ServerReturnValue.PERFECTREFRESH;
+                            if (remainingNum[0] < PurchaseNum && MessageType == 1) {
+                            state[0] = ServerReturnValue.RETURNVALUES;
                             return false;
                         }
                         break;
@@ -148,6 +153,10 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
                     return true;
                 }
             }), Config.SERVICE_SUCCESS)) {
+                if( state[0] == ServerReturnValue.RETURNVALUES ){
+                    response.setHeader( "values",Integer.toString(remainingNum[0]) );
+                }
+
                 return state[0];
             }
 

@@ -207,6 +207,16 @@ public class Config {
     public static String RedPointNewJoinActivity = "RedPointNewJoinActivity";
 
     public static String UserLoginToken = "UserLoginToken::";
+
+    /**
+     * 预购类型:购买
+     */
+    public static final int ADVANCETYPE_BUY = 1;
+
+    /**
+     * 预购类型:预购
+     */
+    public static final int ADVANCETYPE_ADVANCE = 2;
 }
 
 

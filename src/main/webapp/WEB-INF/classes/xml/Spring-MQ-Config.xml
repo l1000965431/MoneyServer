@@ -6,32 +6,32 @@
     <bean id="MoneyServerMQTopic" class="com.money.config.MoneyServerMQ_Topic">
         <property name="MESSAFE_PRODUCERID" value="PID_MoneySever_2" />
         <property name="MESSAFE_CONSUMERID" value="CID_MoneySever_2" />
-        <property name="MONEYSERVERMQ_ORDERINSERT_TOPIC" value="MoneyServer_Order_Insert" />
-        <property name="MONEYSERVERMQ_ORDERINSERT_TAG" value="MoneyServer_Order_Insert" />
-        <property name="MONEYSERVERMQ_ACTIVITYBUY_TOPIC" value="MoneyServer_Buy_Listener" />
-        <property name="MONEYSERVERMQ_ACTIVITYBUY_TAG" value="MoneyServer_Buy_Listener" />
-        <property name="MONEYSERVERMQ_LOTTERY_TOPIC" value="MoneyServer_Lottery_Listener" />
-        <property name="MONEYSERVERMQ_LOTTERY_TAG" value="MoneyServer_Lottery_Listener" />
-        <property name="MONEYSERVERMQ_SOMEFRAM_TOPIC" value="MoneyServer_SomeFarm_Listener" />
-        <property name="MONEYSERVERMQ_SOMEFRAM_TAG" value="MoneyServer_SomeFarm_Listener" />
-        <property name="MONEYSERVERMQ_RECHARGEWALLET_TOPIC" value="MoneyServer_RechargeWallet_Listener" />
-        <property name="MONEYSERVERMQ_RECHARGEWALLET_TAG" value="MoneyServer_RechargeWallet_Listener" />
-        <property name="MONEYSERVERMQ_PUSH_TOPIC" value="MoneyServer_PushListener_Listener" />
-        <property name="MONEYSERVERMQ_PUSH_TAG" value="MoneyServer_PushListener_Listener" />
-        <property name="MONEYSERVERMQ_INSTALLMENT_TOPIC" value="MoneyServer_Installment_Listener" />
-        <property name="MONEYSERVERMQ_INSTALLMENT_TAG" value="MoneyServer_Installment_Listener" />
-        <property name="MONEYSERVERMQ_LOTTERYPUSHLIST_TOPIC" value="MoneyServer_LotteryPushLis_Listener" />
-        <property name="MONEYSERVERMQ_LOTTERYPUSHLIST_TAG" value="MoneyServer_LotteryPushLis_Listener" />
-        <property name="MONEYSERVERMQ_TRANSFER_TOPIC" value="MoneyServer_Transfer_Listener" />
-        <property name="MONEYSERVERMQ_TRANSFER_TAG" value="MoneyServer_Transfer_Listener" />
-        <property name="MONEYSERVERMQ_INSERTINVITECODE_TOPIC" value="MoneyServer_InsertInviteCode_Listener" />
-        <property name="MONEYSERVERMQ_INSERTINVITECODE_TAG" value="MoneyServer_InsertInviteCode_Listener" />
-        <property name="MONEYSERVERMQ_LOTTERVACTIVITYPREFERENTIAL_TOPIC" value="MoneyServer_LotteryActivityPreferentialListener_Listener" />
-        <property name="MONEYSERVERMQ_LOTTERVACTIVITYPREFERENTIAL_TAG" value="MoneyServer_LotteryActivityPreferentialListener_Listener" />
-        <property name="MONEYSERVERMQ_JOINACTIVITYPREFERENTIAL_TOPIC" value="MoneyServer_JoinActivityPreferentialListener_Listener" />
-        <property name="MONEYSERVERMQ_JOINACTIVITYPREFERENTIAL_TAG" value="MoneyServer_JoinActivityPreferentialListener_Listener" />
-        <property name="MONEYSERVERMQ_UMENGPUSHCUSTOMMESSAGE_TOPIC" value="MoneyServer_PushCustomMessageListener_Listener" />
-        <property name="MONEYSERVERMQ_UMENGPUSHCUSTOMMESSAGE_TAG" value="MoneyServer_PushCustomMessageListener_Listener" />
+        <property name="MONEYSERVERMQ_ORDERINSERT_TOPIC" value="MoneyServer_Order_Insert_liveQ" />
+        <property name="MONEYSERVERMQ_ORDERINSERT_TAG" value="MoneyServer_Order_Insert_liveQ" />
+        <property name="MONEYSERVERMQ_ACTIVITYBUY_TOPIC" value="MoneyServer_Buy_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_ACTIVITYBUY_TAG" value="MoneyServer_Buy_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_LOTTERY_TOPIC" value="MoneyServer_Lottery_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_LOTTERY_TAG" value="MoneyServer_Lottery_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_SOMEFRAM_TOPIC" value="MoneyServer_SomeFarm_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_SOMEFRAM_TAG" value="MoneyServer_SomeFarm_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_RECHARGEWALLET_TOPIC" value="MoneyServer_RechargeWallet_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_RECHARGEWALLET_TAG" value="MoneyServer_RechargeWallet_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_PUSH_TOPIC" value="MoneyServer_PushListener_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_PUSH_TAG" value="MoneyServer_PushListener_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_INSTALLMENT_TOPIC" value="MoneyServer_Installment_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_INSTALLMENT_TAG" value="MoneyServer_Installment_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_LOTTERYPUSHLIST_TOPIC" value="MoneyServer_LotteryPushLis_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_LOTTERYPUSHLIST_TAG" value="MoneyServer_LotteryPushLis_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_TRANSFER_TOPIC" value="MoneyServer_Transfer_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_TRANSFER_TAG" value="MoneyServer_Transfer_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_INSERTINVITECODE_TOPIC" value="MoneyServer_InsertInviteCode_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_INSERTINVITECODE_TAG" value="MoneyServer_InsertInviteCode_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_LOTTERVACTIVITYPREFERENTIAL_TOPIC" value="MoneyServer_LotteryActivityPreferentialListener_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_LOTTERVACTIVITYPREFERENTIAL_TAG" value="MoneyServer_LotteryActivityPreferentialListener_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_JOINACTIVITYPREFERENTIAL_TOPIC" value="MoneyServer_JoinActivityPreferentialListener_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_JOINACTIVITYPREFERENTIAL_TAG" value="MoneyServer_JoinActivityPreferentialListener_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_UMENGPUSHCUSTOMMESSAGE_TOPIC" value="MoneyServer_PushCustomMessageListener_Listener_liveQ" />
+        <property name="MONEYSERVERMQ_UMENGPUSHCUSTOMMESSAGE_TAG" value="MoneyServer_PushCustomMessageListener_Listener_liveQ" />
     </bean>
 
 

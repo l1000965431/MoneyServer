@@ -18,6 +18,7 @@ public class OrderGsonAdapter implements JsonSerializer<OrderModel> {
         o.addProperty("orderLines", orderModel.getOrderLines());
         o.addProperty("ActivityName", orderModel.getActivityDetailModel().getActivityVerifyCompleteModel().getName());
         o.addProperty("ActivityStatus", orderModel.getActivityDetailModel().getStatus());
+        o.addProperty("VirtualSecurities", orderModel.getVirtualSecurities());
 
         o.addProperty("TotalLines", orderModel.getActivityDetailModel().getDynamicModel().getActivityTotalLines());
         o.addProperty("CurLines", orderModel.getActivityDetailModel().getDynamicModel().getActivityCurLines());

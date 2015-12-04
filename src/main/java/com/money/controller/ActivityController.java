@@ -159,8 +159,8 @@ public class ActivityController extends ControllerBase implements IController {
         }
 
         OrderService orderService = ServiceFactory.getService("OrderService");
-
         List ActivityHasEarnings = orderService.getOrderByUserID(UserID, page, findNum);
+
         return GsonUntil.JavaClassToJson(ActivityHasEarnings);
     }
 
