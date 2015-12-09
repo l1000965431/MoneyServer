@@ -33,27 +33,28 @@ public class TransferDAO extends BaseDao {
      * @param AliName  支付宝帐号
      * @return 0失败 >0成功
      */
-    public int Submitalitansfer(String UserId, int Lines, String RealName, String AliName) {
+    public int Submitalitansfer(String UserId, int Lines,int Poundage, String RealName, String AliName) {
 
         AlitransferModel alitransferModel = GetAliTransfer(UserId);
 
         if (alitransferModel == null) {
-
             AlitransferModel NewalitransferModel = new AlitransferModel();
             NewalitransferModel.setUserId(UserId);
             NewalitransferModel.setAliEmail(AliName);
             NewalitransferModel.setRealName(RealName);
             NewalitransferModel.setLines(Lines);
+            NewalitransferModel.setPoundageResult( Poundage );
             NewalitransferModel.setAlitransferDate( MoneyServerDate.getDateCurDate() );
             this.saveNoTransaction(NewalitransferModel);
             return 1;
         } else {
-            String sql = "update alitransfer set TransferLines = TransferLines+?, AlitransferDate=? where UserId = ?";
+            String sql = "update alitransfer set TransferLines = TransferLines+?,poundageResult = poundageResult+?, AlitransferDate=? where UserId = ?";
             Session session = this.getNewSession();
             SQLQuery query = session.createSQLQuery(sql);
             query.setParameter(0, Lines);
-            query.setParameter(1, MoneyServerDate.getStringCurDate());
-            query.setParameter(2, UserId);
+            query.setParameter(1, Poundage);
+            query.setParameter(2, MoneyServerDate.getStringCurDate());
+            query.setParameter(3, UserId);
             return query.executeUpdate();
         }
     }
@@ -72,7 +73,7 @@ public class TransferDAO extends BaseDao {
 
     }
 
-    public int SubmitaliWxtansfer( String UserId, int Lines, String RealName, String AliName ){
+    public int SubmitaliWxtansfer( String UserId, int Lines,int Poundage, String RealName, String AliName ){
         WxTranferModel wxTranferModel = GetWxTransfer(UserId);
 
         if (wxTranferModel == null) {
@@ -82,16 +83,18 @@ public class TransferDAO extends BaseDao {
             NewwxTranferModel.setOpenId(AliName);
             NewwxTranferModel.setRealName(RealName);
             NewwxTranferModel.setLines(Lines);
+            NewwxTranferModel.setPoundageResult( Poundage );
             NewwxTranferModel.setWxtransferDate( MoneyServerDate.getDateCurDate() );
             this.saveNoTransaction(NewwxTranferModel);
             return 1;
         } else {
-            String sql = "update wxtransfer set TransferLines = TransferLines+?, WxtransferDate=? where UserId = ?";
+            String sql = "update wxtransfer set TransferLines = TransferLines+?,PoundageResult = PoundageResult+?, WxtransferDate=? where UserId = ?";
             Session session = this.getNewSession();
             SQLQuery query = session.createSQLQuery(sql);
             query.setParameter(0, Lines);
-            query.setParameter(1, MoneyServerDate.getStringCurDate());
-            query.setParameter(2, UserId);
+            query.setParameter(1, Poundage);
+            query.setParameter(2, MoneyServerDate.getStringCurDate());
+            query.setParameter(3, UserId);
             return query.executeUpdate();
         }
     }

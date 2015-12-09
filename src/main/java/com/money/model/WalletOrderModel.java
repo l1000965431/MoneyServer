@@ -37,6 +37,11 @@ public class WalletOrderModel {
      */
     String WalletChannel;
 
+    /**
+     * 充值人Id
+     */
+    String userId;
+
     public String getOrderID() {
         return OrderID;
     }
@@ -67,5 +72,13 @@ public class WalletOrderModel {
 
     public void setWalletChannel(String walletChannel) {
         WalletChannel = walletChannel;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

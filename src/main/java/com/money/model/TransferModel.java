@@ -21,6 +21,8 @@ public class TransferModel extends BaseModel {
 
     int transferLines;
 
+    int transferLinesPoundage;
+
     String userId;
 
     String openId;
@@ -73,5 +75,13 @@ public class TransferModel extends BaseModel {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getTransferLinesPoundage() {
+        return transferLinesPoundage;
+    }
+
+    public void setTransferLinesPoundage(int transferLinesPoundage) {
+        this.transferLinesPoundage = transferLinesPoundage;
     }
 }

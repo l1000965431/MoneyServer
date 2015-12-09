@@ -40,9 +40,6 @@ public class GsonUntil {
                 o.addProperty("currentFund", src.getDynamicModel().getActivityCurLines() + src.getDynamicModel().getActivityCurLinesPeoples());
                 o.addProperty("currentStage", src.getStageIndex());
                 o.addProperty("totalStage", src.getActivityVerifyCompleteModel().getTotalInstallmentNum());
-                int CurLinesPeoplesAndvance = src.getActivityVerifyCompleteModel().getCurLinePeoples()/
-                        (src.getActivityVerifyCompleteModel().getTotalLinePeoples()/
-                                src.getActivityVerifyCompleteModel().getTotalInstallmentNum());
                 return o;
             }
         }).registerTypeAdapter(ActivityVerifyCompleteModel.class, new JsonSerializer<ActivityVerifyCompleteModel>() {

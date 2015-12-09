@@ -36,6 +36,11 @@ License URL: http://creativecommons.org/licenses/by/3.0/
         %>
 
     </script>
+    <style type="text/css">
+        label{display:block;position:relative;margin:20px 0;}
+        span{position:absolute;float:left;line-height:40px;left:65px;top:10px;cursor:text;}
+    </style>
+
 
     <!--webfonts-->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,300,600,700,800'
@@ -48,15 +53,16 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <div class="app-nature">
     <div class="nature"><img src="http://7xo7qm.com1.z0.glb.clouddn.com/timer.png" class="img-responsive" alt=""/></div>
     <form action="./js/WxBindingFunction.jsp" method="get">
-        <input type="text" class="text" value="输入账号手机号码" onfocus="this.value = '';"
-               onblur="if (this.value == '') {this.value = '输入账号手机号码';}" id="username" name="username">
-        <input type="password" value="Password" onfocus="this.value = '';"
-               onblur="if (this.value == '') {this.value = 'Password';}" id="userpassword" name="userpassword">
+       <%-- <label><span>请输入微距竞投帐号</span>--%><input type="text" class="text" value=''
+                                            onfocus="if(this.value==''){$(this).siblings('span').hide();};"
+               onblur="if (this.value == '') {this.siblings('spanusername')[0].show();}" id="username" name="username"><%--</label>--%>
+        <%--<label><span id="spanuserapssword">请输入密码</span>--%><input type="password" value=""
+                                                              onfocus="if(this.value = ''){this.siblings('spanuserapssword')[0].hide();};"
+               onblur="if (this.value == '') {this.siblings('spanuserapssword')[0].show();}" id="userpassword" name="userpassword"><%--</label>--%>
         <input type="text" class="text" value="<%=openId%>" id="openId" name="openId" hidden="hidden">
         <div class="submit"><input type="submit" onsubmit="if( document.getElementsByName( 'username')[0].value == '' || document.getElementsByName( 'username')[0].value =='输入登陆的手机号码'){ return alert( '请输入用户名' ); }
                if( document.getElementsByName( 'userpassword' )[0].value == '' || document.getElementsByName( 'userpassword' )[0].value == '输入密码输入密码' ){ return alert( '请输入密码' ); } return on_binding();"
                                    value="绑定"></div>
-
         <div class="clear"></div>
     </form>
 </div>

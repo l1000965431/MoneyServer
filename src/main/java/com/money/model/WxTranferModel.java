@@ -33,6 +33,11 @@ public class WxTranferModel {
     int TransferLines = 0;
 
     /**
+     * 提现手续费
+     */
+    int poundageResult = 0;
+
+    /**
      * 付款最后时间
      */
     Date WxtransferDate;
@@ -132,5 +137,13 @@ public class WxTranferModel {
 
     public void setErrorInfo(String errorInfo) {
         ErrorInfo = errorInfo;
+    }
+
+    public void setPoundageResult(int poundageResult) {
+        this.poundageResult = poundageResult;
+    }
+
+    public int getPoundageResult() {
+        return poundageResult;
     }
 }

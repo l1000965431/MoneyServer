@@ -6,6 +6,8 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import until.MoneyServerDate;
+import until.MoneySeverRandom;
+import until.ShareCodeUtil;
 
 import java.math.BigInteger;
 import java.text.ParseException;
@@ -42,8 +44,7 @@ public class InviteCodeDAO extends BaseDao {
         String Sql = "insert into invitecode( inviteCode,userId ) values ";
         String Vaules = "";
         for (int i = 0; i < num; i++) {
-            int curTime = (int) System.currentTimeMillis()+i;
-            String a = Integer.toHexString(curTime);
+            String a = ShareCodeUtil.toSerialCode(MoneySeverRandom.getRandomNum( 10000000,99999999 ));
             Vaules += "('" + a + "','0'),";
         }
         Vaules = Vaules.substring(0,Vaules.length()-1);

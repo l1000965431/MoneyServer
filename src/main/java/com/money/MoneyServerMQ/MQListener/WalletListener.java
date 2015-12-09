@@ -67,7 +67,7 @@ public class WalletListener extends MoneyServerListener {
                         LOGGER.error( "充值失败RechargeWallet{}",mapdata);
                         return false;
                     }
-                    walletService.InsertWalletOrder(OrderID, Lines, ChannelID);
+                    walletService.InsertWalletOrder(OrderID, finalUserID,Lines, ChannelID);
                     return true;
                 }
             })!= Config.SERVICE_SUCCESS){

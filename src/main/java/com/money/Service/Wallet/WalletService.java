@@ -124,7 +124,7 @@ public class WalletService extends ServiceBase implements ServiceInterface {
                     LOGGER.error("充值失败RechargeWallet", mapdata);
                     return false;
                 }
-                InsertWalletOrder(OrderID, Lines, ChannelID);
+                InsertWalletOrder(OrderID,finalUserID,Lines, ChannelID);
                 return true;
             }
         }) != Config.SERVICE_SUCCESS) {
@@ -280,18 +280,19 @@ public class WalletService extends ServiceBase implements ServiceInterface {
      * @param Lines
      * @param ChannelID
      */
-    public void InsertWalletOrder(String OrderID, int Lines, String ChannelID) throws Exception {
+    public void InsertWalletOrder(String OrderID,String UserId ,int Lines, String ChannelID) throws Exception {
 
         WalletOrderModel walletOrderModel = new WalletOrderModel();
         walletOrderModel.setOrderID(OrderID);
         walletOrderModel.setWalletLines(Lines);
         walletOrderModel.setWalletChannel(ChannelID);
         walletOrderModel.setOrderDate(MoneyServerDate.getDateCurDate());
+        walletOrderModel.setUserId( UserId );
         generaDAO.saveNoTransaction(walletOrderModel);
 
     }
 
-    public void InsertTransferOrder(UserModel userModel, String OrderId, String OpenId, int Lines, String status) throws ParseException {
+    public void InsertTransferOrder(UserModel userModel, String OrderId, String OpenId, int Lines,int poundage, String status) throws ParseException {
         TransferModel transferModel = new TransferModel();
         transferModel.setOrderId(OrderId);
         transferModel.setOpenId(OpenId);
@@ -299,6 +300,7 @@ public class WalletService extends ServiceBase implements ServiceInterface {
         transferModel.setTransferDate(MoneyServerDate.getDateCurDate());
         transferModel.setUserId(userModel.getUserId());
         transferModel.setStatus(status);
+        transferModel.setTransferLinesPoundage( poundage );
         generaDAO.saveNoTransaction(transferModel);
     }
 
@@ -602,18 +604,10 @@ public class WalletService extends ServiceBase implements ServiceInterface {
      */
     //0:失败 1:提交成功 2:余额不足
     public int alipayTransfer(final String UserId, final int Lines) {
-
         //计算支付宝的手续费
-        double poundage = Lines * 0.005;
-        double poundageResult = Math.ceil(poundage);
+        final int poundageResult = (int)getPoundage( Lines,0.005,1.0,25.0 );
 
-        if (poundageResult < 1.0) {
-            poundageResult = 1.0;
-        } else if (poundageResult > 25.0) {
-            poundageResult = 25.0;
-        }
-
-        final int costLines = Lines + (int) poundageResult;
+        final int costLines = Lines + poundageResult;
 
         final int[] state = {1};
         transferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
@@ -631,7 +625,7 @@ public class WalletService extends ServiceBase implements ServiceInterface {
                     return false;
                 }
 
-                if (transferDAO.Submitalitansfer(userModel.getUserId(), Lines, userModel.getAlipayRealName(), userModel.getAlipayId()) == 0) {
+                if (transferDAO.Submitalitansfer(userModel.getUserId(), Lines,poundageResult,userModel.getAlipayRealName(), userModel.getAlipayId()) == 0) {
                     state[0] = -1;
                     Object[] objects = new Object[3];
                     objects[0] = userModel;
@@ -642,7 +636,7 @@ public class WalletService extends ServiceBase implements ServiceInterface {
                 }
 
 
-                InsertTransferOrder(userModel, MoneyServerOrderID.GetOrderID(UserId), userModel.getAlipayId(), costLines, "alipay");
+                InsertTransferOrder(userModel, MoneyServerOrderID.GetOrderID(UserId), userModel.getAlipayId(), costLines,poundageResult, "alipay");
                 return true;
             }
         });
@@ -681,7 +675,7 @@ public class WalletService extends ServiceBase implements ServiceInterface {
                     return false;
                 }
 
-                if (transferDAO.SubmitaliWxtansfer(userModel.getUserId(), costLines, userModel.getRealName(), userModel.getWxOpenId()) == 0) {
+                if (transferDAO.SubmitaliWxtansfer(userModel.getUserId(), costLines,0, userModel.getRealName(), userModel.getWxOpenId()) == 0) {
                     state[0] = -1;
                     Object[] objects = new Object[3];
                     objects[0] = userModel;
@@ -691,7 +685,7 @@ public class WalletService extends ServiceBase implements ServiceInterface {
                     return false;
                 }
 
-                InsertTransferOrder(userModel, MoneyServerOrderID.GetOrderID(UserId), userModel.getWxOpenId(), costLines, "wxpay");
+                InsertTransferOrder(userModel, MoneyServerOrderID.GetOrderID(UserId), userModel.getWxOpenId(), costLines,0, "wxpay");
                 return true;
             }
         });
@@ -748,6 +742,18 @@ public class WalletService extends ServiceBase implements ServiceInterface {
                             alitransferModel.setIsFaliled(true);
                             alitransferModel.setErrorInfo( aFaildetailsList.get(5) );
                             session.update(alitransferModel);
+
+                            //将钱款打回到用户账户中
+                            RechargeWallet( alitransferModel.getUserId(),
+                                    alitransferModel.getLines()+alitransferModel.getPoundageResult() );
+
+                            //发送失败通知
+                            UmengSendParameter umengSendParameter = new UmengSendParameter( alitransferModel.getUserId(),"微距竞投","支付宝提现失败","您的支付宝提现请求被驳回,请检查绑定的支付宝帐号是否正确." +
+                                    "点击解绑支付宝帐号,重新进行绑定","支付宝提现失败" );
+                            String Json = GsonUntil.JavaClassToJson( umengSendParameter );
+                            MoneyServerMQManager.SendMessage(new MoneyServerMessage(MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TOPIC,
+                                    MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TAG, Json, "购买成功"));
+
                         }
 
                         if( TotalIndex == 200 ){
@@ -973,9 +979,46 @@ public class WalletService extends ServiceBase implements ServiceInterface {
                 WhenCase.setLength( 0 );
             }
 
-        }
+            //微信提现失败 打款到原账户
+            Session session1 = generaDAO.getNewSession();
+            Transaction t1 = session1.beginTransaction();
 
+            WxTranferModel wxTranferModel = (WxTranferModel)generaDAO.loadNoTransaction( WxTranferModel.class,Integer.valueOf( jsonlist.get(0) ) );
+            try {
+                RechargeWallet( wxTranferModel.getUserId(),wxTranferModel.getLines()+wxTranferModel.getPoundageResult() );
+                t1.commit();
+            } catch (Exception e) {
+                LOGGER.error( "WX提现打回失败{}",wxTranferModel );
+                t1.rollback();
+            }
+            //发送失败通知
+            UmengSendParameter umengSendParameter = new UmengSendParameter( wxTranferModel.getUserId(),"微距竞投","微信提现失败","您的微信提现请求被驳回,请重新提交"
+                    ,"支付宝提现失败" );
+            String Json1 = GsonUntil.JavaClassToJson( umengSendParameter );
+            MoneyServerMQManager.SendMessage(new MoneyServerMessage(MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TOPIC,
+                    MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TAG, Json1, "购买成功"));
+        }
         MemCachService.RemoveValue(failKey.getBytes());
         return true;
     }
+
+    /**
+     * 计算提现手续费
+     * @param rate 利率
+     * @return
+     */
+    double getPoundage( int Lines,double rate,double MinPoundage,double MaxPoundage ){
+        //计算支付宝的手续费
+        double poundage = Lines * rate;
+        double poundageResult = Math.ceil(poundage);
+
+        if (poundageResult < MinPoundage) {
+            poundageResult = MinPoundage;
+        } else if (poundageResult > MaxPoundage) {
+            poundageResult = MaxPoundage;
+        }
+
+        return poundageResult;
+    }
+
 }
