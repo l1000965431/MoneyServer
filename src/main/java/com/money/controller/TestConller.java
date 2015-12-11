@@ -476,14 +476,16 @@ public class TestConller extends ControllerBase implements IController {
     int TestInsertWxTransferInfo( HttpServletRequest request ){
         int insertNum = Integer.valueOf(request.getParameter("insertNum"));
 
-        StringBuffer stringBuffer =  new StringBuffer("(FALSE,'1','刘旻',2,'15810356658','2015-11-23 16:03:08',1),");
+        StringBuffer stringBuffer =  new StringBuffer("(FALSE,'1','刘旻',"+MoneySeverRandom.getRandomNum( 1,3000 )+","+
+                MoneySeverRandom.getRandomNum(0,25)+",'15810356658','2015-11-23 16:03:08',1),");
 
         for( int i = 0; i < insertNum-1;++i ){
-            stringBuffer.append( "(FALSE,'1','刘旻',2,'15810356658','2015-11-23 16:03:08',1)," );
+            stringBuffer.append( "(FALSE,'1','刘旻',"+MoneySeverRandom.getRandomNum( 1,3000 )+","+
+                    MoneySeverRandom.getRandomNum(0,25)+",'15810356658','2015-11-23 16:03:08',1)," );
         }
         stringBuffer.deleteCharAt( stringBuffer.length()-1 );
         Session session = userDAO.getNewSession();
-        String sql = "insert into wxtransfer (IsFaliled,OpenId,RealName,TransferLines,UserId,WxtransferDate,IsLock)" +
+        String sql = "insert into wxtransfer (IsFaliled,OpenId,RealName,TransferLines,poundageResult,UserId,WxtransferDate,IsLock)" +
                 "values" + stringBuffer.toString();
         Transaction t = session.beginTransaction();
         session.createSQLQuery( sql ).executeUpdate();
@@ -497,14 +499,16 @@ public class TestConller extends ControllerBase implements IController {
     int TestInsertAliTransferInfo( HttpServletRequest request ){
         int insertNum = Integer.valueOf(request.getParameter("insertNum"));
 
-        StringBuffer stringBuffer =  new StringBuffer("(FALSE,'1','刘旻',2,'15810356658','2015-11-23 16:03:08',1),");
+        StringBuffer stringBuffer =  new StringBuffer("(FALSE,'1','刘旻',"+MoneySeverRandom.getRandomNum(1,3000)+","+
+                MoneySeverRandom.getRandomNum(1,25)+",'15810356658','2015-11-23 16:03:08',1),");
 
         for( int i = 0; i < insertNum-1;++i ){
-            stringBuffer.append( "(FALSE,'1','刘旻',2,'15810356658','2015-11-23 16:03:08',1)," );
+            stringBuffer.append( "(FALSE,'1','刘旻',"+MoneySeverRandom.getRandomNum(1,3000)+","+
+                    MoneySeverRandom.getRandomNum(1,25)+",'15810356658','2015-11-23 16:03:08',1)," );
         }
         stringBuffer.deleteCharAt( stringBuffer.length()-1 );
         Session session = userDAO.getNewSession();
-        String sql = "insert into alitransfer (IsFaliled,AliEmail,RealName,TransferLines,UserId,AlitransferDate,IsLock)" +
+        String sql = "insert into alitransfer (IsFaliled,AliEmail,RealName,TransferLines,poundageResult,UserId,AlitransferDate,IsLock)" +
                 "values" + stringBuffer.toString();
         Transaction t = session.beginTransaction();
         session.createSQLQuery( sql ).executeUpdate();

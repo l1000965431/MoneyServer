@@ -4,6 +4,8 @@ import com.money.config.Config;
 import com.money.dao.BaseDao;
 import com.money.model.LotteryPeoples;
 import com.money.model.SREarningModel;
+import org.hibernate.Session;
+import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Repository;
 
 import java.util.Iterator;
@@ -45,9 +47,21 @@ public class LotteryDAO extends BaseDao {
         String sql = "SELECT * FROM "+DBName+" where PurchaseType = 2 order by rand() limit "+Integer.toString( Peoples2 )+";";
         //大R中奖查询
         String sql1 = "SELECT * FROM "+DBName+" where PurchaseType = 1 order by rand() limit "+ Integer.toString( Peoples1 )+";";
+
         try{
-            List list = this.getListClassBySQLNoTransaction(sql, LotteryPeoples.class);
-            List list1 = this.getListClassBySQLNoTransaction(sql1, LotteryPeoples.class );
+            Session session = getNewSession();
+            List list = session.createSQLQuery(sql)
+                    .addScalar( "TickID" )
+                    .addScalar( "UserId" )
+                    .addScalar( "PurchaseType" )
+                    .setResultTransformer(Transformers.aliasToBean(LotteryPeoples.class)).list();
+
+
+            List list1 = session.createSQLQuery(sql1)
+                    .addScalar( "TickID" )
+                    .addScalar( "UserId" )
+                    .addScalar( "PurchaseType" )
+                    .setResultTransformer(Transformers.aliasToBean(LotteryPeoples.class)).list();
             list.addAll( list1 );
             return list;
         }catch ( Exception e ){

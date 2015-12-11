@@ -60,7 +60,7 @@ public class AuditActivityDao extends BaseDao {
             public boolean callback(Session session) throws Exception {
                 //session.delete(verifyModel);
                 session.update(verifyModel);
-                session.saveOrUpdate(completeModel);
+                session.save(completeModel);
                 return true;
             }
         });
