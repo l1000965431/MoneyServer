@@ -3,7 +3,7 @@ package until;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+
 import java.util.Date;
 
 /**
@@ -17,7 +17,7 @@ import java.util.Date;
 public class QuartzUntil {
 
     @Autowired
-    protected SchedulerFactoryBean schedulerFactoryBean;
+    protected Scheduler scheduler;
 
     private static QuartzUntil quartzUntil;
 
@@ -36,7 +36,6 @@ public class QuartzUntil {
      *@param job 作业信息
      */
     public void AddTick(ScheduleJob job, Class<? extends Job> jobClass) throws SchedulerException {
-        Scheduler scheduler = schedulerFactoryBean.getScheduler();
 
         //获取触发器标识
         TriggerKey triggerKey = TriggerKey.triggerKey(job.getJobName(), job.getJobGroup());
@@ -83,8 +82,6 @@ public class QuartzUntil {
 
 
     public void AddTick(ScheduleJob job, Class<? extends Job> jobClass,Date startTime ) throws SchedulerException {
-        Scheduler scheduler = schedulerFactoryBean.getScheduler();
-
         //获取触发器标识
         TriggerKey triggerKey = TriggerKey.triggerKey(job.getJobName(), job.getJobGroup());
         //获取触发器trigger
@@ -124,7 +121,6 @@ public class QuartzUntil {
     }
 
     public void DeleteJob(ScheduleJob scheduleJob) throws SchedulerException {
-        Scheduler scheduler = schedulerFactoryBean.getScheduler();
         JobKey jobKey = JobKey.jobKey(scheduleJob.getJobName(), scheduleJob.getJobGroup());
         scheduler.deleteJob(jobKey);
     }

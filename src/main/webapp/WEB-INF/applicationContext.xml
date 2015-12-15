@@ -46,6 +46,14 @@
                                 expression="org.springframework.stereotype.Service"/>
     </context:component-scan>
 
+    <!-- 线程池 -->
+    <bean id="taskExecutor"
+          class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="8" />
+        <property name="keepAliveSeconds" value="200" />
+        <property name="maxPoolSize" value="8" />
+        <property name="queueCapacity" value="25" />
+    </bean>
 
     <!-- 读取配置文件 生产环境 -->
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -65,7 +73,8 @@
     <import resource="classes/xml/Spring-Quartz-Config.xml"/>
 
      <!--读取配置文件  测试环境-->
-<!--    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+<!--
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
                 <value>WEB-INF/classes/Test/conf/redis.properties</value>
@@ -75,6 +84,7 @@
     </bean>
 
     &lt;!&ndash;配置文件 测试环境&ndash;&gt;
-    <import resource="classes/Test/xml/Spring-*.xml"/>-->
+    <import resource="classes/Test/xml/Spring-*.xml"/>
+-->
 
 </beans>

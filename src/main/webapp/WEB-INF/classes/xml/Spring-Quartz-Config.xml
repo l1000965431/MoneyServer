@@ -12,7 +12,7 @@
         <property value="${jdbc.password}" name="password"/>
     </bean>
 
-    <bean name="schedulerFactoryBean"
+    <bean name="SchedulerFactoryBean"
           class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="applicationContextSchedulerContextKey"
                   value="applicationContextKey"/>
@@ -26,6 +26,7 @@
         </property>
 
     </bean>
+
 
 
     <!--redis aof压缩命令任务-->
