@@ -202,6 +202,11 @@ public class ActivityVerifyCompleteModel extends BaseModel {
     @Column(length = 1000)
     String EarningPeoples;
 
+    /**
+     * 项目版本号 用于跟下一版本的项目共存做准备
+     */
+    int version = 1;
+
     public int getStatus() {
         return status;
     }
@@ -495,5 +500,13 @@ public class ActivityVerifyCompleteModel extends BaseModel {
 
     public void setSrEarningModels(Set<SREarningModel> srEarningModels) {
         this.srEarningModels = srEarningModels;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 }

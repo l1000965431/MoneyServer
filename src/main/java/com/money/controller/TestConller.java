@@ -1,6 +1,7 @@
 package com.money.controller;
 
 import com.google.gson.reflect.TypeToken;
+import com.money.Service.Lottery.LotteryService;
 import com.money.Service.PurchaseInAdvance.PurchaseInAdvance;
 import com.money.Service.ServiceFactory;
 import com.money.Service.Wallet.WalletService;
@@ -10,6 +11,8 @@ import com.money.Service.user.Token;
 import com.money.Service.user.UserService;
 import com.money.config.Config;
 import com.money.config.ServerReturnValue;
+import com.money.dao.BaseDao;
+import com.money.dao.TransactionCallback;
 import com.money.dao.userDAO.UserDAO;
 import com.money.job.TestJob;
 import com.money.memcach.MemCachService;
@@ -612,5 +615,35 @@ public class TestConller extends ControllerBase implements IController {
 
         return 1;
     }
+
+    @RequestMapping("/TestBackTicket")
+    public void TestBackTicket( HttpServletRequest request ){
+        final String activityId = request.getParameter( "activityId" );
+        final LotteryService lotteryService = ServiceFactory.getService("LotteryService");
+        userDAO.excuteTransactionByCallback(new TransactionCallback() {
+            @Override
+            public void callback(BaseDao basedao) throws Exception {
+                lotteryService.BackTicket( activityId );
+            }
+        });
+
+    }
+
+    @RequestMapping("/TestDTokenFilter")
+    @com.money.annotation.Token(save = true)
+    @ResponseBody
+    public int TestDTokenFilter(){
+
+        return 1;
+    }
+
+    @RequestMapping("/TestRemoveUslToken")
+    @com.money.annotation.Token(remove = true)
+    @ResponseBody
+    public int TestRemoveUslToken(){
+
+        return 1;
+    }
+
 }
 

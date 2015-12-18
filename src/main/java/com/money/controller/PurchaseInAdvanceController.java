@@ -7,6 +7,7 @@ import com.money.Service.ServiceFactory;
 import com.money.Service.Wallet.WalletService;
 import com.money.Service.activity.ActivityService;
 import com.money.Service.user.UserService;
+import com.money.annotation.Token;
 import com.money.config.Config;
 import com.money.config.MoneyServerMQ_Topic;
 import com.money.config.ServerReturnValue;
@@ -58,6 +59,7 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
 
     @RequestMapping("/PurchaseActivity")
     @ResponseBody
+    @Token(remove = true)
     //-1:重新登录 1:期或票不够 2:钱不够 3:本期不够 预购后边的期 100:支付成功 103:支付成功客户端需要刷新104:微卷不够 105:错误 106:返回当前剩余值
     //  MessageType:1:判断本期 2:不判断本期
     public int PurchaseActivity(HttpServletRequest request,HttpServletResponse response) {
@@ -183,6 +185,7 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
 
     @RequestMapping("/PurchaseActivityNum")
     @ResponseBody
+    @Token(save = true)
     public String PurchaseActivityNum(HttpServletRequest request) {
         final String InstallmentActivityID = request.getParameter("installmentActivityID");
         return activityService.GetInstaInstallmentActivityInfo(InstallmentActivityID);

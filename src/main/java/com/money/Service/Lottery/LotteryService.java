@@ -16,6 +16,7 @@ import com.money.dao.userDAO.UserDAO;
 import com.money.job.LotteryPushJob;
 import com.money.model.*;
 import org.hibernate.Session;
+import org.hibernate.transform.Transformers;
 import org.quartz.DateBuilder;
 import org.quartz.SchedulerException;
 import org.slf4j.LoggerFactory;
@@ -101,9 +102,10 @@ public class LotteryService extends ServiceBase implements ServiceInterface {
                     SomeFarmByPrizeList(InstallmentActivityID);
                 }
 
-                //删除本期的购买表(取消删除,先保留该表以便查询使用 注意定期维护)
-/*                String DBName = Config.ACTIVITYGROUPTICKETNAME + InstallmentActivityID;
-                lotteryDAO.DropList(DBName);*/
+                //复制购买信息到保留表里 删除本期的购买表
+                BackTicket( InstallmentActivityID );
+                String DBName = Config.ACTIVITYGROUPTICKETNAME + InstallmentActivityID;
+                lotteryDAO.DropList(DBName);
 
                 return true;
             }
@@ -346,4 +348,56 @@ public class LotteryService extends ServiceBase implements ServiceInterface {
         }
 
     }
+
+    public void BackTicket(String InstallmentActivityID) {
+        String DBName = Config.ACTIVITYGROUPTICKETNAME + InstallmentActivityID;
+
+        String sql = "SELECT * FROM " + DBName + " limit ?,1000";
+
+        int page = 0;
+        Session session = userDAO.getNewSession();
+        while (true) {
+            List<BackTicket> list = session.createSQLQuery(sql)
+                    .addScalar( "TickID" )
+                    .addScalar( "UserId" )
+                    .addScalar( "PurchaseType" )
+                    .addScalar( "PurchaseDate" )
+                    .addScalar( "AdvanceType" )
+                    .setParameter(0, page)
+                    .setResultTransformer(Transformers.aliasToBean(BackTicket.class))
+                    .list();
+            if (list == null || list.size() == 0) {
+                break;
+            }
+
+            int i = 1;
+            StringBuffer stringBuffer = new StringBuffer();
+            boolean insert = false;
+            for( BackTicket backTicket : list ){
+                backTicket.setInstallmentActivityID( InstallmentActivityID );
+                stringBuffer.append( "('"+backTicket.getTickID()+"','"+ backTicket.getInstallmentActivityID()+"','"
+                        +backTicket.getUserId() + "',"+backTicket.getAdvanceType()+",'"+backTicket.getPurchaseDate().toString()+"',"
+                        +backTicket.getPurchaseType()+")," );
+                if( i % 200 == 0 ){
+                    insert = true;
+                }else if( i == list.size() ){
+                    insert = true;
+                }
+
+                if( insert == true ){
+                    insert = false;
+                    String vaule = stringBuffer.substring(0,stringBuffer.length()-1);
+                    String sqlInsert = "insert into backticket (TickID,InstallmentActivityID,UserId,AdvanceType,PurchaseDate,Purchasetype) values " + vaule;
+                    session.createSQLQuery( sqlInsert ).executeUpdate();
+                    stringBuffer.setLength(0);
+                }
+
+                i++;
+            }
+
+            page += 1000;
+        }
+
+    }
+
 }

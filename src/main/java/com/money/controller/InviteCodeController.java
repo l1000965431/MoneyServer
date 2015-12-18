@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 
 /**
@@ -24,27 +23,35 @@ public class InviteCodeController {
     @RequestMapping("/useInviteCode")
     @ResponseBody
     public int useInviteCode(HttpServletRequest request) throws ParseException {
-        String userId = request.getParameter( "userId" );
-        String inviteCode = request.getParameter( "inviteCode" );
+        String userId = request.getParameter("userId");
+        String inviteCode = request.getParameter("inviteCode");
 
-        if( userId == null || inviteCode == null ){
+        if (userId == null || inviteCode == null) {
             return 0;
         }
 
-        return inviteCodeService.useInviteCode( userId,inviteCode );
+        return inviteCodeService.useInviteCode(userId, inviteCode);
     }
 
     @RequestMapping("/InsertInviteCode")
     @ResponseBody
-    public int InsertInviteCode(HttpServletRequest request) throws ParseException {
+    public String InsertInviteCode(HttpServletRequest request) throws ParseException {
         int inviteCode = Integer.valueOf(request.getParameter("num"));
         return inviteCodeService.AddInviteCode(inviteCode);
     }
 
+    @RequestMapping("/getInviteCode")
+    @ResponseBody
+    public String getInviteCode(HttpServletRequest request) {
+        int num = Integer.valueOf(request.getParameter("num"));
+        return inviteCodeService.getInviteCode( num );
+    }
+
     @RequestMapping("/TestInviteCode")
     @ResponseBody
-    public int TestInviteCode(HttpServletRequest request) throws ParseException {
+    public int TestInviteCode() throws ParseException {
         return inviteCodeService.CountInviteCode();
+
     }
 
 }

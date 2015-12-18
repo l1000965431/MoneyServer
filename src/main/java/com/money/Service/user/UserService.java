@@ -47,10 +47,6 @@ public class UserService extends ServiceBase implements ServiceInterface {
             return ServerReturnValue.REQISTEREDUSERNAMEERROR;
         }
 
-        if (!userDAO.userIsRight(username) || !userDAO.passwordIsRight(password)) {
-            return ServerReturnValue.REQISTEREDUSERNAMEERROR;
-        }
-
         final int[] state = new int[1];
         if (userDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
             public boolean callback(Session session) throws Exception {
@@ -70,7 +66,7 @@ public class UserService extends ServiceBase implements ServiceInterface {
 
             }
         }) != Config.SERVICE_SUCCESS) {
-            return ServerReturnValue.REQISTEREDCODEERROR;
+            return state[0];
         }
 
         return state[0];

@@ -5,7 +5,7 @@ package until;
  */
 public class StringUtil {
     /**
-     * ¼ì²é×Ö·û´®ÊÇ·ñÎª¿Õ
+     * ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½Ç·ï¿½Îªï¿½ï¿½
      * <p>Checks if a String is not empty (""), not null and not whitespace only.</p>
      *
      * <pre>
@@ -36,5 +36,19 @@ public class StringUtil {
         }
         return empty;
     }
+
+
+    public static StringBuffer replaceAll(StringBuffer sb, String oldStr, String newStr) {
+        int i = sb.indexOf(oldStr);
+        int oldLen = oldStr.length();
+        int newLen = newStr.length();
+        while (i > -1) {
+            sb.delete(i, i + oldLen);
+            sb.insert(i, newStr);
+            i = sb.indexOf(oldStr, i + newLen);
+        }
+        return sb;
+    }
+
 }
 

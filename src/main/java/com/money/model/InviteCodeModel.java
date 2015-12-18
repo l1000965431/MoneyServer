@@ -33,6 +33,11 @@ public class InviteCodeModel extends BaseModel {
      */
     Date useDate;
 
+    /**
+     * 创建日期
+     */
+    Date CreateDate;
+
 
     public int getId() {
         return Id;
@@ -64,5 +69,13 @@ public class InviteCodeModel extends BaseModel {
 
     public void setUseDate(Date useDate) {
         this.useDate = useDate;
+    }
+
+    public Date getCreateDate() {
+        return CreateDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        CreateDate = createDate;
     }
 }
