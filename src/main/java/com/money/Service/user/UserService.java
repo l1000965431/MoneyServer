@@ -245,6 +245,10 @@ public class UserService extends ServiceBase implements ServiceInterface {
         return userDAO.getUSerModel(UserID);
     }
 
+    public UserModel getUserInfoNoTransaction(String UserID) {
+        return userDAO.getUSerModelNoTransaction(UserID);
+    }
+
     public UserModel getUserInfoTest(String UserID) {
         Session session = userDAO.getNewSession();
         Transaction t = session.beginTransaction();

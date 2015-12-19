@@ -77,10 +77,6 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
             return ServerReturnValue.PERFECTERROR;
         }
 
-        if( PurchaseNum%AdvanceNum != 0 ){
-            return ServerReturnValue.PERFECTERROR;
-        }
-
         if (!this.UserIsLand(UserID, token)) {
             return Config.LANDFAILED;
         }

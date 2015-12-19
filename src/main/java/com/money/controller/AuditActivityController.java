@@ -5,7 +5,8 @@ import com.money.Service.GroupActivity.ServiceGroupActivity;
 import com.money.Service.ServiceFactory;
 import com.money.Service.activity.ActivityService;
 import com.money.config.Config;
-import com.money.model.*;
+import com.money.model.ActivityVerifyModel;
+import com.money.model.SREarningModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +17,6 @@ import until.MoneySeverRandom;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -76,7 +76,6 @@ public class AuditActivityController extends ControllerBase implements IControll
     }
 
 
-
     /**
      * 获取已审批的项目列表
      *
@@ -102,17 +101,17 @@ public class AuditActivityController extends ControllerBase implements IControll
         long activityId;
         int result;
         String param;
-        try{
+        try {
             activityId = Long.parseLong(request.getParameter("activityId"));
             result = Integer.parseInt(request.getParameter("result"));
             param = request.getParameter("param");
-        }catch (Exception e){
+        } catch (Exception e) {
             return "paramIncorrect";
         }
 
-        if( serviceAuditActivity.setActivityAuditorResult(activityId, result, param) ){
+        if (serviceAuditActivity.setActivityAuditorResult(activityId, result, param)) {
             return Config.SERVICE_SUCCESS;
-        }else {
+        } else {
             return Config.SERVICE_FAILED;
         }
     }
@@ -125,7 +124,7 @@ public class AuditActivityController extends ControllerBase implements IControll
         int PurchaseNum = Integer.valueOf(request.getParameter("PurchaseNum"));
         int Lines = Integer.valueOf(request.getParameter("Lines"));
         int LinePeoples = Integer.valueOf(request.getParameter("LinePeoples"));
-        serviceGroupActivity.splitActivityByStage(Lines,LinePeoples,ActivityID, AdvanceNum, PurchaseNum);
+        serviceGroupActivity.splitActivityByStage(Lines, LinePeoples, ActivityID, AdvanceNum, PurchaseNum);
         return "1";
     }
 
@@ -150,14 +149,15 @@ public class AuditActivityController extends ControllerBase implements IControll
         String LinesEarnings = request.getParameter("LinesEarnings");
         String LinePeoplesEarnings = request.getParameter("LinePeoplesEarnings");
 
-        serviceGroupActivity.splitActivityByStage( Lines,LinePeoples,ActivityID, AdvanceNum, PurchaseNum);
+        serviceGroupActivity.splitActivityByStage(Lines, LinePeoples, ActivityID, AdvanceNum, PurchaseNum);
 
         serviceGroupActivity.SetActivityInformationEarnings(Lines, LinePeoples, ActivityID,
                 AdvanceNum, PurchaseNum, LinesEarnings, LinePeoplesEarnings);
 
-        if( activityService.ActivityCompleteStart(ActivityID) ){
+        //发布的时候先发布为测试项目 检查没有问题后 在更改成正式状态
+        if (activityService.ActivityCompleteStartTest(ActivityID)) {
             return 1;
-        }else{
+        } else {
             return 0;
         }
     }
@@ -174,14 +174,14 @@ public class AuditActivityController extends ControllerBase implements IControll
         String LinesEarnings = request.getParameter("LinesEarnings");
         String LinePeoplesEarnings = request.getParameter("LinePeoplesEarnings");
 
-        serviceGroupActivity.splitActivityByStage( Lines,LinePeoples,ActivityID, AdvanceNum, PurchaseNum);
+        serviceGroupActivity.splitActivityByStage(Lines, LinePeoples, ActivityID, AdvanceNum, PurchaseNum);
 
         serviceGroupActivity.SetActivityInformationEarnings(Lines, LinePeoples, ActivityID,
                 AdvanceNum, PurchaseNum, LinesEarnings, LinePeoplesEarnings);
 
-        if( activityService.ActivityCompleteStartTest(ActivityID) ){
+        if (activityService.ActivityCompleteStartTest(ActivityID)) {
             return 1;
-        }else{
+        } else {
             return 0;
         }
     }
@@ -192,7 +192,14 @@ public class AuditActivityController extends ControllerBase implements IControll
         int page = Integer.valueOf(request.getParameter("page"));
         int findNum = Integer.valueOf(request.getParameter("findNum"));
         int status = Integer.valueOf(request.getParameter("status"));
-        return serviceAuditActivity.getAuditorPassActivity( page,findNum,status );
+        return serviceAuditActivity.getAuditorPassActivity(page, findNum, status);
+    }
+
+    @RequestMapping("/SetActivityStartRaise")
+    @ResponseBody
+    public int SetActivityStartRaise(HttpServletRequest request) {
+        String ActivityID = request.getParameter("activityId");
+        return activityService.SetActivityStartRaise( ActivityID );
     }
 
     @RequestMapping("/Test")

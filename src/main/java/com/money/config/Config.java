@@ -109,6 +109,12 @@ public class Config {
     //发布者
     public static final int BORROWER = 2;
 
+    //普通访问项目权限
+    public static final int PERMISSIONSNOMAL = 0;
+
+    //测试访问项目权限
+    public static final int PERMISSIONSTEST = 1;
+
     /**
      * 土豪发奖
      */

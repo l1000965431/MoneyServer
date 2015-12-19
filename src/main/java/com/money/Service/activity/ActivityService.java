@@ -7,6 +7,7 @@ import com.money.Service.PurchaseInAdvance.PurchaseInAdvance;
 import com.money.Service.ServiceBase;
 import com.money.Service.ServiceInterface;
 import com.money.Service.Ticket.TicketService;
+import com.money.Service.user.UserService;
 import com.money.config.Config;
 import com.money.config.MoneyServerMQ_Topic;
 import com.money.dao.BaseDao;
@@ -17,14 +18,11 @@ import com.money.model.*;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.mapping.Array;
-import org.hibernate.transform.Transformers;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import until.GsonUntil;
 import until.MoneyServerDate;
-import until.StringUtil;
 import until.UmengPush.UMengMessage;
 import until.UmengPush.UmengSendParameter;
 
@@ -53,6 +51,9 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
     @Autowired
     LotteryService lotteryService;
 
+    @Autowired
+    UserService userService;
+
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ActivityService.class);
 
     public ActivityDetailModel getActivityDetails(String InstallmentActivityID) {
@@ -73,12 +74,46 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
 
 
     @SuppressWarnings("unchecked")
-    public List<ActivityDetailModel> getAllActivityDetail(int pageIndex, int numPerPage) {
+    private List<ActivityDetailModel> getAllActivityDetail(int pageIndex, int numPerPage) {
         return activityDao.getActivityListActivity(pageIndex, numPerPage);
     }
 
-    public List<ActivityDetailModel> getAllActivityDetailTest(int pageIndex, int numPerPage) {
+    private List<ActivityDetailModel> getAllActivityDetailTest(int pageIndex, int numPerPage) {
         return activityDao.getActivityListActivityTest(pageIndex, numPerPage);
+    }
+
+
+    public String getAllActivityDetail(final String UserId, final int pageIndex, final int numPerPage) {
+
+        final List<List<ActivityDetailModel>> list = new ArrayList<>();
+
+        if (activityDao.excuteTransactionByCallback(new TransactionSessionCallback() {
+            @Override
+            public boolean callback(Session session) throws Exception {
+
+                UserModel userModel = userService.getUserInfoNoTransaction(UserId);
+
+                if (userModel == null) {
+                    return false;
+                }
+
+                switch (userModel.getUserPermissions()) {
+                    case Config.PERMISSIONSNOMAL:
+                        list.add(getAllActivityDetail(pageIndex, numPerPage));
+                        break;
+                    case Config.PERMISSIONSTEST:
+                        list.add(getAllActivityDetailTest(pageIndex, numPerPage));
+                        break;
+                }
+
+                return true;
+            }
+        }).equals(Config.SERVICE_FAILED)) {
+            return "";
+        }
+
+        String json = GsonUntil.JavaClassToJson(list.get(0));
+        return json;
     }
 
 
@@ -186,6 +221,10 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
             activityVerifyCompleteModel.setActivityStartTime(MoneyServerDate.getDateCurDate());
         }
 
+        if (Status == ActivityVerifyModel.STATUS_RAISE_FINISH) {
+            activityVerifyCompleteModel.setActivityEndtTime(MoneyServerDate.getDateCurDate());
+        }
+
         activityDao.updateNoTransaction(activityVerifyCompleteModel);
 
     }
@@ -199,7 +238,7 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
      * @return
      */
 
-    private boolean InstallmentActivityIDStart(String ActivityID, int Installment) throws Exception {
+    private boolean InstallmentActivityIDStart(String ActivityID, int Installment,int InstallmentActivityState ) throws Exception {
 
         if (Installment - 1 > 0) {
             String preInstallmentActivityID = ActivityID + "_" + Integer.toString(Installment - 1);
@@ -233,7 +272,7 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
         }
 
         //设置项目开始
-        SetInstallmentActivityStatus(InstallmentActivityID, ActivityDetailModel.ONLINE_ACTIVITY_START);
+        SetInstallmentActivityStatus(InstallmentActivityID, InstallmentActivityState);
 
         return true;
     }
@@ -250,6 +289,7 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
             }
 
             if (activityDynamicModel.getActivityState() != ActivityDetailModel.ONLINE_ACTIVITY_COMPLETE) {
+                LOGGER.error("本期项目的上一期状态错误{}{}", ActivityID, activityDynamicModel.getActivityState());
                 return false;
             }
         }
@@ -261,11 +301,12 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
         activityDao.CreateTicketDB(InstallmentActivityID,
                 activityDynamicModel.getActivityTotalLinesPeoples(),
                 activityDynamicModel.getActivityTotalLines());
-        //创建分期项目票ID 改为调用存储过程 与创建票表函数合并
+
         ActivityCreateTicketID(InstallmentActivityID);
         //预购项目
         if (purchaseInAdvance.PurchaseActivityFromPurchaseInAdvance(ActivityID, InstallmentActivityID) == -1) {
             //购买错误
+            LOGGER.error("项目分期预购错误{}{}", ActivityID, InstallmentActivityID);
             return false;
         }
 
@@ -279,7 +320,7 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
     public void InstallmentActivityStart(final String ActivityID, final int Installment) throws Exception {
         if (Objects.equals(activityDao.excuteTransactionByCallback(new TransactionSessionCallback() {
             public boolean callback(Session session) throws Exception {
-                return InstallmentActivityIDStart(ActivityID, Installment);
+                return InstallmentActivityIDStart(ActivityID, Installment,ActivityDetailModel.ONLINE_ACTIVITY_START);
             }
         }), Config.SERVICE_SUCCESS)) {
             //预购项目已经完成  开始下一期
@@ -315,7 +356,7 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
                 //设置项目开始
                 SetActivityStatus(ActivityID, ActivityVerifyModel.STATUS_START_RAISE);
                 //设置第一期开始
-                InstallmentActivityIDStart(ActivityID, 1);
+                InstallmentActivityIDStart(ActivityID, 1,ActivityDetailModel.ONLINE_ACTIVITY_START);
             }
         }), Config.SERVICE_SUCCESS) == true) {
             //发送新项目红点消息
@@ -334,7 +375,7 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
                 //创建预购项目表
                 activityDao.CreatePurchaseInAdvanceDB(ActivityID);
                 //设置项目开始
-                SetActivityStatus(ActivityID, ActivityVerifyModel.STATUS_START_RAISE);
+                SetActivityStatus(ActivityID, ActivityVerifyModel.STATUS_AUDITOR_WAIT_TEST);
                 //设置第一期开始
                 InstallmentActivityIDStartTest(ActivityID, 1);
             }
@@ -581,7 +622,7 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
         int LinePeoples;
 
         InstallmentPurchNum = TotalLines[0] - CurLines[0];
-        InstallmentAdvance = (int)Math.ceil(((double)TotalActivityLines[0] - (double)CurActivityLine[0]) / (double)TotalLines[0]);
+        InstallmentAdvance = (int) Math.ceil(((double) TotalActivityLines[0] - (double) CurActivityLine[0]) / (double) TotalLines[0]);
         LinePeoples = (TotalLinePeoples[0] - CurLinePeoples[0]) / InstallmentTotalLinesPeoplse[0];
 
         List list = new ArrayList();
@@ -671,4 +712,40 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
         return ListJson;
     }
 
+    /**
+     * 设置项目正式开始
+     * @param ActivityID
+     * @return
+     */
+    public int SetActivityStartRaise(final String ActivityID ){
+
+        if( activityDao.excuteTransactionByCallback(new TransactionSessionCallback() {
+            @Override
+            public boolean callback(Session session) throws Exception {
+                SetActivityStatus( ActivityID,ActivityVerifyModel.STATUS_START_RAISE );
+
+                ActivityDetailModel activityDetailModel = activityDao.getActivityDetaillNoTransaction(ActivityID+"_1");
+                ActivityDynamicModel activityDynamicModel = activityDao.getActivityDynamicModelNoTransaction(ActivityID+"_1");
+
+                if( activityDetailModel.getStatus() != ActivityDetailModel.ONLINE_ACTIVITY_TEST ||
+                        activityDynamicModel.getActivityState() != ActivityDetailModel.ONLINE_ACTIVITY_TEST ){
+                    return false;
+                }
+
+                //设置项目开始
+                SetInstallmentActivityStatus(ActivityID+"_1", ActivityDetailModel.ONLINE_ACTIVITY_START);
+                return false;
+            }
+        }).equals( Config.SERVICE_FAILED )){
+            return 0;
+        }
+
+        //发送新项目红点消息
+        UmengSendParameter umengSendParameter = new UmengSendParameter(new UMengMessage("", "redpoint", Config.RedPointNewActivity, "新项目上线通知"));
+        String Json = GsonUntil.JavaClassToJson(umengSendParameter);
+        MoneyServerMQManager.SendMessage(new MoneyServerMessage(MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TOPIC,
+                MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TAG, Json, "新项目上线通知"));
+
+        return 1;
+    }
 }

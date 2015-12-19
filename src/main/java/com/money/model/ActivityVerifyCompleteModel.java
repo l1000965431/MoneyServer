@@ -145,6 +145,12 @@ public class ActivityVerifyCompleteModel extends BaseModel {
     Date activityStartTime;
 
     /**
+     * 筹款结束时间
+     */
+    Date activityEndtTime;
+
+
+    /**
      * 筹资天数
      */
     int raiseDay;
@@ -508,5 +514,13 @@ public class ActivityVerifyCompleteModel extends BaseModel {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public Date getActivityEndtTime() {
+        return activityEndtTime;
+    }
+
+    public void setActivityEndtTime(Date activityEndtTime) {
+        this.activityEndtTime = activityEndtTime;
     }
 }

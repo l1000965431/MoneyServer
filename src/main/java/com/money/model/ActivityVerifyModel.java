@@ -58,6 +58,11 @@ public class ActivityVerifyModel extends BaseModel {
     public static final int STATUS_AUDITOR_WAIT_START = 8;
 
     /**
+     * 已经发布成测试项目 等待修改
+     */
+    public static final int STATUS_AUDITOR_WAIT_TEST = 9;
+
+    /**
      * 项目ID
      */
     @Id

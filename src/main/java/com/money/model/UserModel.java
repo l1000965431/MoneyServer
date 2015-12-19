@@ -75,7 +75,16 @@ public class UserModel extends BaseModel {
      */
     boolean IsInvited = false;
 
+    /**
+     * 创建时间
+     */
     Date CreateTime;
+
+    /**
+     * 用户访问项目权限 0:普通 1:测试者
+     */
+    int UserPermissions = 0;
+
 
     public void setUserId(String userId) {
         this.userId = userId;
@@ -293,5 +302,13 @@ public class UserModel extends BaseModel {
 
     public void setCreateTime(Date createTime) {
         CreateTime = createTime;
+    }
+
+    public int getUserPermissions() {
+        return UserPermissions;
+    }
+
+    public void setUserPermissions(int userPermissions) {
+        UserPermissions = userPermissions;
     }
 }

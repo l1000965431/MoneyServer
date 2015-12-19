@@ -1,6 +1,7 @@
 package com.money.controller;
 
 import com.google.gson.reflect.TypeToken;
+import com.money.Service.GroupActivity.ServiceGroupActivity;
 import com.money.Service.Lottery.LotteryService;
 import com.money.Service.PurchaseInAdvance.PurchaseInAdvance;
 import com.money.Service.ServiceFactory;
@@ -51,6 +52,7 @@ public class TestConller extends ControllerBase implements IController {
 
     @Autowired
     UserDAO userDAO;
+
 
     @RequestMapping("/TestHead")
     @ResponseBody
@@ -369,16 +371,16 @@ public class TestConller extends ControllerBase implements IController {
 
     @RequestMapping("/TestGetUserModelByIdCard")
     @ResponseBody
-    String TestGetUserModelByIdCard( HttpServletRequest request ) throws Exception {
-        String mail = request.getParameter( "mail" );
-        String idcard = request.getParameter( "idcard" );
-        UserModel userModel = userDAO.getUserByMailOrIdCard( mail,idcard );
+    String TestGetUserModelByIdCard(HttpServletRequest request) throws Exception {
+        String mail = request.getParameter("mail");
+        String idcard = request.getParameter("idcard");
+        UserModel userModel = userDAO.getUserByMailOrIdCard(mail, idcard);
         return userModel.toString();
     }
 
     @RequestMapping("/TestUserLogin")
     @ResponseBody
-    void TestUserLogin( HttpServletRequest request ) throws Exception {
+    void TestUserLogin(HttpServletRequest request) throws Exception {
         Map<String, String> mapData = DecryptionDataToMapByUserId(request.getParameter("data"),
                 this.initDesKey(request.getHeader("userId")));
 
@@ -403,18 +405,18 @@ public class TestConller extends ControllerBase implements IController {
 
     @RequestMapping("/TestRedisList")
     @ResponseBody
-    int TestRedisList( HttpServletRequest request ){
-        int ThreadId = Integer.valueOf(request.getParameter( "threadId" ));
+    int TestRedisList(HttpServletRequest request) {
+        int ThreadId = Integer.valueOf(request.getParameter("threadId"));
         int len = (int) MemCachService.getLen("wxTransferPass2015111705373972".getBytes());
-        int enIndex = len<200 ? len-1 : ThreadId * 200+200-1;
-        List<byte[]> list = MemCachService.lrang("wxTransferPass2015111705373972".getBytes(), ThreadId*200, 100);
+        int enIndex = len < 200 ? len - 1 : ThreadId * 200 + 200 - 1;
+        List<byte[]> list = MemCachService.lrang("wxTransferPass2015111705373972".getBytes(), ThreadId * 200, 100);
 
         return 1;
     }
 
     @RequestMapping("/TestPasswordLogin")
     @ResponseBody
-    String TestPasswordLogin( HttpServletRequest request ){
+    String TestPasswordLogin(HttpServletRequest request) {
         String UserName = request.getParameter("userId");
         String PassWord = request.getParameter("password");
 
@@ -427,7 +429,7 @@ public class TestConller extends ControllerBase implements IController {
         mapToken.put("token", UserName);
         mapToken.put("time", time);
         //存入缓存
-        MemCachService.MemCachSetMap( Config.UserLoginToken+UserName, Config.FAILUER_TIME, mapToken);
+        MemCachService.MemCachSetMap(Config.UserLoginToken + UserName, Config.FAILUER_TIME, mapToken);
 
         Map<String, Object> map = new HashMap();
         map.put("token", LoginResult);
@@ -445,17 +447,17 @@ public class TestConller extends ControllerBase implements IController {
 
     @RequestMapping("/TestRewallet")
     @ResponseBody
-    String TestRewallet( HttpServletRequest request ){
+    String TestRewallet(HttpServletRequest request) {
         String UserID = request.getParameter("userId");
         int Lines = Integer.valueOf(request.getParameter("lines"));
         String ChannelID = request.getParameter("channelid");
 
-        return PingPlus.CreateChargeParams(UserID,Lines, ChannelID, "", "充值", "null", Long.toString( System.currentTimeMillis()));
+        return PingPlus.CreateChargeParams(UserID, Lines, ChannelID, "", "充值", "null", Long.toString(System.currentTimeMillis()));
     }
 
     @RequestMapping("/TestPrefactInfo")
     @ResponseBody
-    int TestPrefactInfo( HttpServletRequest request ){
+    int TestPrefactInfo(HttpServletRequest request) {
         String userID = request.getParameter("userID");
         String token = request.getParameter("token");
         String info = request.getParameter("info");
@@ -464,7 +466,7 @@ public class TestConller extends ControllerBase implements IController {
 
     @RequestMapping("/TestRig")
     @ResponseBody
-    int TestRig( HttpServletRequest request ){
+    int TestRig(HttpServletRequest request) {
         String userName = request.getParameter("userId");
         //String code = request.getParameter( "code" );
         String password = request.getParameter("password");
@@ -476,22 +478,22 @@ public class TestConller extends ControllerBase implements IController {
 
     @RequestMapping("/TestInsertWxTransferInfo")
     @ResponseBody
-    int TestInsertWxTransferInfo( HttpServletRequest request ){
+    int TestInsertWxTransferInfo(HttpServletRequest request) {
         int insertNum = Integer.valueOf(request.getParameter("insertNum"));
 
-        StringBuffer stringBuffer =  new StringBuffer("(FALSE,'1','刘旻',"+MoneySeverRandom.getRandomNum( 1,3000 )+","+
-                MoneySeverRandom.getRandomNum(0,25)+",'15810356658','2015-11-23 16:03:08',1),");
+        StringBuffer stringBuffer = new StringBuffer("(FALSE,'1','刘旻'," + MoneySeverRandom.getRandomNum(1, 3000) + "," +
+                MoneySeverRandom.getRandomNum(0, 25) + ",'15810356658','2015-11-23 16:03:08',1),");
 
-        for( int i = 0; i < insertNum-1;++i ){
-            stringBuffer.append( "(FALSE,'1','刘旻',"+MoneySeverRandom.getRandomNum( 1,3000 )+","+
-                    MoneySeverRandom.getRandomNum(0,25)+",'15810356658','2015-11-23 16:03:08',1)," );
+        for (int i = 0; i < insertNum - 1; ++i) {
+            stringBuffer.append("(FALSE,'1','刘旻'," + MoneySeverRandom.getRandomNum(1, 3000) + "," +
+                    MoneySeverRandom.getRandomNum(0, 25) + ",'15810356658','2015-11-23 16:03:08',1),");
         }
-        stringBuffer.deleteCharAt( stringBuffer.length()-1 );
+        stringBuffer.deleteCharAt(stringBuffer.length() - 1);
         Session session = userDAO.getNewSession();
         String sql = "insert into wxtransfer (IsFaliled,OpenId,RealName,TransferLines,poundageResult,UserId,WxtransferDate,IsLock)" +
                 "values" + stringBuffer.toString();
         Transaction t = session.beginTransaction();
-        session.createSQLQuery( sql ).executeUpdate();
+        session.createSQLQuery(sql).executeUpdate();
         t.commit();
 
         return 1;
@@ -499,22 +501,22 @@ public class TestConller extends ControllerBase implements IController {
 
     @RequestMapping("/TestInsertAliTransferInfo")
     @ResponseBody
-    int TestInsertAliTransferInfo( HttpServletRequest request ){
+    int TestInsertAliTransferInfo(HttpServletRequest request) {
         int insertNum = Integer.valueOf(request.getParameter("insertNum"));
 
-        StringBuffer stringBuffer =  new StringBuffer("(FALSE,'1','刘旻',"+MoneySeverRandom.getRandomNum(1,3000)+","+
-                MoneySeverRandom.getRandomNum(1,25)+",'15810356658','2015-11-23 16:03:08',1),");
+        StringBuffer stringBuffer = new StringBuffer("(FALSE,'1','刘旻'," + MoneySeverRandom.getRandomNum(1, 3000) + "," +
+                MoneySeverRandom.getRandomNum(1, 25) + ",'15810356658','2015-11-23 16:03:08',1),");
 
-        for( int i = 0; i < insertNum-1;++i ){
-            stringBuffer.append( "(FALSE,'1','刘旻',"+MoneySeverRandom.getRandomNum(1,3000)+","+
-                    MoneySeverRandom.getRandomNum(1,25)+",'15810356658','2015-11-23 16:03:08',1)," );
+        for (int i = 0; i < insertNum - 1; ++i) {
+            stringBuffer.append("(FALSE,'1','刘旻'," + MoneySeverRandom.getRandomNum(1, 3000) + "," +
+                    MoneySeverRandom.getRandomNum(1, 25) + ",'15810356658','2015-11-23 16:03:08',1),");
         }
-        stringBuffer.deleteCharAt( stringBuffer.length()-1 );
+        stringBuffer.deleteCharAt(stringBuffer.length() - 1);
         Session session = userDAO.getNewSession();
         String sql = "insert into alitransfer (IsFaliled,AliEmail,RealName,TransferLines,poundageResult,UserId,AlitransferDate,IsLock)" +
                 "values" + stringBuffer.toString();
         Transaction t = session.beginTransaction();
-        session.createSQLQuery( sql ).executeUpdate();
+        session.createSQLQuery(sql).executeUpdate();
         t.commit();
 
         return 1;
@@ -523,12 +525,12 @@ public class TestConller extends ControllerBase implements IController {
 
     @RequestMapping("/TestCreateWxWinTransferList")
     @ResponseBody
-    int TestCreateWxWinTransferList( HttpServletRequest request ){
-        String BatchId = request.getParameter( "BatchId" );
+    int TestCreateWxWinTransferList(HttpServletRequest request) {
+        String BatchId = request.getParameter("BatchId");
         String key = "wxtransferWinList::" + BatchId;
         String key1 = "wxTransferPass::" + BatchId;
         int len = (int) MemCachService.getLen(key1.getBytes());
-        List<byte[]> list = MemCachService.lrang(key1.getBytes(), 0, len-1);
+        List<byte[]> list = MemCachService.lrang(key1.getBytes(), 0, len - 1);
 
         for (byte[] tempbyte : list) {
             String json = new String(tempbyte);
@@ -550,80 +552,80 @@ public class TestConller extends ControllerBase implements IController {
 
     @RequestMapping("/TestBatchWinList")
     @ResponseBody
-    int TestBatchWinList( HttpServletRequest request ){
+    int TestBatchWinList(HttpServletRequest request) {
         String BachList = request.getParameter("BatchWinList");
         //String code = request.getParameter( "code" );
-        WalletService walletService = ServiceFactory.getService( "WalletService" );
-        walletService.wxTransferWinList( BachList );
+        WalletService walletService = ServiceFactory.getService("WalletService");
+        walletService.wxTransferWinList(BachList);
         return 1;
     }
 
     @RequestMapping("/TestBatchFailList")
     @ResponseBody
-    int TestBatchFailList( HttpServletRequest request ){
+    int TestBatchFailList(HttpServletRequest request) {
         String BachList = request.getParameter("BatchWinList");
         //String code = request.getParameter( "code" );
-        WalletService walletService = ServiceFactory.getService( "WalletService" );
-        walletService.FailTransfer( BachList );
+        WalletService walletService = ServiceFactory.getService("WalletService");
+        walletService.FailTransfer(BachList);
         return 1;
     }
 
     @RequestMapping("/TestLogs")
     @ResponseBody
-    int TestLogs(){
-        LOGGER.error( "测试log error" );
-        LOGGER.info( "测试log info" );
+    int TestLogs() {
+        LOGGER.error("测试log error");
+        LOGGER.info("测试log info");
 
         List<Integer> listInt = new ArrayList<>();
-        listInt.add( 1 );
-        listInt.add( 2 );
-        listInt.add( 3 );
-        listInt.add( 4 );
+        listInt.add(1);
+        listInt.add(2);
+        listInt.add(3);
+        listInt.add(4);
 
         List<String> listString = new ArrayList<>();
-        listString.add( "10" );
-        listString.add( "20" );
-        listString.add( "30" );
-        listString.add( "40" );
+        listString.add("10");
+        listString.add("20");
+        listString.add("30");
+        listString.add("40");
 
-        Map<Integer,String> mapIS = new HashMap<>();
-        mapIS.put( 1,"1" );
-        mapIS.put( 2,"2" );
-        mapIS.put( 3,"3" );
-        mapIS.put( 4,"4" );
+        Map<Integer, String> mapIS = new HashMap<>();
+        mapIS.put(1, "1");
+        mapIS.put(2, "2");
+        mapIS.put(3, "3");
+        mapIS.put(4, "4");
 
-        Map<String,String> mapSS = new HashMap<>();
-        mapSS.put( "10","1" );
-        mapSS.put( "20","2" );
-        mapSS.put( "30","3" );
-        mapSS.put( "40","4" );
+        Map<String, String> mapSS = new HashMap<>();
+        mapSS.put("10", "1");
+        mapSS.put("20", "2");
+        mapSS.put("30", "3");
+        mapSS.put("40", "4");
 
-        Map<String,List<String>> mapSL = new HashMap<>();
-        mapSL.put( "19",listString );
-        mapSL.put( "29",listString );
-        mapSL.put( "39",listString );
-        mapSL.put( "49",listString );
+        Map<String, List<String>> mapSL = new HashMap<>();
+        mapSL.put("19", listString);
+        mapSL.put("29", listString);
+        mapSL.put("39", listString);
+        mapSL.put("49", listString);
 
-        LOGGER.error( "测试log error List{}",listInt );
-        LOGGER.info( "测试log info List{}",listString );
+        LOGGER.error("测试log error List{}", listInt);
+        LOGGER.info("测试log info List{}", listString);
 
-        LOGGER.error( "测试log error map{}",mapIS );
-        LOGGER.info( "测试log info map{}",mapSS );
+        LOGGER.error("测试log error map{}", mapIS);
+        LOGGER.info("测试log info map{}", mapSS);
 
-        LOGGER.error( "测试log error mapO{}",mapSL );
-        LOGGER.info( "测试log info mapO{}",mapSL );
+        LOGGER.error("测试log error mapO{}", mapSL);
+        LOGGER.info("测试log info mapO{}", mapSL);
 
         return 1;
     }
 
     @RequestMapping("/TestBackTicket")
-    public void TestBackTicket( HttpServletRequest request ){
-        final String activityId = request.getParameter( "activityId" );
+    public void TestBackTicket(HttpServletRequest request) {
+        final String activityId = request.getParameter("activityId");
         final LotteryService lotteryService = ServiceFactory.getService("LotteryService");
         userDAO.excuteTransactionByCallback(new TransactionCallback() {
             @Override
             public void callback(BaseDao basedao) throws Exception {
-                lotteryService.BackTicket( activityId );
+                lotteryService.BackTicket(activityId);
             }
         });
 
@@ -632,7 +634,7 @@ public class TestConller extends ControllerBase implements IController {
     @RequestMapping("/TestDTokenFilter")
     @com.money.annotation.Token(save = true)
     @ResponseBody
-    public int TestDTokenFilter(){
+    public int TestDTokenFilter() {
 
         return 1;
     }
@@ -640,9 +642,27 @@ public class TestConller extends ControllerBase implements IController {
     @RequestMapping("/TestRemoveUslToken")
     @com.money.annotation.Token(remove = true)
     @ResponseBody
-    public int TestRemoveUslToken(){
+    public int TestRemoveUslToken() {
 
         return 1;
+    }
+
+    @RequestMapping("/TestgetActivityDelByUserId")
+    @ResponseBody
+    public String TestgetActivityDelByUserId(HttpServletRequest request) {
+        int pageIndex = Integer.parseInt(request.getParameter("pageIndex"));
+        int numPerPage = Integer.parseInt(request.getParameter("numPerPage"));
+        String userId = request.getParameter("userId");
+        ActivityService activityService = ServiceFactory.getService("ActivityService");
+        return activityService.getAllActivityDetail(userId, pageIndex, numPerPage);
+    }
+
+    @RequestMapping("/TestClearActivity")
+    @ResponseBody
+    public void TestClearActivity(HttpServletRequest request) {
+        String ActivityID = request.getParameter("activityID");
+        ServiceGroupActivity serviceGroupActivity = ServiceFactory.getService( "ServiceGroupActivity" );
+        serviceGroupActivity.CleanTestActivity( ActivityID );
     }
 
 }

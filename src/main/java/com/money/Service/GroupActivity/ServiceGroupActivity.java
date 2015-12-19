@@ -1,15 +1,12 @@
 package com.money.Service.GroupActivity;
 
 import com.google.gson.reflect.TypeToken;
-import com.money.Service.GlobalConifg.GlobalConfigService;
 import com.money.Service.ServiceBase;
 import com.money.Service.ServiceInterface;
+import com.money.config.Config;
 import com.money.dao.TransactionSessionCallback;
 import com.money.dao.activityDAO.activityDAO;
-import com.money.model.ActivityDetailModel;
-import com.money.model.ActivityDynamicModel;
-import com.money.model.ActivityVerifyCompleteModel;
-import com.money.model.SREarningModel;
+import com.money.model.*;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,101 +106,96 @@ public class ServiceGroupActivity extends ServiceBase implements ServiceInterfac
     }
 
 
-    public void splitActivityByStage(int Lines,int LinePeoples, String ActicityID, final int AdvanceNum, final int PurchaseNum) {
+    public void splitActivityByStage(int Lines, int LinePeoples, String ActicityID, final int AdvanceNum, final int PurchaseNum) {
+        Session session = generaDAO.getNewSession();
 
         final ActivityVerifyCompleteModel completeModel = (ActivityVerifyCompleteModel) generaDAO.load(ActivityVerifyCompleteModel.class, ActicityID);
 
         int srInvestProportion = Lines;
         int brInvestProportion = LinePeoples;
 
-        final List list = CalculateActivityEarnings(Lines+LinePeoples, AdvanceNum * PurchaseNum, srInvestProportion, brInvestProportion);
+        final List list = CalculateActivityEarnings(Lines + LinePeoples, AdvanceNum * PurchaseNum, srInvestProportion, brInvestProportion);
 
-        generaDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
-            public boolean callback(Session session) throws Exception {
+        String DeSql = "insert into activitydetails " +
+                "(LocaltyrantsLotteryLines, activityEndTime, activityStartTime, activityVerifyCompleteModel_activityId, dynamicModel_activityStageId, groupId, raiseDay, stageIndex, status, targetFund, activityStageId) values ";
+        String DySql = "insert into activitydynamic " +
+                "(activityCurLines, activityCurLinesPeoples, activityDetailModel_activityStageId, activityState, activityTotalAmount, activityTotalLines, activityTotalLinesPeoples, activityVerifyCompleteModel_activityId, groupId, activityStageId) values ";
 
-                String DeSql = "insert into activitydetails " +
-                        "(LocaltyrantsLotteryLines, activityEndTime, activityStartTime, activityVerifyCompleteModel_activityId, dynamicModel_activityStageId, groupId, raiseDay, stageIndex, status, targetFund, activityStageId) values ";
-                String DySql = "insert into activitydynamic " +
-                        "(activityCurLines, activityCurLinesPeoples, activityDetailModel_activityStageId, activityState, activityTotalAmount, activityTotalLines, activityTotalLinesPeoples, activityVerifyCompleteModel_activityId, groupId, activityStageId) values ";
+        String DeVaules = "";
+        String DyVaules = "";
+        String ActivityID = completeModel.getActivityId();
+        for (int i = 0; i < AdvanceNum * PurchaseNum; i++) {
 
-                String DeVaules = "";
-                String DyVaules = "";
-                String ActivityID = completeModel.getActivityId();
-                for (int i = 0; i < AdvanceNum * PurchaseNum; i++) {
+            String Index = Integer.toString(i + 1);
+            String ActivityStageId = ActivityID + "_" + Index;
 
-                    String Index = Integer.toString(i + 1);
-                    String ActivityStageId = ActivityID + "_" + Index;
+            //最后一期
+            int TargetFund;
+            int TotalAmount;
+            int TotalLines;
+            int TotalLinesPeoples;
+            if (i == AdvanceNum * PurchaseNum - 1) {
+                //每期总金额
+                TargetFund = (Integer) list.get(1) + (Integer) list.get(3);
+                TotalAmount = (Integer) list.get(1) + (Integer) list.get(3);
+                //每期大R小R金额
+                TotalLines = (Integer) list.get(1);
+                TotalLinesPeoples = (Integer) list.get(3);
+            } else {
+                //平常期
+                //每期总金额
+                TargetFund = (Integer) list.get(0) + (Integer) list.get(2);
+                TotalAmount = (Integer) list.get(0) + (Integer) list.get(2);
 
-                    //最后一期
-                    int TargetFund;
-                    int TotalAmount;
-                    int TotalLines;
-                    int TotalLinesPeoples;
-                    if (i == AdvanceNum * PurchaseNum - 1) {
-                        //每期总金额
-                        TargetFund = (Integer) list.get(1) + (Integer) list.get(3);
-                        TotalAmount = (Integer) list.get(1) + (Integer) list.get(3);
-                        //每期大R小R金额
-                        TotalLines = (Integer) list.get(1);
-                        TotalLinesPeoples = (Integer) list.get(3);
-                    } else {
-                        //平常期
-                        //每期总金额
-                        TargetFund = (Integer) list.get(0) + (Integer) list.get(2);
-                        TotalAmount = (Integer) list.get(0) + (Integer) list.get(2);
-
-                        //每期大R小R金额
-                        TotalLines = (Integer) list.get(0);
-                        TotalLinesPeoples = (Integer) list.get(2);
-                    }
-
-                    int GroupId = (i / PurchaseNum) + 1;
-                    String StartTime = MoneyServerDate.getStringCurDate();
-                    int StageIndex = i + 1;
-
-                    String Detemp = "(LocaltyrantsLotteryLines,'activityEndTime','activityStartTime','activityVerifyCompleteModel_activityId','dynamicModel_activityStageId',groupId,raiseDay,stageIndex,status,targetFund,'activityStageId'),";
-                    Detemp = Detemp.replace("LocaltyrantsLotteryLines", "0").replace("activityEndTime", StartTime).replace("activityStartTime", StartTime).
-                            replace("activityVerifyCompleteModel_activityId", ActivityID).replace("dynamicModel_activityStageId", ActivityStageId).replace("groupId", Integer.toString(GroupId)).replace("raiseDay", "0").replace("stageIndex", Integer.toString(StageIndex)).
-                            replace("status", "0").replace("targetFund", Integer.toString(TargetFund)).replace("activityStageId", ActivityStageId);
-
-                    DeVaules += Detemp;
-
-                    String Dytemp = "(activityCurLines,CurLinesPeoples,'activityDetailModel_activityStageId',activityState,activityTotalAmount,activityTotalLines,TotalLinesPeoples,'activityVerifyCompleteModel_activityId',groupId,'activityStageId'),";
-                    Dytemp = Dytemp.replace("activityCurLines", "0").replace("CurLinesPeoples", "0").replace("activityDetailModel_activityStageId", ActivityStageId).replace("activityState", "0").replace("activityTotalAmount", Integer.toString(TotalAmount)).
-                            replace("activityTotalLines", Integer.toString(TotalLines)).replace("TotalLinesPeoples", Integer.toString(TotalLinesPeoples)).replace("activityVerifyCompleteModel_activityId", ActivityID).replace("groupId", Integer.toString(GroupId)).replace("activityStageId", ActivityStageId);
-                    //activityDynamicModel.setActivityStageId(activityDetailModel.getActivityStageId());
-                    DyVaules += Dytemp;
-
-                    if ((i+1)%50 == 0 || i == (AdvanceNum * PurchaseNum)-1){
-                        DeVaules = DeVaules.substring(0, DeVaules.length() - 1);
-                        DyVaules = DyVaules.substring(0, DyVaules.length() - 1);
-                        DeSql += DeVaules;
-                        DySql += DyVaules;
-
-                        SQLQuery sqlQueryde = session.createSQLQuery(DeSql);
-                        SQLQuery sqlQuerydy = session.createSQLQuery(DySql);
-                        SQLQuery sqlQueryfo0 = session.createSQLQuery("set @@foreign_key_checks=0;");
-                        SQLQuery sqlQueryfo1 = session.createSQLQuery("set @@foreign_key_checks=1;");
-                        sqlQueryfo0.executeUpdate();
-                        sqlQueryde.executeUpdate();
-                        sqlQuerydy.executeUpdate();
-                        sqlQueryfo1.executeUpdate();
-
-                        DeVaules = "";
-                        DyVaules = "";
-                        DeSql = "insert into activitydetails " +
-                                "(LocaltyrantsLotteryLines, activityEndTime, activityStartTime, activityVerifyCompleteModel_activityId, dynamicModel_activityStageId, groupId, raiseDay, stageIndex, status, targetFund, activityStageId) values ";
-                        DySql = "insert into activitydynamic " +
-                                "(activityCurLines, activityCurLinesPeoples, activityDetailModel_activityStageId, activityState, activityTotalAmount, activityTotalLines, activityTotalLinesPeoples, activityVerifyCompleteModel_activityId, groupId, activityStageId) values ";
-                    }
-
-                }
-
-                completeModel.setTotalInstallmentNum(AdvanceNum * PurchaseNum);
-                generaDAO.updateNoTransaction(completeModel);
-                return true;
+                //每期大R小R金额
+                TotalLines = (Integer) list.get(0);
+                TotalLinesPeoples = (Integer) list.get(2);
             }
-        });
+
+            int GroupId = (i / PurchaseNum) + 1;
+            String StartTime = MoneyServerDate.getStringCurDate();
+            int StageIndex = i + 1;
+
+            String Detemp = "(LocaltyrantsLotteryLines,'activityEndTime','activityStartTime','activityVerifyCompleteModel_activityId','dynamicModel_activityStageId',groupId,raiseDay,stageIndex,status,targetFund,'activityStageId'),";
+            Detemp = Detemp.replace("LocaltyrantsLotteryLines", "0").replace("activityEndTime", StartTime).replace("activityStartTime", StartTime).
+                    replace("activityVerifyCompleteModel_activityId", ActivityID).replace("dynamicModel_activityStageId", ActivityStageId).replace("groupId", Integer.toString(GroupId)).replace("raiseDay", "0").replace("stageIndex", Integer.toString(StageIndex)).
+                    replace("status", "0").replace("targetFund", Integer.toString(TargetFund)).replace("activityStageId", ActivityStageId);
+
+            DeVaules += Detemp;
+
+            String Dytemp = "(activityCurLines,CurLinesPeoples,'activityDetailModel_activityStageId',activityState,activityTotalAmount,activityTotalLines,TotalLinesPeoples,'activityVerifyCompleteModel_activityId',groupId,'activityStageId'),";
+            Dytemp = Dytemp.replace("activityCurLines", "0").replace("CurLinesPeoples", "0").replace("activityDetailModel_activityStageId", ActivityStageId).replace("activityState", "0").replace("activityTotalAmount", Integer.toString(TotalAmount)).
+                    replace("activityTotalLines", Integer.toString(TotalLines)).replace("TotalLinesPeoples", Integer.toString(TotalLinesPeoples)).replace("activityVerifyCompleteModel_activityId", ActivityID).replace("groupId", Integer.toString(GroupId)).replace("activityStageId", ActivityStageId);
+            //activityDynamicModel.setActivityStageId(activityDetailModel.getActivityStageId());
+            DyVaules += Dytemp;
+
+            if ((i + 1) % 50 == 0 || i == (AdvanceNum * PurchaseNum) - 1) {
+                DeVaules = DeVaules.substring(0, DeVaules.length() - 1);
+                DyVaules = DyVaules.substring(0, DyVaules.length() - 1);
+                DeSql += DeVaules;
+                DySql += DyVaules;
+
+                SQLQuery sqlQueryde = session.createSQLQuery(DeSql);
+                SQLQuery sqlQuerydy = session.createSQLQuery(DySql);
+                SQLQuery sqlQueryfo0 = session.createSQLQuery("set @@foreign_key_checks=0;");
+                SQLQuery sqlQueryfo1 = session.createSQLQuery("set @@foreign_key_checks=1;");
+                sqlQueryfo0.executeUpdate();
+                sqlQueryde.executeUpdate();
+                sqlQuerydy.executeUpdate();
+                sqlQueryfo1.executeUpdate();
+
+                DeVaules = "";
+                DyVaules = "";
+                DeSql = "insert into activitydetails " +
+                        "(LocaltyrantsLotteryLines, activityEndTime, activityStartTime, activityVerifyCompleteModel_activityId, dynamicModel_activityStageId, groupId, raiseDay, stageIndex, status, targetFund, activityStageId) values ";
+                DySql = "insert into activitydynamic " +
+                        "(activityCurLines, activityCurLinesPeoples, activityDetailModel_activityStageId, activityState, activityTotalAmount, activityTotalLines, activityTotalLinesPeoples, activityVerifyCompleteModel_activityId, groupId, activityStageId) values ";
+            }
+
+        }
+
+        completeModel.setTotalInstallmentNum(AdvanceNum * PurchaseNum);
+        generaDAO.updateNoTransaction(completeModel);
     }
 
     public HashSet<SREarningModel> calcEarningPrize(int earningAmount, List<Integer> earningLevelList, List<Float> earningProportionList, int ticketsNum) {
@@ -228,6 +220,29 @@ public class ServiceGroupActivity extends ServiceBase implements ServiceInterfac
             ticketModels.add(model);
         }
         return ticketModels;
+    }
+
+    public void PublishProject(final int Lines, final int LinePeoples, final String ActivityID, final int AdvanceNum,
+                               final int PurchaseNum, final String LinesEarnings, final String LinePeoplesEarnings) {
+
+        generaDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
+            public boolean callback(Session session) throws Exception {
+
+                ActivityVerifyCompleteModel activityVerifyCompleteModel = generaDAO.getActivityVerifyCompleteModelNoTransaction(ActivityID);
+                if (activityVerifyCompleteModel == null) {
+                    return false;
+                }
+
+                //如果是已经发布成测试状态的项目则清理上一次发布的项目
+                if( activityVerifyCompleteModel.getStatus() == ActivityVerifyModel.STATUS_AUDITOR_WAIT_TEST ){
+                    CleanTestActivity( ActivityID );
+                }
+
+                splitActivityByStage( Lines,LinePeoples,ActivityID,AdvanceNum,PurchaseNum );
+                SetActivityInformationEarnings( Lines,LinePeoples,ActivityID,AdvanceNum,PurchaseNum,LinesEarnings,LinePeoplesEarnings );
+                return true;
+            }
+        });
     }
 
 
@@ -269,99 +284,124 @@ public class ServiceGroupActivity extends ServiceBase implements ServiceInterfac
      */
     public int SetActivityInformationEarnings(final int Lines, final int LinePeoples, final String ActivityID, final int AdvanceNum,
                                               final int PurchaseNum, final String LinesEarnings, final String LinePeoplesEarnings) {
-        generaDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
-            public boolean callback(Session session) throws Exception {
-                ActivityVerifyCompleteModel activityVerifyCompleteModel = generaDAO.getActivityVerifyCompleteModelNoTransaction(ActivityID);
-                if (activityVerifyCompleteModel == null) {
-                    return false;
-                }
 
-                activityVerifyCompleteModel.setTotalLinePeoples(LinePeoples);
-                activityVerifyCompleteModel.setTotalLines(Lines);
+        ActivityVerifyCompleteModel activityVerifyCompleteModel = generaDAO.getActivityVerifyCompleteModelNoTransaction(ActivityID);
+        if (activityVerifyCompleteModel == null) {
+            return 0;
+        }
 
-                List<SREarningModel> LinesSREarningList = GsonUntil.jsonToJavaClass(LinesEarnings, new TypeToken<List<SREarningModel>>() {
-                }.getType());
-                List<SREarningModel> LinePeoplesSREarningList = GsonUntil.jsonToJavaClass(LinePeoplesEarnings, new TypeToken<List<SREarningModel>>() {
-                }.getType());
+        activityVerifyCompleteModel.setTotalLinePeoples(LinePeoples);
+        activityVerifyCompleteModel.setTotalLines(Lines);
 
-                if( LinesSREarningList == null || LinePeoplesSREarningList == null ){
-                    return false;
-                }
+        List<SREarningModel> LinesSREarningList = GsonUntil.jsonToJavaClass(LinesEarnings, new TypeToken<List<SREarningModel>>() {
+        }.getType());
+        List<SREarningModel> LinePeoplesSREarningList = GsonUntil.jsonToJavaClass(LinePeoplesEarnings, new TypeToken<List<SREarningModel>>() {
+        }.getType());
+
+        if (LinesSREarningList == null || LinePeoplesSREarningList == null) {
+            return 0;
+        }
 
 
-                String linesPeoples = LinePeoplesEarnings.replaceAll("\r|\n|\\s*", "");
-                activityVerifyCompleteModel.setEarningPeoples(linesPeoples);
-                generaDAO.saveOrupdateNoTransaction(activityVerifyCompleteModel);
+        String linesPeoples = LinePeoplesEarnings.replaceAll("\r|\n|\\s*", "");
+        activityVerifyCompleteModel.setEarningPeoples(linesPeoples);
+        generaDAO.saveOrupdateNoTransaction(activityVerifyCompleteModel);
 
-                //小R发奖
-                String sql = "insert into srearning (activityStageId, activityId, earningPrice, earningType, num) values ";
-                String Vaules = "";
-                int rIndex = 0;
-                for (SREarningModel LinesSREarning : LinesSREarningList) {
-                    SREarningModel newSREarningModel = new SREarningModel(LinesSREarning);
-                    newSREarningModel.setActivityVerifyCompleteModel(activityVerifyCompleteModel);
+        //小R发奖
+        String sql = "insert into srearning (activityStageId, activityId, earningPrice, earningType, num) values ";
+        String Vaules = "";
+        int rIndex = 0;
+        for (SREarningModel LinesSREarning : LinesSREarningList) {
+            SREarningModel newSREarningModel = new SREarningModel(LinesSREarning);
+            newSREarningModel.setActivityVerifyCompleteModel(activityVerifyCompleteModel);
 
-                    String temp = "('activityStageId', 'activityId', earningPrice, earningType, num),";
-                    temp = temp.replace( "activityStageId","" ).replace( "activityId",activityVerifyCompleteModel.getActivityId() ).
-                            replace("earningPrice", Integer.toString(LinesSREarning.getEarningPrice())).replace("earningType", Integer.toString(LinesSREarning.getEarningType())).
-                            replace("num",Integer.toString(LinesSREarning.getNum()));
-                    Vaules += temp;
-                    rIndex++;
-                    if( rIndex%50 ==0 || rIndex == LinesSREarningList.size() ){
-                        Vaules = Vaules.substring( 0,Vaules.length()-1 );
-                        sql += Vaules;
-                        String sql0 = "set @@foreign_key_checks=0; ";
-                        String sql1 = "set @@foreign_key_checks=1; ";
-                        generaDAO.getNewSession().createSQLQuery( sql0 ).executeUpdate();
-                        generaDAO.getNewSession().createSQLQuery( sql ).executeUpdate();
-                        generaDAO.getNewSession().createSQLQuery( sql1 ).executeUpdate();
-
-                        sql = "insert into srearning (activityStageId, activityId, earningPrice, earningType, num) values ";
-                        Vaules = "";
-                    }
-                }
+            String temp = "('activityStageId', 'activityId', earningPrice, earningType, num),";
+            temp = temp.replace("activityStageId", "").replace("activityId", activityVerifyCompleteModel.getActivityId()).
+                    replace("earningPrice", Integer.toString(LinesSREarning.getEarningPrice())).replace("earningType", Integer.toString(LinesSREarning.getEarningType())).
+                    replace("num", Integer.toString(LinesSREarning.getNum()));
+            Vaules += temp;
+            rIndex++;
+            if (rIndex % 50 == 0 || rIndex == LinesSREarningList.size()) {
+                Vaules = Vaules.substring(0, Vaules.length() - 1);
+                sql += Vaules;
+                String sql0 = "set @@foreign_key_checks=0; ";
+                String sql1 = "set @@foreign_key_checks=1; ";
+                generaDAO.getNewSession().createSQLQuery(sql0).executeUpdate();
+                generaDAO.getNewSession().createSQLQuery(sql).executeUpdate();
+                generaDAO.getNewSession().createSQLQuery(sql1).executeUpdate();
 
                 sql = "insert into srearning (activityStageId, activityId, earningPrice, earningType, num) values ";
                 Vaules = "";
-                int PurchaseNumIndex = 0;
-                for (int i = 0; i < AdvanceNum * PurchaseNum; i++) {
-                    int Index = i + 1;
-                    String InstallmentActivityID = ActivityID + "_" + Integer.toString(Index);
-                    ActivityDetailModel activityDetailModel = generaDAO.getActivityDetaillNoTransaction(InstallmentActivityID);
-                    if (activityDetailModel == null) {
-                        return false;
-                    }
-
-                    //大R发奖
-                    if (PurchaseNumIndex >= PurchaseNum) {
-                        PurchaseNumIndex = 0;
-                        Collections.shuffle(LinePeoplesSREarningList);
-                    }
-
-                    String temp = "('activityStageId', 'activityId', earningPrice, earningType, num),";
-                    temp = temp.replace( "activityStageId",InstallmentActivityID ).replace( "activityId","" ).
-                            replace("earningPrice", Integer.toString(LinePeoplesSREarningList.get(PurchaseNumIndex).getEarningPrice())).replace("earningType", Integer.toString(LinePeoplesSREarningList.get(PurchaseNumIndex).getEarningType())).
-                            replace("num", Integer.toString(LinePeoplesSREarningList.get(PurchaseNumIndex).getNum()));
-                    Vaules += temp;
-
-                    if( Index%50 ==0 || i == (AdvanceNum * PurchaseNum)-1 ){
-                        Vaules = Vaules.substring( 0,Vaules.length()-1 );
-                        sql += Vaules;
-                        String sql0 = "set @@foreign_key_checks=0; ";
-                        String sql1 = "set @@foreign_key_checks=1; ";
-                        generaDAO.getNewSession().createSQLQuery( sql0 ).executeUpdate();
-                        generaDAO.getNewSession().createSQLQuery( sql ).executeUpdate();
-                        generaDAO.getNewSession().createSQLQuery( sql1 ).executeUpdate();
-
-                        sql = "insert into srearning (activityStageId, activityId, earningPrice, earningType, num) values ";
-                        Vaules = "";
-                    }
-
-                    PurchaseNumIndex++;
-                }
-                return true;
             }
-        });
+        }
+
+        sql = "insert into srearning (activityStageId, activityId, earningPrice, earningType, num) values ";
+        Vaules = "";
+        int PurchaseNumIndex = 0;
+        for (int i = 0; i < AdvanceNum * PurchaseNum; i++) {
+            int Index = i + 1;
+            String InstallmentActivityID = ActivityID + "_" + Integer.toString(Index);
+            ActivityDetailModel activityDetailModel = generaDAO.getActivityDetaillNoTransaction(InstallmentActivityID);
+            if (activityDetailModel == null) {
+                return 0;
+            }
+
+            //大R发奖
+            if (PurchaseNumIndex >= PurchaseNum) {
+                PurchaseNumIndex = 0;
+                Collections.shuffle(LinePeoplesSREarningList);
+            }
+
+            String temp = "('activityStageId', 'activityId', earningPrice, earningType, num),";
+            temp = temp.replace("activityStageId", InstallmentActivityID).replace("activityId", "").
+                    replace("earningPrice", Integer.toString(LinePeoplesSREarningList.get(PurchaseNumIndex).getEarningPrice())).replace("earningType", Integer.toString(LinePeoplesSREarningList.get(PurchaseNumIndex).getEarningType())).
+                    replace("num", Integer.toString(LinePeoplesSREarningList.get(PurchaseNumIndex).getNum()));
+            Vaules += temp;
+
+            if (Index % 50 == 0 || i == (AdvanceNum * PurchaseNum) - 1) {
+                Vaules = Vaules.substring(0, Vaules.length() - 1);
+                sql += Vaules;
+                String sql0 = "set @@foreign_key_checks=0; ";
+                String sql1 = "set @@foreign_key_checks=1; ";
+                generaDAO.getNewSession().createSQLQuery(sql0).executeUpdate();
+                generaDAO.getNewSession().createSQLQuery(sql).executeUpdate();
+                generaDAO.getNewSession().createSQLQuery(sql1).executeUpdate();
+
+                sql = "insert into srearning (activityStageId, activityId, earningPrice, earningType, num) values ";
+                Vaules = "";
+            }
+
+            PurchaseNumIndex++;
+        }
         return 0;
     }
+
+    /**
+     * 清理上一次已经发布的测试项目
+     * @param ActivityID
+     */
+    public void CleanTestActivity( String ActivityID ){
+        String sql0 = "set @@foreign_key_checks=0; ";
+        String sql1 = "set @@foreign_key_checks=1; ";
+        String DelDe = "delete from activitydetails where activityStageId like '"+ActivityID+"/_%'escape '/'";
+        String DelDy = "delete from activitydynamic where activityStageId like '"+ActivityID+"/_%'escape '/'";
+        String DelSrearning = "delete from srearning where activityStageId like '"+ActivityID+"/_%'escape '/' or activityId = '"+ActivityID+"'";
+
+        Session session = generaDAO.getNewSession();
+
+        session.createSQLQuery( sql0 ).executeUpdate();
+        session.createSQLQuery( DelDe ).executeUpdate();
+        session.createSQLQuery( DelDy ).executeUpdate();
+        session.createSQLQuery( DelSrearning ).executeUpdate();
+        session.createSQLQuery( sql1 ).executeUpdate();
+
+        String DBName = Config.ACTIVITYGROUPTICKETNAME + ActivityID + "_1";
+        generaDAO.DropList( DBName );
+
+        String PuDBName = Config.ACTIVITYPURCHASE + ActivityID;
+        generaDAO.DropList( PuDBName );
+
+    }
+
+
 }

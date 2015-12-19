@@ -3,19 +3,17 @@ package com.money.dao.activityDAO;
 import com.money.config.Config;
 import com.money.dao.BaseDao;
 import com.money.dao.TransactionCallback;
-import com.money.dao.TransactionSessionCallback;
 import com.money.memcach.MemCachService;
-import com.money.model.*;
-import org.hibernate.*;
-import org.hibernate.criterion.CriteriaQuery;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Order;
+import com.money.model.ActivityDetailModel;
+import com.money.model.ActivityDynamicModel;
+import com.money.model.ActivityVerifyCompleteModel;
+import com.money.model.OrderModel;
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.engine.spi.TypedValue;
 import org.springframework.stereotype.Repository;
 import until.GsonUntil;
 
-import java.lang.annotation.Documented;
 import java.util.List;
 
 /**
@@ -133,46 +131,34 @@ public class activityDAO extends BaseDao {
     @SuppressWarnings("unchecked")
     public List<ActivityDetailModel> getActivityListActivity(int page, int pageNum) {
         Session session = getNewSession();
-        Transaction t = session.beginTransaction();
-        try{
-            List<ActivityDetailModel> list = session.createCriteria(ActivityDetailModel.class)
-                    .add(Restrictions.eq("status", 1))
-                    .setFirstResult(page * pageNum)
-                    .setMaxResults(pageNum)
-                    .list();
+        List<ActivityDetailModel> list = session.createCriteria(ActivityDetailModel.class)
+                .add(Restrictions.eq("status", ActivityDetailModel.ONLINE_ACTIVITY_START))
+                .setFirstResult(page * pageNum)
+                .setMaxResults(pageNum)
+                .list();
 
-            for (ActivityDetailModel detailModel : list) {
-                detailModel.getActivityVerifyCompleteModel().getActivityId();
-                detailModel.getDynamicModel().getActivityCurLines();
-            }
-            t.commit();
-            return list;
-        }catch ( Exception e ){
-            t.rollback();
-            return null;
+        for (ActivityDetailModel detailModel : list) {
+            detailModel.getActivityVerifyCompleteModel().getActivityId();
+            detailModel.getDynamicModel().getActivityCurLines();
         }
+        return list;
     }
 
     public List<ActivityDetailModel> getActivityListActivityTest(int page, int pageNum) {
         Session session = getNewSession();
-        Transaction t = session.beginTransaction();
-        try{
-            List<ActivityDetailModel> list = session.createCriteria(ActivityDetailModel.class)
-                    .add(Restrictions.eq("status", ActivityDetailModel.ONLINE_ACTIVITY_TEST))
-                    .setFirstResult(page * pageNum)
-                    .setMaxResults(pageNum)
-                    .list();
 
-            for (ActivityDetailModel detailModel : list) {
-                detailModel.getActivityVerifyCompleteModel().getActivityId();
-                detailModel.getDynamicModel().getActivityCurLines();
-            }
-            t.commit();
-            return list;
-        }catch ( Exception e){
-            t.rollback();
-            return null;
+        List<ActivityDetailModel> list = session.createCriteria(ActivityDetailModel.class)
+                .add(Restrictions.eq("status", ActivityDetailModel.ONLINE_ACTIVITY_TEST))
+                .setFirstResult(page * pageNum)
+                .setMaxResults(pageNum)
+                .list();
+
+        for (ActivityDetailModel detailModel : list) {
+            detailModel.getActivityVerifyCompleteModel().getActivityId();
+            detailModel.getDynamicModel().getActivityCurLines();
         }
+
+        return list;
     }
 
     /**
@@ -288,7 +274,7 @@ public class activityDAO extends BaseDao {
      *
      * @param InstallmentActivityID
      */
-    public void CreateTicketDB(final String InstallmentActivityID,int TotalLinePeoples, int TotalLines) {
+    public void CreateTicketDB(final String InstallmentActivityID, int TotalLinePeoples, int TotalLines) {
         Session session = this.getNewSession();
         String DBName = Config.ACTIVITYGROUPTICKETNAME + InstallmentActivityID;
         String Sql = "CREATE TABLE " + DBName + " ( TickID VARCHAR(45) NOT NULL,UserId VARCHAR(45) NULL DEFAULT 0,PurchaseType INT(2) NOT NULL,PurchaseDate datetime DEFAULT NULL," +
@@ -345,8 +331,8 @@ public class activityDAO extends BaseDao {
         return detailModel;
     }
 
-    public void changeActivityStatus(String activityId, int status){
-        ActivityVerifyCompleteModel completeModel = (ActivityVerifyCompleteModel)load(ActivityVerifyCompleteModel.class, activityId);
+    public void changeActivityStatus(String activityId, int status) {
+        ActivityVerifyCompleteModel completeModel = (ActivityVerifyCompleteModel) load(ActivityVerifyCompleteModel.class, activityId);
         completeModel.setStatus(status);
         update(completeModel);
     }
