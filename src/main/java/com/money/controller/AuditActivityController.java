@@ -149,10 +149,10 @@ public class AuditActivityController extends ControllerBase implements IControll
         String LinesEarnings = request.getParameter("LinesEarnings");
         String LinePeoplesEarnings = request.getParameter("LinePeoplesEarnings");
 
-        serviceGroupActivity.splitActivityByStage(Lines, LinePeoples, ActivityID, AdvanceNum, PurchaseNum);
-
-        serviceGroupActivity.SetActivityInformationEarnings(Lines, LinePeoples, ActivityID,
-                AdvanceNum, PurchaseNum, LinesEarnings, LinePeoplesEarnings);
+        if( !serviceGroupActivity.PublishProject(Lines, LinePeoples, ActivityID,
+                AdvanceNum, PurchaseNum,LinesEarnings,LinePeoplesEarnings)){
+            return 0;
+        }
 
         //发布的时候先发布为测试项目 检查没有问题后 在更改成正式状态
         if (activityService.ActivityCompleteStartTest(ActivityID)) {

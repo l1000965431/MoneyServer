@@ -617,7 +617,7 @@ public class BaseDao {
      */
     public int DropList( String ListName ){
         Session session = getNewSession();
-        String Sql = "DROP TABLE  tbl_name;";
+        String Sql = "DROP TABLE IF EXISTS tbl_name;";
         Sql = Sql.replace("tbl_name", ListName );
         return session.createSQLQuery(Sql).executeUpdate();
     }

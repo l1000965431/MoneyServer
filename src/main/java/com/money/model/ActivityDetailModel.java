@@ -41,6 +41,9 @@ public class ActivityDetailModel extends BaseModel {
     //测试项目
     public final static int ONLINE_ACTIVITY_TEST = 6;
 
+    //测试项目完成
+    public final static int ONLINE_ACTIVITY_COMPLETETEST = 7;
+
     /**
      *分期的项目ID
      */

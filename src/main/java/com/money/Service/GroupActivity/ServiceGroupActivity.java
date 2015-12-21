@@ -109,7 +109,7 @@ public class ServiceGroupActivity extends ServiceBase implements ServiceInterfac
     public void splitActivityByStage(int Lines, int LinePeoples, String ActicityID, final int AdvanceNum, final int PurchaseNum) {
         Session session = generaDAO.getNewSession();
 
-        final ActivityVerifyCompleteModel completeModel = (ActivityVerifyCompleteModel) generaDAO.load(ActivityVerifyCompleteModel.class, ActicityID);
+        final ActivityVerifyCompleteModel completeModel = (ActivityVerifyCompleteModel) generaDAO.loadNoTransaction(ActivityVerifyCompleteModel.class, ActicityID);
 
         int srInvestProportion = Lines;
         int brInvestProportion = LinePeoples;
@@ -194,6 +194,10 @@ public class ServiceGroupActivity extends ServiceBase implements ServiceInterfac
 
         }
 
+        completeModel.setCurFund(0);
+        completeModel.setCurInstallmentNum(0);
+        completeModel.setCurLinePeoples(0);
+        completeModel.setCurLines(0);
         completeModel.setTotalInstallmentNum(AdvanceNum * PurchaseNum);
         generaDAO.updateNoTransaction(completeModel);
     }
@@ -222,10 +226,10 @@ public class ServiceGroupActivity extends ServiceBase implements ServiceInterfac
         return ticketModels;
     }
 
-    public void PublishProject(final int Lines, final int LinePeoples, final String ActivityID, final int AdvanceNum,
+    public boolean PublishProject(final int Lines, final int LinePeoples, final String ActivityID, final int AdvanceNum,
                                final int PurchaseNum, final String LinesEarnings, final String LinePeoplesEarnings) {
 
-        generaDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
+        if( generaDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
             public boolean callback(Session session) throws Exception {
 
                 ActivityVerifyCompleteModel activityVerifyCompleteModel = generaDAO.getActivityVerifyCompleteModelNoTransaction(ActivityID);
@@ -234,15 +238,25 @@ public class ServiceGroupActivity extends ServiceBase implements ServiceInterfac
                 }
 
                 //如果是已经发布成测试状态的项目则清理上一次发布的项目
-                if( activityVerifyCompleteModel.getStatus() == ActivityVerifyModel.STATUS_AUDITOR_WAIT_TEST ){
-                    CleanTestActivity( ActivityID );
+                if (activityVerifyCompleteModel.getStatus() == ActivityVerifyModel.STATUS_AUDITOR_WAIT_TEST) {
+                    CleanTestActivity(ActivityID);
                 }
 
-                splitActivityByStage( Lines,LinePeoples,ActivityID,AdvanceNum,PurchaseNum );
-                SetActivityInformationEarnings( Lines,LinePeoples,ActivityID,AdvanceNum,PurchaseNum,LinesEarnings,LinePeoplesEarnings );
+                splitActivityByStage(Lines, LinePeoples, ActivityID, AdvanceNum, PurchaseNum);
+
+
+                if (SetActivityInformationEarnings(Lines, LinePeoples, ActivityID,
+                        AdvanceNum, PurchaseNum, LinesEarnings, LinePeoplesEarnings) == 0) {
+                    return false;
+                }
                 return true;
             }
-        });
+        }).equals( Config.SERVICE_SUCCESS )){
+            return true;
+        }else{
+            return false;
+        }
+
     }
 
 
@@ -373,34 +387,45 @@ public class ServiceGroupActivity extends ServiceBase implements ServiceInterfac
 
             PurchaseNumIndex++;
         }
-        return 0;
+        return 1;
     }
 
     /**
      * 清理上一次已经发布的测试项目
+     *
      * @param ActivityID
      */
-    public void CleanTestActivity( String ActivityID ){
+    public void CleanTestActivity(String ActivityID) {
         String sql0 = "set @@foreign_key_checks=0; ";
         String sql1 = "set @@foreign_key_checks=1; ";
-        String DelDe = "delete from activitydetails where activityStageId like '"+ActivityID+"/_%'escape '/'";
-        String DelDy = "delete from activitydynamic where activityStageId like '"+ActivityID+"/_%'escape '/'";
-        String DelSrearning = "delete from srearning where activityStageId like '"+ActivityID+"/_%'escape '/' or activityId = '"+ActivityID+"'";
+        String DelDe = "delete from activitydetails where activityStageId like '" + ActivityID + "/_%'escape '/'";
+        String DelDy = "delete from activitydynamic where activityStageId like '" + ActivityID + "/_%'escape '/'";
+        String DelSrearning = "delete from srearning where activityStageId like '" + ActivityID + "/_%'escape '/' or activityId = '" + ActivityID + "'";
+        String Delearning = "delete from earningsrecord where activityStageId like '" + ActivityID + "/_%'escape '/'";
+        String Delorder = "delete from activityorder where activityDetailModel_activityStageId like '" + ActivityID + "/_%'escape '/'";
+        String Delbackticket = "delete from backticket where InstallmentActivityID like '" + ActivityID + "/_%'escape '/'";
+        String Deluserearnings = "delete from userearnings where ActivityStageId like '" + ActivityID + "/_%'escape '/'";
 
         Session session = generaDAO.getNewSession();
+        session.createSQLQuery(sql0).executeUpdate();
+        session.createSQLQuery(DelDe).executeUpdate();
+        session.createSQLQuery(DelDy).executeUpdate();
+        session.createSQLQuery(DelSrearning).executeUpdate();
+        session.createSQLQuery(Delearning).executeUpdate();
+        session.createSQLQuery(Delorder).executeUpdate();
+        session.createSQLQuery(Delbackticket).executeUpdate();
+        session.createSQLQuery(Deluserearnings).executeUpdate();
+        session.createSQLQuery(sql1).executeUpdate();
 
-        session.createSQLQuery( sql0 ).executeUpdate();
-        session.createSQLQuery( DelDe ).executeUpdate();
-        session.createSQLQuery( DelDy ).executeUpdate();
-        session.createSQLQuery( DelSrearning ).executeUpdate();
-        session.createSQLQuery( sql1 ).executeUpdate();
-
-        String DBName = Config.ACTIVITYGROUPTICKETNAME + ActivityID + "_1";
-        generaDAO.DropList( DBName );
+        //删除当前的票表
+        ActivityVerifyCompleteModel activityVerifyCompleteModel =
+                (ActivityVerifyCompleteModel) generaDAO.loadNoTransaction(ActivityVerifyCompleteModel.class, ActivityID);
+        int delCurInstallmentNum = activityVerifyCompleteModel.getCurInstallmentNum() + 1;
+        String DBName = Config.ACTIVITYGROUPTICKETNAME + ActivityID + "_" + delCurInstallmentNum;
+        generaDAO.DropList(DBName);
 
         String PuDBName = Config.ACTIVITYPURCHASE + ActivityID;
-        generaDAO.DropList( PuDBName );
-
+        generaDAO.DropList(PuDBName);
     }
 
 

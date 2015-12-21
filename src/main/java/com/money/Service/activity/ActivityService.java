@@ -249,10 +249,17 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
                 return false;
             }
 
-            if (activityDynamicModel.getActivityState() != ActivityDetailModel.ONLINE_ACTIVITY_COMPLETE) {
+            if (activityDynamicModel.getActivityState() != ActivityDetailModel.ONLINE_ACTIVITY_COMPLETE &&
+                    activityDynamicModel.getActivityState() != ActivityDetailModel.ONLINE_ACTIVITY_COMPLETETEST) {
                 LOGGER.error("本期项目的上一期状态错误{}{}", ActivityID, activityDynamicModel.getActivityState());
                 return false;
             }
+
+            //如果是测试项目 则设置下一期开始也是测试项目
+            if( activityDynamicModel.getActivityState() == ActivityDetailModel.ONLINE_ACTIVITY_COMPLETETEST ){
+                InstallmentActivityState = ActivityDetailModel.ONLINE_ACTIVITY_TEST;
+            }
+
         }
 
         String InstallmentActivityID = ActivityID + "_" + Integer.toString(Installment);
@@ -370,7 +377,7 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
     }
 
     public boolean ActivityCompleteStartTest(final String ActivityID) {
-        activityDao.excuteTransactionByCallback(new TransactionCallback() {
+        if(activityDao.excuteTransactionByCallback(new TransactionCallback() {
             public void callback(BaseDao basedao) throws Exception {
                 //创建预购项目表
                 activityDao.CreatePurchaseInAdvanceDB(ActivityID);
@@ -379,7 +386,9 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
                 //设置第一期开始
                 InstallmentActivityIDStartTest(ActivityID, 1);
             }
-        });
+        }).equals( Config.SERVICE_FAILED )){
+            return false;
+        }
         return true;
     }
 
@@ -422,6 +431,18 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
         }
     }
 
+    public void SetActivityEndTest(String ActivityID) throws ParseException {
+        ActivityVerifyCompleteModel activityVerifyCompleteModel = activityDao.getActivityVerifyCompleteModelNoTransaction(ActivityID);
+        if (activityVerifyCompleteModel.IsEnoughInstallmentNum()) {
+            SetActivityStatus(ActivityID, ActivityVerifyModel.STATUS_AUDITOR_WAIT_COMPELETETEST);
+
+            //清理项目预购临时用表
+            String DBName = Config.ACTIVITYPURCHASE + ActivityID;
+            activityDao.DropList(DBName);
+        }
+    }
+
+
     /**
      * 设置分期项目完成
      *
@@ -431,8 +452,6 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
 
         final boolean[] activityDynamicModelIsEnough = {false};
         final boolean[] activityVerifyCompleteModelIsEnoughInstallmentNum = {false};
-        final boolean[] activityVerifyCompleteModelIsEnoughInstallmentNumTest = {false};
-
 
         final String[] ActivityID = {""};
         final int[] Installment = {0};
@@ -464,7 +483,7 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
                     }*/
 
 
-                    if (!activityVerifyCompleteModel.IsEnoughInstallmentNum() &&
+                    if (CurInstallmentNum < activityVerifyCompleteModel.getTotalInstallmentNum() &&
                             activityVerifyCompleteModel.getStatus() == ActivityVerifyModel.STATUS_START_RAISE) {
                         //开启下一期
                         activityVerifyCompleteModelIsEnoughInstallmentNum[0] = true;
@@ -481,13 +500,12 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
                 } else if (activityDynamicModel.IsEnough() && activityDynamicModel.getActivityState() == ActivityDetailModel.ONLINE_ACTIVITY_TEST) {
                     activityDynamicModelIsEnough[0] = true;
 
-                    SetInstallmentActivityStatus(InstallmentActivityID, ActivityDetailModel.ONLINE_ACTIVITY_COMPLETE);
+                    SetInstallmentActivityStatus(InstallmentActivityID, ActivityDetailModel.ONLINE_ACTIVITY_COMPLETETEST);
 
                     ActivityVerifyCompleteModel activityVerifyCompleteModel = activityDynamicModel.getActivityVerifyCompleteModel();
 
                     int CurInstallmentNum = activityVerifyCompleteModel.getCurInstallmentNum();
                     CurInstallmentNum++;
-
 
                     //完成的期和项目ID 对不上
                     String temp = activityVerifyCompleteModel.getActivityId() + "_" + Integer.toString(CurInstallmentNum);
@@ -501,10 +519,10 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
                     }*/
 
 
-                    if (!activityVerifyCompleteModel.IsEnoughInstallmentNum() &&
-                            activityVerifyCompleteModel.getStatus() == ActivityVerifyModel.STATUS_START_RAISE) {
+                    if (CurInstallmentNum < activityVerifyCompleteModel.getTotalInstallmentNum() &&
+                            activityVerifyCompleteModel.getStatus() == ActivityVerifyModel.STATUS_AUDITOR_WAIT_TEST) {
                         //开启下一期
-                        activityVerifyCompleteModelIsEnoughInstallmentNumTest[0] = true;
+                        activityVerifyCompleteModelIsEnoughInstallmentNum[0] = true;
                         ActivityID[0] = activityVerifyCompleteModel.getActivityId();
                         Installment[0] = CurInstallmentNum + 1;
                     }
@@ -512,8 +530,8 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
                     activityVerifyCompleteModel.setCurInstallmentNum(CurInstallmentNum);
                     activityDao.updateNoTransaction(activityVerifyCompleteModel);
 
-                    //如果所有分期项目完成  设置父项目完成
-                    SetActivityEnd(activityDynamicModel.getActivityVerifyCompleteModel().getActivityId());
+                    //如果所有分期项目完成  设置父项目测试完成
+                    SetActivityEndTest(activityDynamicModel.getActivityVerifyCompleteModel().getActivityId());
                     return true;
                 } else {
                     return false;
@@ -535,16 +553,6 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
                 String json = GsonUntil.JavaClassToJson(map);
                 MoneyServerMQManager.SendMessage(new MoneyServerMessage(MoneyServerMQ_Topic.MONEYSERVERMQ_INSTALLMENT_TOPIC,
                         MoneyServerMQ_Topic.MONEYSERVERMQ_INSTALLMENT_TAG, json, InstallmentActivityID));
-            }
-
-            if (activityVerifyCompleteModelIsEnoughInstallmentNumTest[0]) {
-                Map<String, Object> map = new HashMap();
-                map.put("ActivityID", ActivityID[0]);
-                map.put("Installment", Installment[0]);
-
-                String json = GsonUntil.JavaClassToJson(map);
-                MoneyServerMQManager.SendMessage(new MoneyServerMessage(MoneyServerMQ_Topic.MONEYSERVERMQ_INSTALLMENTTEST_TOPIC,
-                        MoneyServerMQ_Topic.MONEYSERVERMQ_INSTALLMENTTEST_TAG, json, InstallmentActivityID));
             }
         }
 
@@ -633,8 +641,14 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
         return GsonUntil.JavaClassToJson(list);
     }
 
-    public void changeActivityStatus(String activityId, int status) {
-        activityDao.changeActivityStatus(activityId, status);
+    public void changeActivityStatus(final String activityId, final int status) {
+        activityDao.excuteTransactionByCallback(new TransactionSessionCallback() {
+            @Override
+            public boolean callback(Session session) throws Exception {
+                SetActivityStatus( activityId,status );
+                return true;
+            }
+        });
     }
 
     public void Test(String ActivityID, String josn) {
@@ -722,6 +736,16 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
         if( activityDao.excuteTransactionByCallback(new TransactionSessionCallback() {
             @Override
             public boolean callback(Session session) throws Exception {
+                final ActivityVerifyCompleteModel activityVerifyCompleteModel = activityDao.getActivityVerifyCompleteModelNoTransaction(ActivityID);
+
+                if (activityVerifyCompleteModel == null) {
+                    return false;
+                }
+
+                if( activityVerifyCompleteModel.getStatus() != ActivityVerifyModel.STATUS_AUDITOR_WAIT_TEST ){
+                    return false;
+                }
+
                 SetActivityStatus( ActivityID,ActivityVerifyModel.STATUS_START_RAISE );
 
                 ActivityDetailModel activityDetailModel = activityDao.getActivityDetaillNoTransaction(ActivityID+"_1");
@@ -734,7 +758,7 @@ public class ActivityService extends ServiceBase implements ServiceInterface {
 
                 //设置项目开始
                 SetInstallmentActivityStatus(ActivityID+"_1", ActivityDetailModel.ONLINE_ACTIVITY_START);
-                return false;
+                return true;
             }
         }).equals( Config.SERVICE_FAILED )){
             return 0;

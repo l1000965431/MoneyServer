@@ -12,6 +12,7 @@ import com.money.dao.TransactionSessionCallback;
 import com.money.model.ActivityDetailModel;
 import com.money.model.ActivityDynamicModel;
 import com.money.model.ActivityVerifyCompleteModel;
+import com.money.model.ActivityVerifyModel;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -241,12 +242,25 @@ public class ActivityController extends ControllerBase implements IController {
             return "paramIncorrect";
         }
 
+        int State = 1;
+
         try {
-            activityService.changeActivityStatus(activityId, result);
+            if( result == ActivityVerifyModel.STATUS_START_RAISE){
+                State = activityService.SetActivityStartRaise( activityId );
+            }else{
+                activityService.changeActivityStatus(activityId, result);
+            }
+
         } catch (Exception e) {
             return Config.SERVICE_FAILED;
         }
-        return Config.SERVICE_SUCCESS;
+
+        if( State == 1 ){
+            return Config.SERVICE_SUCCESS;
+        }else{
+            return Config.SERVICE_FAILED;
+        }
+
     }
 
 
