@@ -102,10 +102,10 @@ public class ActivityBuyListener extends MoneyServerListener {
                     MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TAG, Json, "购买成功"));
 
             //发送新项目红点消息
-            UmengSendParameter umengSendParameterRed = new UmengSendParameter( new UMengMessage( "","redpoint", Config.RedPointNewJoinActivity,"新项目上线通知" ) );
+            UmengSendParameter umengSendParameterRed = new UmengSendParameter( new UMengMessage( "","redpoint", Config.RedPointNewJoinActivity,"购买成功红点通知" ) );
             String JsonRed = GsonUntil.JavaClassToJson( umengSendParameterRed );
             MoneyServerMQManager.SendMessage( new MoneyServerMessage(MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TOPIC,
-                    MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TAG,JsonRed,"新项目上线通知"));
+                    MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TAG,JsonRed,"购买成功红点通知"));
         }else{
             //发送失败的消息
             if( ActivityName == null || ActivityName.length() == 0 ){

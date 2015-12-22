@@ -374,7 +374,7 @@ public class PurchaseInAdvance extends ServiceBase implements ServiceInterface {
 
                     if (activityDetailModel.getStageIndex() != activityVerifyCompleteModel.getTotalInstallmentNum()) {
                         int temp = activityVerifyCompleteModel.getTotalLinePeoples() / activityVerifyCompleteModel.getTotalInstallmentNum();
-                        OrderStartAndvance = activityVerifyCompleteModel.getCurLinePeoples() / temp;
+                        OrderStartAndvance = (int)Math.ceil((double)activityVerifyCompleteModel.getCurLinePeoples() / (double)temp);
                     } else {
                         OrderStartAndvance = 1;
                     }
