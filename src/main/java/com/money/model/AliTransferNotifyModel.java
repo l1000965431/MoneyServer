@@ -6,7 +6,7 @@ import javax.persistence.Table;
 import java.util.Date;
 
 /**
- * Created by liumin on 15/9/28.
+ * 支付宝提现完成通知表
  */
 
 @Entity(name = "aliTransferNotify")

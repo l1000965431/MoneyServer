@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import java.text.DecimalFormat;
 
 /**
- * Created by liumin on 15/9/25.
+ * 支付宝提交提现申请信息
  */
 public class AliTransferInfo {
 

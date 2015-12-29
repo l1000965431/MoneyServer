@@ -1,7 +1,7 @@
 package com.money.model;
 
 /**
- * Created by liumin on 15/7/25.
+ * 中奖信息
  */
 public class LotteryPeoples extends BaseModel {
 

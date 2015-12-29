@@ -3,7 +3,7 @@ package com.money.model;
 import java.io.Serializable;
 
 /**
- * Created by liumin on 15/10/15.
+ * 特惠项目中奖信息
  */
 public class PreferentiaLotteryModel implements Serializable {
 

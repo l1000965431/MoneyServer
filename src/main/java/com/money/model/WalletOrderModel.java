@@ -8,7 +8,7 @@ import javax.persistence.Table;
 import java.util.Date;
 
 /**
- * Created by liumin on 15/8/9.
+ * 用户充值订单表
  */
 
 @Entity(name = "walletorder")

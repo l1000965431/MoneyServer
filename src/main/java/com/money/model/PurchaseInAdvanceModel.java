@@ -1,7 +1,7 @@
 package com.money.model;
 
 /**
- *
+ * 购买信息
  */
 
 public class PurchaseInAdvanceModel extends BaseModel {

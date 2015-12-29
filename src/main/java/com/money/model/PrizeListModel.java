@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * Created by liumin on 15/7/25.
+ * 项目完成发奖表
  */
 
 @Entity(name = "PrizeList")

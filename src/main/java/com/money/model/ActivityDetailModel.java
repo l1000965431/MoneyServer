@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 项目已上线
+ * 项目静态数据表
  * <p>User: Guo Hong
  * <p>Date: 15-7-8
  * <p>Version: 1.0

@@ -3,7 +3,7 @@ package com.money.model;
 import java.util.*;
 
 /**
- * Created by liumin on 15/10/15.
+ * 特惠项目信息表
  */
 public class ActivityPreferentiaInfo extends BaseModel {
 

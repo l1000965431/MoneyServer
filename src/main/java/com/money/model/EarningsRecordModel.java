@@ -6,7 +6,7 @@ import javax.persistence.Table;
 import java.util.Date;
 
 /**
- * Created by liumin on 15/8/20.
+ * 项目奖项信息表
  */
 
 @Entity(name = "EarningsRecord")

@@ -1,5 +1,5 @@
 /**
- * Created by liumin on 15/11/16.
+ * 微信提现信息表
  */
 
 package com.money.model;

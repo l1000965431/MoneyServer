@@ -4,7 +4,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 
 /**
- * 项目动态
+ * 项目动态数据表
  * <p>User: liumin
  * <p>Date: 15-7-14
  * <p>Version: 1.0

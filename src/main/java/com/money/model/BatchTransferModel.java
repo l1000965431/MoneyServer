@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * Created by liumin on 15/11/19.
+ * 批量提现申请表
  */
 
 @Entity(name = "BatchTransfer" )

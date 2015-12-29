@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * Created by liumin on 15/8/13.
+ * 个人收益情况表
  */
 @Entity(name = "UserEarnings")
 @Table

@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * Created by fisher on 2015/7/18.
+ * 用户列表
  */
 @Entity(name = "User")
 @Table

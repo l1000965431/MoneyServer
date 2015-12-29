@@ -5,7 +5,7 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 /**
- * Created by liumin on 15/9/25.
+ * 支付宝提交提现申请表
  */
 
 @Entity(name = "alitransfer")

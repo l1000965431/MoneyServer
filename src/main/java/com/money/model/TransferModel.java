@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * Created by liumin on 15/8/26.
+ * 整体提现信息表
  */
 
 @Entity(name = "Transfer")
