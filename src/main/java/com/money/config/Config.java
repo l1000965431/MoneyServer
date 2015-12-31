@@ -223,6 +223,8 @@ public class Config {
      * 预购类型:预购
      */
     public static final int ADVANCETYPE_ADVANCE = 2;
+
+    public static final float Haremmaster_Proportion = 0.005f;
 }
 
 

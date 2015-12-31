@@ -45,6 +45,7 @@ public class TransferDAO extends BaseDao {
             NewalitransferModel.setLines(Lines);
             NewalitransferModel.setPoundageResult( Poundage );
             NewalitransferModel.setAlitransferDate( MoneyServerDate.getDateCurDate() );
+            NewalitransferModel.setExtension( "微聚竞投提现打款" );
             this.saveNoTransaction(NewalitransferModel);
             return 1;
         } else {
@@ -203,7 +204,7 @@ public class TransferDAO extends BaseDao {
         String sql1 = "update alitransfer INNER JOIN"
                 +"(select * from alitransfer where TransferLines != 0 and IsFaliled != true limit ? ,3000)as ali set alitransfer.IsLock=1;";
         query = session.createSQLQuery(sql1);
-        query.setParameter(0, page);
+        query.setParameter(0, page*3000);
         query.executeUpdate();
 
         return Sqllist;
@@ -220,14 +221,14 @@ public class TransferDAO extends BaseDao {
         String sql = "select * from wxtransfer where TransferLines != 0 and IsFaliled != true limit ? ,1000;";
         Query query = session.createSQLQuery(sql).addEntity(WxTranferModel.class);
 
-        query.setParameter(0, page);
+        query.setParameter(0, page*1000);
         List<WxTranferModel> Sqllist = (List<WxTranferModel>)query.list();
 
         //锁定列表
         String sql1 = "update wxtransfer INNER JOIN " +
                 "(select * from wxtransfer where TransferLines != 0 and IsFaliled != true limit ? ,1000)as wx set wxtransfer.IsLock=1;";
         query = session.createSQLQuery(sql1);
-        query.setParameter(0, page);
+        query.setParameter(0, page*1000);
         query.executeUpdate();
         return Sqllist;
     }

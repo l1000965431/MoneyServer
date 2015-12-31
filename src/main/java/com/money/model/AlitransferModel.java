@@ -38,7 +38,7 @@ public class AlitransferModel extends BaseModel {
     /**
      * 付款最后时间
      */
-    Date  AlitransferDate;
+    Date AlitransferDate;
 
     /**
      * 真实姓名
@@ -59,6 +59,11 @@ public class AlitransferModel extends BaseModel {
      * 错误信息
      */
     String ErrorInfo = "";
+
+    /**
+     * 扩展参数
+     */
+    String extension = "";
 
     public int getId() {
         return Id;
@@ -116,10 +121,10 @@ public class AlitransferModel extends BaseModel {
         AliEmail = aliEmail;
     }
 
-    public String toAlipayTransFormat(){
-        DecimalFormat df   =   new   DecimalFormat("#####0.00");
-        return Integer.toString( Id ) + "^" + AliEmail + "^" + RealName + "^"
-                + df.format(TransferLines) + "^" + "微聚竞投提现打款";
+    public String toAlipayTransFormat() {
+        DecimalFormat df = new DecimalFormat("#####0.00");
+        return Integer.toString(Id) + "^" + AliEmail + "^" + RealName + "^"
+                + df.format(TransferLines) + "^" + extension;
     }
 
     public String getErrorInfo() {
@@ -136,5 +141,13 @@ public class AlitransferModel extends BaseModel {
 
     public void setPoundageResult(int poundageResult) {
         this.poundageResult = poundageResult;
+    }
+
+    public String getExtension() {
+        return extension;
+    }
+
+    public void setExtension(String extension) {
+        this.extension = extension;
     }
 }

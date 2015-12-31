@@ -85,6 +85,10 @@ public class UserModel extends BaseModel {
      */
     int UserPermissions = 0;
 
+    /**
+     * 是否是群主
+     */
+    boolean IsHaremmaster;
 
     public void setUserId(String userId) {
         this.userId = userId;
@@ -310,5 +314,13 @@ public class UserModel extends BaseModel {
 
     public void setUserPermissions(int userPermissions) {
         UserPermissions = userPermissions;
+    }
+
+    public boolean isHaremmaster() {
+        return IsHaremmaster;
+    }
+
+    public void setHaremmaster(boolean haremmaster) {
+        IsHaremmaster = haremmaster;
     }
 }

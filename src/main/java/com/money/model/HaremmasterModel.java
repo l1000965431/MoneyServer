@@ -1,8 +1,6 @@
 package com.money.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * 群主列表
@@ -10,8 +8,11 @@ import javax.persistence.Table;
 
 @Entity(name = "Haremmaster")
 @Table
-public class HaremmasterModel {
+public class HaremmasterModel extends BaseModel {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    int Id;
+
     String userId;
 
     /**
@@ -33,6 +34,18 @@ public class HaremmasterModel {
      * 当月提成
      */
     int MonthPushMoney;
+
+    /**
+     * 当月每天的充值 每月28日0点清空 复制到MonthRecharge项中
+     */
+    int MonthDayRecharge;
+
+    /**
+     * 总得邀请人数
+     */
+    int TotalInvitePeopleNum;
+
+    boolean IsShielding;
 
     public String getUserId() {
         return userId;
@@ -72,5 +85,37 @@ public class HaremmasterModel {
 
     public void setMonthPushMoney(int monthPushMoney) {
         MonthPushMoney = monthPushMoney;
+    }
+
+    public int getMonthDayRecharge() {
+        return MonthDayRecharge;
+    }
+
+    public void setMonthDayRecharge(int monthDayRecharge) {
+        MonthDayRecharge = monthDayRecharge;
+    }
+
+    public int getTotalInvitePeopleNum() {
+        return TotalInvitePeopleNum;
+    }
+
+    public void setTotalInvitePeopleNum(int totalInvitePeopleNum) {
+        TotalInvitePeopleNum = totalInvitePeopleNum;
+    }
+
+    public boolean isShielding() {
+        return IsShielding;
+    }
+
+    public void setShielding(boolean shielding) {
+        IsShielding = shielding;
+    }
+
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
     }
 }

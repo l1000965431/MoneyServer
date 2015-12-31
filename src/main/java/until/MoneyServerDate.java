@@ -2,6 +2,7 @@ package until;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -25,6 +26,21 @@ public class MoneyServerDate {
             return sdf.parse( timeStr );
         } catch (ParseException e) {
             return new Date();
+        }
+    }
+
+    public static Date getDatePreDate(){
+        Date dNow = new Date();
+        Date dBefore;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(dNow);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        dBefore = calendar.getTime();
+        String defaultStartDate = sdf.format(dBefore);
+        try {
+            return sdf.parse( defaultStartDate );
+        } catch (ParseException e) {
+            return null;
         }
     }
 

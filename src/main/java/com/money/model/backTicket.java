@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * Created by liumin on 15/12/17.
+ * 期项目完成购买情况被分表
  */
 
 @Entity(name = "backTicket")

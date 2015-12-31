@@ -31,18 +31,18 @@ public class PayService extends ServiceBase implements ServiceInterface {
 /*    @Autowired
     private HttpProtocolHandler client;*/
 
-    public String requestTransaction(List<AlitransferModel> dataList) throws IOException, HttpException {
+    public String requestTransaction(List<AlitransferModel> dataList,String notify_url) throws IOException, HttpException {
         if (dataList == null || dataList.size() == 0) {
             return "无支付宝提现记录";
         }
 
         //待请求参数数组
-        Map<String, String> paramsMap = buildParam(dataList);
+        Map<String, String> paramsMap = buildParam(dataList,notify_url);
         return buildForm(paramsMap);
     }
 
 
-    public Map<String, String> buildParam(List<AlitransferModel> dataList) {
+    public Map<String, String> buildParam(List<AlitransferModel> dataList,String notify_url) {
         HashMap<String, String> map = new HashMap<>();
 
         // j接口名称
@@ -55,7 +55,7 @@ public class PayService extends ServiceBase implements ServiceInterface {
         map.put("_input_charset", AlipayConfig.input_charset);
 
         // 服务器异步通知页面
-        map.put("notify_url", "http://115.29.111.0/Longyan/Wallet/TransactionResult");
+        map.put("notify_url", notify_url);
 
         // 付款账号名
         map.put("account_name", AlipayConfig.account_name);
@@ -122,12 +122,12 @@ public class PayService extends ServiceBase implements ServiceInterface {
     }
 
     public String buildDetailData(List<AlitransferModel> dataList) {
-        String dataString = "";
+        StringBuffer dataString = new StringBuffer();
         for (int i = 0; i < dataList.size() - 1; i++) {
-            dataString += dataList.get(i).toAlipayTransFormat() + "|";
+            dataString.append(dataList.get(i).toAlipayTransFormat() + "|");
         }
-        dataString += dataList.get(dataList.size() - 1).toAlipayTransFormat();
-        return dataString;
+        dataString.append(dataList.get(dataList.size() - 1).toAlipayTransFormat());
+        return dataString.toString();
     }
 
     public double calcSumPrice(List<AlitransferModel> dataList) {

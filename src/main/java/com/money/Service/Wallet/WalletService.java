@@ -813,6 +813,84 @@ public class WalletService extends ServiceBase implements ServiceInterface {
     }
 
     /**
+     * 群主打款通知
+     * @param NotifyInfo
+     * @return
+     */
+    public String HaremmasterTransferNotify(Map<String, String> NotifyInfo){
+        final String Batchno = NotifyInfo.get("batch_no");
+        final String Payuserid = NotifyInfo.get("pay_user_id");
+        final String Payusername = NotifyInfo.get("pay_user_name");
+        final String Notifytime = NotifyInfo.get("notify_time");
+        final String Faildetails = NotifyInfo.get("fail_details");
+        final String Successdetails = NotifyInfo.get("success_details");
+
+        return transferDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
+            @Override
+            public boolean callback(Session session) throws Exception {
+
+                List<List<String>> FaildetailsList;
+                List<List<String>> SuccessdetailsList;
+
+                if (Faildetails != null) {
+                    FaildetailsList = PayService.ParsingNotifyParam(Faildetails);
+
+                    if (FaildetailsList == null) {
+                        LOGGER.error("FaildetailsList == null");
+                        return false;
+                    }
+
+
+
+
+                }
+
+                if (Successdetails != null) {
+                    SuccessdetailsList = PayService.ParsingNotifyParam(Successdetails);
+
+                    if (SuccessdetailsList == null) {
+                        LOGGER.error("SuccessdetailsList == null");
+                        return false;
+                    }
+
+                    int TotalIndex = 0;
+                    for (List<String> aSuccessdetailsList : SuccessdetailsList) {
+                        TotalIndex++;
+                        HaremmasterModel haremmasterModel =
+                                (HaremmasterModel) transferDAO.loadNoTransaction(HaremmasterModel.class, aSuccessdetailsList.get(0).toString());
+                        if (haremmasterModel == null) {
+                            continue;
+                        }
+
+                        //
+                        haremmasterModel.setMonthPushMoney(0);
+                        session.update( haremmasterModel );
+
+                        double linestemp = Double.valueOf(aSuccessdetailsList.get(3));
+                        HaremmasterTransferModel haremmasterTransferModel
+                                = new HaremmasterTransferModel();
+                        haremmasterTransferModel.setPushMoney( (int)linestemp );
+                        haremmasterTransferModel.setPushMoneyDate( MoneyServerDate.getDateCurDate() );
+                        session.save( linestemp );
+
+                        if( TotalIndex == 200 ){
+                            TotalIndex = 0;
+                            session.flush();
+                        }
+                    }
+
+
+                }
+
+
+                return true;
+            }
+        });
+    }
+
+
+
+    /**
      * 计算跟投花费
      *
      * @param Lines             实际金额

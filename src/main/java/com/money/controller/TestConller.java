@@ -15,6 +15,8 @@ import com.money.config.ServerReturnValue;
 import com.money.dao.BaseDao;
 import com.money.dao.TransactionCallback;
 import com.money.dao.userDAO.UserDAO;
+import com.money.job.HaremmasterMonthDayRechargeJob;
+import com.money.job.HaremmasterMonthRechargeJob;
 import com.money.job.TestJob;
 import com.money.memcach.MemCachService;
 import com.money.model.PreferentiaLotteryModel;
@@ -23,6 +25,7 @@ import com.money.model.UserModel;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.quartz.DateBuilder;
+import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -663,6 +666,20 @@ public class TestConller extends ControllerBase implements IController {
         String ActivityID = request.getParameter("activityID");
         ServiceGroupActivity serviceGroupActivity = ServiceFactory.getService( "ServiceGroupActivity" );
         serviceGroupActivity.CleanTestActivity( ActivityID );
+    }
+
+    @RequestMapping("/TestSettlementMonthDay")
+    @ResponseBody
+    public void TestSettlementMonthDay() throws JobExecutionException {
+        HaremmasterMonthDayRechargeJob haremmasterMonthDayRechargeJob = new HaremmasterMonthDayRechargeJob();
+        haremmasterMonthDayRechargeJob.execute( null );
+    }
+
+    @RequestMapping("/TestSettlementMonth")
+    @ResponseBody
+    public void TestSettlementMonth() throws JobExecutionException {
+        HaremmasterMonthRechargeJob haremmasterMonthRechargeJob = new HaremmasterMonthRechargeJob();
+        haremmasterMonthRechargeJob.execute( null );
     }
 
 }

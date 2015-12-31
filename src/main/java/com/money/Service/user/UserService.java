@@ -10,6 +10,7 @@ import com.money.config.MoneyServerMQ_Topic;
 import com.money.config.ServerReturnValue;
 import com.money.dao.TransactionSessionCallback;
 import com.money.dao.userDAO.UserDAO;
+import com.money.model.HaremmasterInviteInfoModel;
 import com.money.model.UserModel;
 import com.money.model.WalletModel;
 import org.hibernate.Session;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import until.GsonUntil;
+import until.MoneyServerDate;
 import until.UmengPush.UmengSendParameter;
 
 import java.util.*;
@@ -430,6 +432,19 @@ public class UserService extends ServiceBase implements ServiceInterface {
 
                 if (inviteUserModel.getUserId().equals(userId)) {
                     return false;
+                }
+
+                /**
+                 * 如果是群主 添加到群主邀请信息里
+                 */
+                if (inviteUserModel.isHaremmaster()) {
+                    HaremmasterInviteInfoModel haremmasterInviteInfoModel
+                            = new HaremmasterInviteInfoModel();
+
+                    haremmasterInviteInfoModel.setHaremmasterUserId( inviteUserModel.getUserId() );
+                    haremmasterInviteInfoModel.setInvitedDate(MoneyServerDate.getDateCurDate());
+                    haremmasterInviteInfoModel.setInvitedUserId( userModel.getUserId() );
+                    userDAO.save( haremmasterInviteInfoModel );
                 }
 
                 InvitedUserID[0] = inviteUserModel.getUserId();

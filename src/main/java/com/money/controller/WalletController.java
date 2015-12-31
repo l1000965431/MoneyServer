@@ -305,7 +305,7 @@ public class WalletController extends ControllerBase {
     public String TestTransaction(HttpServletRequest request) throws IOException, HttpException {
         int page = Integer.valueOf(request.getParameter("page"));
         List dataList = walletService.GetAliTranserInfo(page);
-        return payService.requestTransaction(dataList);
+        return payService.requestTransaction(dataList,"http://115.29.111.0/Longyan/Wallet/TransactionResult");
     }
 
     /**
