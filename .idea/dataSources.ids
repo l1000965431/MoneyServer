@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="dataSourceStorage">
-  <data-source name="MySQL - moneyserver@rdswp598pmka3388cg81o.mysql.rds.aliyuncs.com" uuid="8509a76c-d4ae-4d59-84a7-8ebad3486263">
-    <database-info product="MySQL" version="5.6.16" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.35 ( Revision: 5fb9c5849535c13917c2cf9baaece6ef9693ef27 )">
+  <data-source name="MySQL - SpringMoney@127.0.0.1" uuid="8509a76c-d4ae-4d59-84a7-8ebad3486263">
+    <database-info product="MySQL" version="5.6.25" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.35 ( Revision: 5fb9c5849535c13917c2cf9baaece6ef9693ef27 )">
       <extra-name-characters>#@</extra-name-characters>
       <identifier-quote-string>`</identifier-quote-string>
     </database-info>
     <case-sensitivity plain-identifiers="lower" quoted-identifiers="lower"/>
     <database-model serializer="dbm" rdbms="MYSQL" format-version="2.4">
-      <schema id="1" name="moneyserver"/>
+      <schema id="1" name="money"/>
       <table id="2" parent="1" name="activitydetails"/>
       <table id="3" parent="1" name="activitydynamic"/>
       <table id="4" parent="1" name="activityorder"/>
@@ -17,1015 +17,1406 @@
       <table id="8" parent="1" name="adminstrator"/>
       <table id="9" parent="1" name="alitransfer"/>
       <table id="10" parent="1" name="alitransfernotify"/>
-      <table id="11" parent="1" name="auto_purchase_16"/>
-      <table id="12" parent="1" name="auto_ticket_16_1"/>
-      <table id="13" parent="1" name="batchtransfer"/>
-      <table id="14" parent="1" name="earningsrecord"/>
-      <table id="15" parent="1" name="globalconfig"/>
-      <table id="16" parent="1" name="invitecode"/>
-      <table id="17" parent="1" name="prizelist"/>
-      <table id="18" parent="1" name="srearning"/>
-      <table id="19" parent="1" name="transfer"/>
-      <table id="20" parent="1" name="user"/>
-      <table id="21" parent="1" name="userearnings"/>
-      <table id="22" parent="1" name="wallet"/>
-      <table id="23" parent="1" name="walletorder"/>
-      <table id="24" parent="1" name="wxtransfer"/>
-      <routine id="25" parent="1" name="CreateTicketDB">
+      <table id="11" parent="1" name="auto_purchase_15"/>
+      <table id="12" parent="1" name="auto_purchase_24"/>
+      <table id="13" parent="1" name="auto_purchase_25"/>
+      <table id="14" parent="1" name="auto_purchase_26"/>
+      <table id="15" parent="1" name="auto_purchase_27"/>
+      <table id="16" parent="1" name="auto_purchase_9"/>
+      <table id="17" parent="1" name="auto_ticket_15_1"/>
+      <table id="18" parent="1" name="auto_ticket_24_1"/>
+      <table id="19" parent="1" name="auto_ticket_25_1"/>
+      <table id="20" parent="1" name="auto_ticket_26_1"/>
+      <table id="21" parent="1" name="auto_ticket_27_1"/>
+      <table id="22" parent="1" name="auto_ticket_9_1"/>
+      <table id="23" parent="1" name="backticket"/>
+      <table id="24" parent="1" name="batchtransfer"/>
+      <table id="25" parent="1" name="earningsrecord"/>
+      <table id="26" parent="1" name="globalconfig"/>
+      <table id="27" parent="1" name="haremmaster"/>
+      <table id="28" parent="1" name="haremmasterinviteinfo"/>
+      <table id="29" parent="1" name="haremmastertransfer"/>
+      <table id="30" parent="1" name="invitecode"/>
+      <table id="31" parent="1" name="prizelist"/>
+      <table id="32" parent="1" name="srearning"/>
+      <table id="33" parent="1" name="transfer"/>
+      <table id="34" parent="1" name="user"/>
+      <table id="35" parent="1" name="userearnings"/>
+      <table id="36" parent="1" name="wallet"/>
+      <table id="37" parent="1" name="walletorder"/>
+      <table id="38" parent="1" name="wxtransfer"/>
+      <routine id="39" parent="1" name="CreateTicketDB">
         <comment>创建分期项目票表</comment>
         <routine-kind>PROCEDURE</routine-kind>
       </routine>
-      <routine id="26" parent="1" name="InsertTest">
+      <routine id="40" parent="1" name="InsertTest">
         <routine-kind>FUNCTION</routine-kind>
       </routine>
-      <routine id="27" parent="1" name="procedure_test">
+      <routine id="41" parent="1" name="procedure_test">
         <routine-kind>PROCEDURE</routine-kind>
       </routine>
-      <column id="28" parent="2" name="activityStageId">
+      <column id="42" parent="2" name="activityStageId">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="29" parent="2" name="activityEndTime">
+      <column id="43" parent="2" name="LocaltyrantsLotteryLines">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="44" parent="2" name="activityEndTime">
         <data-type>datetime</data-type>
       </column>
-      <column id="30" parent="2" name="activityStartTime">
+      <column id="45" parent="2" name="activityStartTime">
         <data-type>datetime</data-type>
       </column>
-      <column id="31" parent="2" name="groupId">
+      <column id="46" parent="2" name="groupId">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
-        <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="32" parent="2" name="raiseDay">
+      <column id="47" parent="2" name="raiseDay">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
-        <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="33" parent="2" name="status">
+      <column id="48" parent="2" name="stageIndex">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
-        <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="34" parent="2" name="targetFund">
+      <column id="49" parent="2" name="status">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
-        <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="35" parent="2" name="activityVerifyCompleteModel_activityId">
+      <column id="50" parent="2" name="targetFund">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="51" parent="2" name="activityVerifyCompleteModel_activityId">
+        <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="36" parent="2" name="dynamicModel_activityStageId">
+      <column id="52" parent="2" name="dynamicModel_activityStageId">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="37" parent="2" name="stageIndex">
-        <mandatory>1</mandatory>
-        <data-type>int(11)</data-type>
-        <default-expression>&apos;0&apos;</default-expression>
-      </column>
-      <column id="38" parent="2" name="LocaltyrantsLotteryLines">
-        <mandatory>1</mandatory>
-        <data-type>int(11)</data-type>
-        <default-expression>&apos;0&apos;</default-expression>
-      </column>
-      <column id="39" parent="2" name="activityLinesPeoples">
-        <data-type>varchar(255)</data-type>
-      </column>
-      <index id="40" parent="2" name="FK_2dekir40ohehiyeqnty2i3e8k">
+      <index id="53" parent="2" name="FK_2dekir40ohehiyeqnty2i3e8k">
         <columns>dynamicModel_activityStageId</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="41" parent="2" name="FK_455m4qpf23q59y3bl85eobx3q">
+      <index id="54" parent="2" name="FK_egm46bt8uualjqeysx9g9717l">
         <columns>activityVerifyCompleteModel_activityId</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="42" parent="2" name="PRIMARY">
+      <key id="55" parent="2" name="PRIMARY">
         <columns>activityStageId</columns>
         <primary>1</primary>
       </key>
-      <foreign-key id="43" parent="2" name="FK_2dekir40ohehiyeqnty2i3e8k">
+      <foreign-key id="56" parent="2" name="FK_2dekir40ohehiyeqnty2i3e8k">
         <columns>dynamicModel_activityStageId</columns>
         <ref-key>~.activitydynamic.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <foreign-key id="44" parent="2" name="FK_455m4qpf23q59y3bl85eobx3q">
+      <foreign-key id="57" parent="2" name="FK_egm46bt8uualjqeysx9g9717l">
         <columns>activityVerifyCompleteModel_activityId</columns>
         <ref-key>~.activityverifycomplete.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <column id="45" parent="3" name="activityStageId">
+      <column id="58" parent="3" name="activityStageId">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="46" parent="3" name="activityCurLines">
+      <column id="59" parent="3" name="activityCurLines">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
-        <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="47" parent="3" name="activityState">
+      <column id="60" parent="3" name="activityCurLinesPeoples">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
-        <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="48" parent="3" name="activityTotalAmount">
+      <column id="61" parent="3" name="activityState">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
-        <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="49" parent="3" name="groupId">
+      <column id="62" parent="3" name="activityTotalAmount">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
-        <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="50" parent="3" name="activityDetailModel_activityStageId">
+      <column id="63" parent="3" name="activityTotalLines">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="64" parent="3" name="activityTotalLinesPeoples">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="65" parent="3" name="groupId">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="66" parent="3" name="activityDetailModel_activityStageId">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="51" parent="3" name="activityVerifyCompleteModel_activityId">
+      <column id="67" parent="3" name="activityVerifyCompleteModel_activityId">
+        <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="52" parent="3" name="activityTotalLines">
-        <mandatory>1</mandatory>
-        <data-type>int(11)</data-type>
-        <default-expression>&apos;0&apos;</default-expression>
-      </column>
-      <column id="53" parent="3" name="activityTotalLinesPeoples">
-        <mandatory>1</mandatory>
-        <data-type>int(11)</data-type>
-        <default-expression>&apos;0&apos;</default-expression>
-      </column>
-      <column id="54" parent="3" name="activityCurLinesPeoples">
-        <mandatory>1</mandatory>
-        <data-type>int(11)</data-type>
-      </column>
-      <index id="55" parent="3" name="FK_5lm8y053k76k1qn4eyylnl3cr">
+      <index id="68" parent="3" name="FK_5lm8y053k76k1qn4eyylnl3cr">
         <columns>activityDetailModel_activityStageId</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="56" parent="3" name="FK_5sseglb8l6hxot3njpn07ja4l">
+      <index id="69" parent="3" name="FK_6ay1fjjqt9c402v2f3pchandu">
         <columns>activityVerifyCompleteModel_activityId</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="57" parent="3" name="PRIMARY">
+      <key id="70" parent="3" name="PRIMARY">
         <columns>activityStageId</columns>
         <primary>1</primary>
       </key>
-      <foreign-key id="58" parent="3" name="FK_5lm8y053k76k1qn4eyylnl3cr">
+      <foreign-key id="71" parent="3" name="FK_5lm8y053k76k1qn4eyylnl3cr">
         <columns>activityDetailModel_activityStageId</columns>
         <ref-key>~.activitydetails.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <foreign-key id="59" parent="3" name="FK_5sseglb8l6hxot3njpn07ja4l">
+      <foreign-key id="72" parent="3" name="FK_6ay1fjjqt9c402v2f3pchandu">
         <columns>activityVerifyCompleteModel_activityId</columns>
         <ref-key>~.activityverifycomplete.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <column id="60" parent="4" name="orderId">
+      <column id="73" parent="4" name="orderId">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="61" parent="4" name="AdvanceNum">
+      <column id="74" parent="4" name="AdvanceNum">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="62" parent="4" name="PurchaseNum">
+      <column id="75" parent="4" name="PurchaseNum">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="63" parent="4" name="orderDate">
+      <column id="76" parent="4" name="VirtualSecurities">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="77" parent="4" name="orderDate">
         <data-type>datetime</data-type>
       </column>
-      <column id="64" parent="4" name="orderLines">
+      <column id="78" parent="4" name="orderLines">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="65" parent="4" name="purchaseType">
+      <column id="79" parent="4" name="orderStartAdvance">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="66" parent="4" name="userId">
+      <column id="80" parent="4" name="purchaseType">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="81" parent="4" name="userId">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="67" parent="4" name="activityDetailModel_activityStageId">
+      <column id="82" parent="4" name="activityDetailModel_activityStageId">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="68" parent="4" name="orderStartAdvance">
-        <mandatory>1</mandatory>
-        <data-type>int(11)</data-type>
-      </column>
-      <column id="69" parent="4" name="VirtualSecurities">
-        <mandatory>1</mandatory>
-        <data-type>int(11)</data-type>
-      </column>
-      <index id="70" parent="4" name="FK_93ow6akc4crsy62ekekhh1a4o">
+      <index id="83" parent="4" name="FK_73r1fs4wwn2e152hyppmuaj29">
         <columns>activityDetailModel_activityStageId</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="71" parent="4" name="PRIMARY">
+      <key id="84" parent="4" name="PRIMARY">
         <columns>orderId</columns>
         <primary>1</primary>
       </key>
-      <foreign-key id="72" parent="4" name="FK_93ow6akc4crsy62ekekhh1a4o">
+      <foreign-key id="85" parent="4" name="FK_73r1fs4wwn2e152hyppmuaj29">
         <columns>activityDetailModel_activityStageId</columns>
         <ref-key>~.activitydetails.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <column id="73" parent="5" name="ActivityId">
+      <column id="86" parent="5" name="ActivityId">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="74" parent="5" name="ActivityEndTime">
+      <column id="87" parent="5" name="ActivityEndTime">
         <data-type>datetime</data-type>
       </column>
-      <column id="75" parent="5" name="ActivityLines">
+      <column id="88" parent="5" name="ActivityLines">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="76" parent="5" name="ActivityStartTime">
+      <column id="89" parent="5" name="ActivityStartTime">
         <data-type>datetime</data-type>
       </column>
-      <column id="77" parent="5" name="ActivityState">
+      <column id="90" parent="5" name="ActivityState">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="78" parent="5" name="CurLines">
+      <column id="91" parent="5" name="CurLines">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="79" parent="5" name="UserEXP">
+      <column id="92" parent="5" name="UserEXP">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="80" parent="5" name="WinningChance">
+      <column id="93" parent="5" name="WinningChance">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="81" parent="5" name="activityVerifyCompleteModel_activityId">
+      <column id="94" parent="5" name="activityVerifyCompleteModel_activityId">
         <data-type>varchar(255)</data-type>
       </column>
-      <index id="82" parent="5" name="FK_25to2unqysad4qd3w6x7ulpbo">
+      <index id="95" parent="5" name="FK_25to2unqysad4qd3w6x7ulpbo">
         <columns>activityVerifyCompleteModel_activityId</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="83" parent="5" name="PRIMARY">
+      <key id="96" parent="5" name="PRIMARY">
         <columns>ActivityId</columns>
         <primary>1</primary>
       </key>
-      <foreign-key id="84" parent="5" name="FK_25to2unqysad4qd3w6x7ulpbo">
+      <foreign-key id="97" parent="5" name="FK_25to2unqysad4qd3w6x7ulpbo">
         <columns>activityVerifyCompleteModel_activityId</columns>
         <ref-key>~.activityverifycomplete.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <column id="85" parent="6" name="id">
+      <column id="98" parent="6" name="id">
         <mandatory>1</mandatory>
         <data-type>bigint(20)</data-type>
       </column>
-      <column id="86" parent="6" name="activityIntroduce">
+      <column id="99" parent="6" name="activityIntroduce">
         <data-type>varchar(3100)</data-type>
       </column>
-      <column id="87" parent="6" name="address">
+      <column id="100" parent="6" name="address">
         <data-type>varchar(500)</data-type>
       </column>
-      <column id="88" parent="6" name="auditorId">
+      <column id="101" parent="6" name="auditorId">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="89" parent="6" name="auditorStatus">
+      <column id="102" parent="6" name="auditorStatus">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="90" parent="6" name="category">
+      <column id="103" parent="6" name="category">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="91" parent="6" name="createDate">
+      <column id="104" parent="6" name="createDate">
         <data-type>datetime</data-type>
       </column>
-      <column id="92" parent="6" name="creatorId">
+      <column id="105" parent="6" name="creatorId">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="93" parent="6" name="imageUrl">
+      <column id="106" parent="6" name="imageUrl">
         <data-type>text</data-type>
       </column>
-      <column id="94" parent="6" name="marketAnalysis">
+      <column id="107" parent="6" name="marketAnalysis">
         <data-type>varchar(3100)</data-type>
       </column>
-      <column id="95" parent="6" name="name">
+      <column id="108" parent="6" name="name">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="96" parent="6" name="noaudireason">
+      <column id="109" parent="6" name="noaudireason">
         <data-type>varchar(500)</data-type>
       </column>
-      <column id="97" parent="6" name="profitMode">
+      <column id="110" parent="6" name="profitMode">
         <data-type>varchar(3100)</data-type>
       </column>
-      <column id="98" parent="6" name="raiseDay">
+      <column id="111" parent="6" name="raiseDay">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="99" parent="6" name="revampCount">
+      <column id="112" parent="6" name="revampCount">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="100" parent="6" name="summary">
+      <column id="113" parent="6" name="summary">
         <data-type>varchar(500)</data-type>
       </column>
-      <column id="101" parent="6" name="tags">
+      <column id="114" parent="6" name="tags">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="102" parent="6" name="targetFund">
+      <column id="115" parent="6" name="targetFund">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="103" parent="6" name="teamIntroduce">
+      <column id="116" parent="6" name="teamIntroduce">
         <data-type>varchar(1000)</data-type>
       </column>
-      <column id="104" parent="6" name="teamSize">
+      <column id="117" parent="6" name="teamSize">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="105" parent="6" name="videoUrl">
+      <column id="118" parent="6" name="videoUrl">
         <data-type>varchar(255)</data-type>
       </column>
-      <key id="106" parent="6" name="PRIMARY">
+      <key id="119" parent="6" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="107" parent="7" name="activityId">
+      <column id="120" parent="7" name="activityId">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="108" parent="7" name="activityIntroduce">
+      <column id="121" parent="7" name="activityIntroduce">
         <data-type>varchar(3100)</data-type>
       </column>
-      <column id="109" parent="7" name="activityLinesPeoples">
+      <column id="122" parent="7" name="activityLinesPeoples">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="110" parent="7" name="activityStartTime">
+      <column id="123" parent="7" name="activityStartTime">
         <data-type>datetime</data-type>
       </column>
-      <column id="111" parent="7" name="createDate">
+      <column id="124" parent="7" name="activityEndtTime">
         <data-type>datetime</data-type>
       </column>
-      <column id="112" parent="7" name="address">
+      <column id="125" parent="7" name="createDate">
+        <data-type>datetime</data-type>
+      </column>
+      <column id="126" parent="7" name="address">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="113" parent="7" name="brInvestProportion">
+      <column id="127" parent="7" name="brInvestProportion">
         <mandatory>1</mandatory>
         <data-type>float</data-type>
       </column>
-      <column id="114" parent="7" name="category">
+      <column id="128" parent="7" name="category">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="115" parent="7" name="imageUrl">
+      <column id="129" parent="7" name="imageUrl">
         <data-type>text</data-type>
       </column>
-      <column id="116" parent="7" name="marketAnalysis">
+      <column id="130" parent="7" name="marketAnalysis">
         <data-type>varchar(3100)</data-type>
       </column>
-      <column id="117" parent="7" name="name">
+      <column id="131" parent="7" name="name">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="118" parent="7" name="originalFund">
+      <column id="132" parent="7" name="originalFund">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="119" parent="7" name="raiseDay">
+      <column id="133" parent="7" name="raiseDay">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="120" parent="7" name="srInvestProportion">
+      <column id="134" parent="7" name="srInvestProportion">
         <mandatory>1</mandatory>
         <data-type>float</data-type>
       </column>
-      <column id="121" parent="7" name="status">
+      <column id="135" parent="7" name="status">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="122" parent="7" name="summary">
+      <column id="136" parent="7" name="summary">
         <data-type>varchar(500)</data-type>
       </column>
-      <column id="123" parent="7" name="tags">
+      <column id="137" parent="7" name="tags">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="124" parent="7" name="teamIntroduce">
+      <column id="138" parent="7" name="teamIntroduce">
         <data-type>varchar(1000)</data-type>
       </column>
-      <column id="125" parent="7" name="teamSize">
+      <column id="139" parent="7" name="teamSize">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="126" parent="7" name="videoUrl">
+      <column id="140" parent="7" name="videoUrl">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="127" parent="7" name="profitMode">
+      <column id="141" parent="7" name="profitMode">
         <data-type>varchar(3100)</data-type>
       </column>
-      <column id="128" parent="7" name="targetFund">
+      <column id="142" parent="7" name="targetFund">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="129" parent="7" name="CurInstallmentNum">
-        <mandatory>1</mandatory>
-        <data-type>int(11)</data-type>
-        <default-expression>&apos;0&apos;</default-expression>
-      </column>
-      <column id="130" parent="7" name="TotalInstallmentNum">
+      <column id="143" parent="7" name="CurInstallmentNum">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="131" parent="7" name="CurLinePeoples">
+      <column id="144" parent="7" name="TotalInstallmentNum">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <column id="145" parent="7" name="CurLinePeoples">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="132" parent="7" name="CurLines">
+      <column id="146" parent="7" name="CurLines">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="133" parent="7" name="curFund">
+      <column id="147" parent="7" name="curFund">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="134" parent="7" name="TotalLinePeoples">
+      <column id="148" parent="7" name="TotalLinePeoples">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="135" parent="7" name="TotalLines">
+      <column id="149" parent="7" name="TotalLines">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="136" parent="7" name="EarningPeoples">
+      <column id="150" parent="7" name="EarningPeoples">
         <data-type>longtext</data-type>
       </column>
-      <key id="137" parent="7" name="PRIMARY">
+      <column id="151" parent="7" name="version">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <key id="152" parent="7" name="PRIMARY">
         <columns>activityId</columns>
         <primary>1</primary>
       </key>
-      <column id="138" parent="8" name="userId">
+      <column id="153" parent="8" name="userId">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="139" parent="8" name="adminType">
+      <column id="154" parent="8" name="adminType">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="140" parent="8" name="name">
+      <column id="155" parent="8" name="name">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="141" parent="8" name="password">
+      <column id="156" parent="8" name="password">
         <data-type>varchar(255)</data-type>
       </column>
-      <key id="142" parent="8" name="PRIMARY">
+      <key id="157" parent="8" name="PRIMARY">
         <columns>userId</columns>
         <primary>1</primary>
       </key>
-      <column id="143" parent="9" name="Id">
+      <column id="158" parent="9" name="Id">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="144" parent="9" name="AliEmail">
+      <column id="159" parent="9" name="AliEmail">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="145" parent="9" name="IsFaliled">
+      <column id="160" parent="9" name="IsFaliled">
         <mandatory>1</mandatory>
         <data-type>bit(1)</data-type>
       </column>
-      <column id="146" parent="9" name="RealName">
+      <column id="161" parent="9" name="RealName">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="147" parent="9" name="TransferLines">
+      <column id="162" parent="9" name="TransferLines">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="148" parent="9" name="UserId">
+      <column id="163" parent="9" name="UserId">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="149" parent="9" name="IsLock">
+      <column id="164" parent="9" name="IsLock">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="150" parent="9" name="ErrorInfo">
+      <column id="165" parent="9" name="ErrorInfo">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="151" parent="9" name="AlitransferDate">
+      <column id="166" parent="9" name="AlitransferDate">
         <data-type>datetime</data-type>
       </column>
-      <column id="152" parent="9" name="poundageResult">
+      <column id="167" parent="9" name="poundageResult">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <index id="153" parent="9" name="1">
+      <index id="168" parent="9" name="1">
         <columns>UserId</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="154" parent="9" name="PRIMARY">
+      <key id="169" parent="9" name="PRIMARY">
         <columns>Id</columns>
         <primary>1</primary>
       </key>
-      <column id="155" parent="10" name="Batchno">
+      <column id="170" parent="10" name="Batchno">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="156" parent="10" name="PayStates">
+      <column id="171" parent="10" name="PayStates">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="157" parent="10" name="Payuserid">
+      <column id="172" parent="10" name="Payuserid">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="158" parent="10" name="Payusername">
+      <column id="173" parent="10" name="Payusername">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="159" parent="10" name="PayDate">
+      <column id="174" parent="10" name="PayDate">
         <data-type>datetime</data-type>
       </column>
-      <index id="160" parent="10" name="1">
+      <index id="175" parent="10" name="1">
         <columns>Payuserid</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="161" parent="10" name="PRIMARY">
+      <key id="176" parent="10" name="PRIMARY">
         <columns>Batchno</columns>
         <primary>1</primary>
       </key>
-      <column id="162" parent="11" name="UserID">
+      <column id="177" parent="11" name="UserID">
         <mandatory>1</mandatory>
         <data-type>varchar(45)</data-type>
       </column>
-      <column id="163" parent="11" name="PurchaseInAdvanceNum">
+      <column id="178" parent="11" name="PurchaseInAdvanceNum">
         <mandatory>1</mandatory>
         <data-type>int(5)</data-type>
       </column>
-      <column id="164" parent="11" name="CurPurchaseInAdvanceNum">
+      <column id="179" parent="11" name="CurPurchaseInAdvanceNum">
         <mandatory>1</mandatory>
         <data-type>int(5)</data-type>
       </column>
-      <column id="165" parent="11" name="PurchaseNum">
+      <column id="180" parent="11" name="PurchaseNum">
         <mandatory>1</mandatory>
         <data-type>int(5)</data-type>
       </column>
-      <column id="166" parent="11" name="PurchaseType">
+      <column id="181" parent="11" name="PurchaseType">
         <mandatory>1</mandatory>
         <data-type>int(5)</data-type>
       </column>
-      <column id="167" parent="11" name="PurchaseInAdvanceNumID">
+      <column id="182" parent="11" name="PurchaseInAdvanceNumID">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="168" parent="11" name="PurchaseTime">
+      <column id="183" parent="11" name="PurchaseTime">
         <mandatory>1</mandatory>
         <data-type>datetime</data-type>
       </column>
-      <key id="169" parent="11" name="PRIMARY">
+      <key id="184" parent="11" name="PRIMARY">
         <columns>PurchaseInAdvanceNumID</columns>
         <primary>1</primary>
       </key>
-      <column id="170" parent="12" name="TickID">
+      <column id="185" parent="12" name="UserID">
         <mandatory>1</mandatory>
         <data-type>varchar(45)</data-type>
       </column>
-      <column id="171" parent="12" name="UserId">
+      <column id="186" parent="12" name="PurchaseInAdvanceNum">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="187" parent="12" name="CurPurchaseInAdvanceNum">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="188" parent="12" name="PurchaseNum">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="189" parent="12" name="PurchaseType">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="190" parent="12" name="PurchaseInAdvanceNumID">
+        <mandatory>1</mandatory>
+        <data-type>varchar(255)</data-type>
+      </column>
+      <column id="191" parent="12" name="PurchaseTime">
+        <mandatory>1</mandatory>
+        <data-type>datetime</data-type>
+      </column>
+      <key id="192" parent="12" name="PRIMARY">
+        <columns>PurchaseInAdvanceNumID</columns>
+        <primary>1</primary>
+      </key>
+      <column id="193" parent="13" name="UserID">
+        <mandatory>1</mandatory>
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="194" parent="13" name="PurchaseInAdvanceNum">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="195" parent="13" name="CurPurchaseInAdvanceNum">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="196" parent="13" name="PurchaseNum">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="197" parent="13" name="PurchaseType">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="198" parent="13" name="PurchaseInAdvanceNumID">
+        <mandatory>1</mandatory>
+        <data-type>varchar(255)</data-type>
+      </column>
+      <column id="199" parent="13" name="PurchaseTime">
+        <mandatory>1</mandatory>
+        <data-type>datetime</data-type>
+      </column>
+      <key id="200" parent="13" name="PRIMARY">
+        <columns>PurchaseInAdvanceNumID</columns>
+        <primary>1</primary>
+      </key>
+      <column id="201" parent="14" name="UserID">
+        <mandatory>1</mandatory>
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="202" parent="14" name="PurchaseInAdvanceNum">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="203" parent="14" name="CurPurchaseInAdvanceNum">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="204" parent="14" name="PurchaseNum">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="205" parent="14" name="PurchaseType">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="206" parent="14" name="PurchaseInAdvanceNumID">
+        <mandatory>1</mandatory>
+        <data-type>varchar(255)</data-type>
+      </column>
+      <column id="207" parent="14" name="PurchaseTime">
+        <mandatory>1</mandatory>
+        <data-type>datetime</data-type>
+      </column>
+      <key id="208" parent="14" name="PRIMARY">
+        <columns>PurchaseInAdvanceNumID</columns>
+        <primary>1</primary>
+      </key>
+      <column id="209" parent="15" name="UserID">
+        <mandatory>1</mandatory>
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="210" parent="15" name="PurchaseInAdvanceNum">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="211" parent="15" name="CurPurchaseInAdvanceNum">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="212" parent="15" name="PurchaseNum">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="213" parent="15" name="PurchaseType">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="214" parent="15" name="PurchaseInAdvanceNumID">
+        <mandatory>1</mandatory>
+        <data-type>varchar(255)</data-type>
+      </column>
+      <column id="215" parent="15" name="PurchaseTime">
+        <mandatory>1</mandatory>
+        <data-type>datetime</data-type>
+      </column>
+      <key id="216" parent="15" name="PRIMARY">
+        <columns>PurchaseInAdvanceNumID</columns>
+        <primary>1</primary>
+      </key>
+      <column id="217" parent="16" name="UserID">
+        <mandatory>1</mandatory>
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="218" parent="16" name="PurchaseInAdvanceNum">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="219" parent="16" name="CurPurchaseInAdvanceNum">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="220" parent="16" name="PurchaseNum">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="221" parent="16" name="PurchaseType">
+        <mandatory>1</mandatory>
+        <data-type>int(5)</data-type>
+      </column>
+      <column id="222" parent="16" name="PurchaseInAdvanceNumID">
+        <mandatory>1</mandatory>
+        <data-type>varchar(255)</data-type>
+      </column>
+      <column id="223" parent="16" name="PurchaseTime">
+        <mandatory>1</mandatory>
+        <data-type>datetime</data-type>
+      </column>
+      <key id="224" parent="16" name="PRIMARY">
+        <columns>PurchaseInAdvanceNumID</columns>
+        <primary>1</primary>
+      </key>
+      <column id="225" parent="17" name="TickID">
+        <mandatory>1</mandatory>
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="226" parent="17" name="UserId">
         <data-type>varchar(45)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="172" parent="12" name="PurchaseType">
+      <column id="227" parent="17" name="PurchaseType">
         <mandatory>1</mandatory>
         <data-type>int(2)</data-type>
       </column>
-      <column id="173" parent="12" name="PurchaseDate">
+      <column id="228" parent="17" name="PurchaseDate">
         <data-type>datetime</data-type>
       </column>
-      <column id="174" parent="12" name="AdvanceType">
+      <column id="229" parent="17" name="AdvanceType">
         <data-type>int(2)</data-type>
       </column>
-      <key id="175" parent="12" name="PRIMARY">
+      <key id="230" parent="17" name="PRIMARY">
         <columns>TickID</columns>
         <primary>1</primary>
       </key>
-      <column id="176" parent="13" name="Id">
+      <column id="231" parent="18" name="TickID">
         <mandatory>1</mandatory>
-        <data-type>int(11)</data-type>
+        <data-type>varchar(45)</data-type>
       </column>
-      <column id="177" parent="13" name="BatchId">
-        <data-type>varchar(255)</data-type>
+      <column id="232" parent="18" name="UserId">
+        <data-type>varchar(45)</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="178" parent="13" name="TransferDate">
+      <column id="233" parent="18" name="PurchaseType">
+        <mandatory>1</mandatory>
+        <data-type>int(2)</data-type>
+      </column>
+      <column id="234" parent="18" name="PurchaseDate">
         <data-type>datetime</data-type>
       </column>
-      <column id="179" parent="13" name="TransferLines">
+      <column id="235" parent="18" name="AdvanceType">
+        <data-type>int(2)</data-type>
+      </column>
+      <key id="236" parent="18" name="PRIMARY">
+        <columns>TickID</columns>
+        <primary>1</primary>
+      </key>
+      <column id="237" parent="19" name="TickID">
+        <mandatory>1</mandatory>
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="238" parent="19" name="UserId">
+        <data-type>varchar(45)</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <column id="239" parent="19" name="PurchaseType">
+        <mandatory>1</mandatory>
+        <data-type>int(2)</data-type>
+      </column>
+      <column id="240" parent="19" name="PurchaseDate">
+        <data-type>datetime</data-type>
+      </column>
+      <column id="241" parent="19" name="AdvanceType">
+        <data-type>int(2)</data-type>
+      </column>
+      <key id="242" parent="19" name="PRIMARY">
+        <columns>TickID</columns>
+        <primary>1</primary>
+      </key>
+      <column id="243" parent="20" name="TickID">
+        <mandatory>1</mandatory>
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="244" parent="20" name="UserId">
+        <data-type>varchar(45)</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <column id="245" parent="20" name="PurchaseType">
+        <mandatory>1</mandatory>
+        <data-type>int(2)</data-type>
+      </column>
+      <column id="246" parent="20" name="PurchaseDate">
+        <data-type>datetime</data-type>
+      </column>
+      <column id="247" parent="20" name="AdvanceType">
+        <data-type>int(2)</data-type>
+      </column>
+      <key id="248" parent="20" name="PRIMARY">
+        <columns>TickID</columns>
+        <primary>1</primary>
+      </key>
+      <column id="249" parent="21" name="TickID">
+        <mandatory>1</mandatory>
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="250" parent="21" name="UserId">
+        <data-type>varchar(45)</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <column id="251" parent="21" name="PurchaseType">
+        <mandatory>1</mandatory>
+        <data-type>int(2)</data-type>
+      </column>
+      <column id="252" parent="21" name="PurchaseDate">
+        <data-type>datetime</data-type>
+      </column>
+      <column id="253" parent="21" name="AdvanceType">
+        <data-type>int(2)</data-type>
+      </column>
+      <key id="254" parent="21" name="PRIMARY">
+        <columns>TickID</columns>
+        <primary>1</primary>
+      </key>
+      <column id="255" parent="22" name="TickID">
+        <mandatory>1</mandatory>
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="256" parent="22" name="UserId">
+        <data-type>varchar(45)</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <column id="257" parent="22" name="PurchaseType">
+        <mandatory>1</mandatory>
+        <data-type>int(2)</data-type>
+      </column>
+      <column id="258" parent="22" name="PurchaseDate">
+        <data-type>datetime</data-type>
+      </column>
+      <column id="259" parent="22" name="AdvanceType">
+        <data-type>int(2)</data-type>
+      </column>
+      <key id="260" parent="22" name="PRIMARY">
+        <columns>TickID</columns>
+        <primary>1</primary>
+      </key>
+      <column id="261" parent="23" name="Id">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="180" parent="13" name="Transferchannel">
+      <column id="262" parent="23" name="AdvanceType">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="263" parent="23" name="InstallmentActivityID">
         <data-type>varchar(255)</data-type>
       </column>
-      <key id="181" parent="13" name="PRIMARY">
+      <column id="264" parent="23" name="PurchaseDate">
+        <data-type>datetime</data-type>
+      </column>
+      <column id="265" parent="23" name="Purchasetype">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="266" parent="23" name="UserId">
+        <data-type>varchar(255)</data-type>
+      </column>
+      <column id="267" parent="23" name="TickID">
+        <data-type>varchar(255)</data-type>
+      </column>
+      <key id="268" parent="23" name="PRIMARY">
         <columns>Id</columns>
         <primary>1</primary>
       </key>
-      <column id="182" parent="14" name="activityStageId">
+      <column id="269" parent="24" name="Id">
         <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="270" parent="24" name="BatchId">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="183" parent="14" name="EndDate">
+      <column id="271" parent="24" name="TransferDate">
         <data-type>datetime</data-type>
       </column>
-      <column id="184" parent="14" name="TotalFund">
+      <column id="272" parent="24" name="TransferLines">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="185" parent="14" name="TotalPrize">
-        <mandatory>1</mandatory>
-        <data-type>int(11)</data-type>
-      </column>
-      <column id="186" parent="14" name="ActivityID">
+      <column id="273" parent="24" name="Transferchannel">
         <data-type>varchar(255)</data-type>
       </column>
-      <key id="187" parent="14" name="PRIMARY">
+      <key id="274" parent="24" name="PRIMARY">
+        <columns>Id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="275" parent="25" name="activityStageId">
+        <mandatory>1</mandatory>
+        <data-type>varchar(255)</data-type>
+      </column>
+      <column id="276" parent="25" name="EndDate">
+        <data-type>datetime</data-type>
+      </column>
+      <column id="277" parent="25" name="TotalFund">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="278" parent="25" name="TotalPrize">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="279" parent="25" name="ActivityID">
+        <data-type>varchar(255)</data-type>
+      </column>
+      <key id="280" parent="25" name="PRIMARY">
         <columns>activityStageId</columns>
         <primary>1</primary>
       </key>
-      <column id="188" parent="15" name="Configkey">
+      <column id="281" parent="26" name="Configkey">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="189" parent="15" name="value">
+      <column id="282" parent="26" name="value">
         <data-type>text</data-type>
       </column>
-      <key id="190" parent="15" name="PRIMARY">
+      <key id="283" parent="26" name="PRIMARY">
         <columns>Configkey</columns>
         <primary>1</primary>
       </key>
-      <column id="191" parent="16" name="Id">
+      <column id="284" parent="27" name="Id">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="192" parent="16" name="inviteCode">
-        <data-type>varchar(255)</data-type>
-      </column>
-      <column id="193" parent="16" name="useDate">
-        <data-type>datetime</data-type>
-      </column>
-      <column id="194" parent="16" name="userId">
-        <data-type>varchar(255)</data-type>
-      </column>
-      <key id="195" parent="16" name="PRIMARY">
-        <columns>Id</columns>
-        <primary>1</primary>
-      </key>
-      <column id="196" parent="17" name="ActivityIID">
+      <column id="285" parent="27" name="userId">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="197" parent="17" name="IsPrize">
+      <column id="286" parent="27" name="MonthPushMoney">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="287" parent="27" name="MonthRecharge">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="288" parent="27" name="Proportion">
+        <mandatory>1</mandatory>
+        <data-type>float</data-type>
+      </column>
+      <column id="289" parent="27" name="TotalRecharge">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="290" parent="27" name="MonthDayRecharge">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="291" parent="27" name="TotalInvitePeopleNum">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="292" parent="27" name="IsShielding">
         <mandatory>1</mandatory>
         <data-type>bit(1)</data-type>
       </column>
-      <column id="198" parent="17" name="PrizeSituation">
-        <data-type>text</data-type>
+      <key id="293" parent="27" name="PRIMARY">
+        <columns>userId</columns>
+        <primary>1</primary>
+      </key>
+      <column id="294" parent="28" name="InvitedUserId">
+        <mandatory>1</mandatory>
+        <data-type>varchar(255)</data-type>
       </column>
-      <column id="199" parent="17" name="PrizeDate">
+      <column id="295" parent="28" name="HaremmasterUserId">
+        <data-type>varchar(255)</data-type>
+      </column>
+      <column id="296" parent="28" name="InvitedDate">
         <data-type>datetime</data-type>
       </column>
-      <column id="200" parent="17" name="ActivityType">
+      <key id="297" parent="28" name="PRIMARY">
+        <columns>InvitedUserId</columns>
+        <primary>1</primary>
+      </key>
+      <column id="298" parent="29" name="Id">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <key id="201" parent="17" name="PRIMARY">
+      <column id="299" parent="29" name="PushMoney">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="300" parent="29" name="PushMoneyDate">
+        <data-type>datetime</data-type>
+      </column>
+      <column id="301" parent="29" name="userId">
+        <data-type>varchar(255)</data-type>
+      </column>
+      <key id="302" parent="29" name="PRIMARY">
+        <columns>Id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="303" parent="30" name="Id">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="304" parent="30" name="inviteCode">
+        <data-type>varchar(255)</data-type>
+      </column>
+      <column id="305" parent="30" name="useDate">
+        <data-type>datetime</data-type>
+      </column>
+      <column id="306" parent="30" name="userId">
+        <data-type>varchar(255)</data-type>
+      </column>
+      <column id="307" parent="30" name="CreateDate">
+        <data-type>datetime</data-type>
+      </column>
+      <key id="308" parent="30" name="PRIMARY">
+        <columns>Id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="309" parent="31" name="ActivityIID">
+        <mandatory>1</mandatory>
+        <data-type>varchar(255)</data-type>
+      </column>
+      <column id="310" parent="31" name="IsPrize">
+        <mandatory>1</mandatory>
+        <data-type>bit(1)</data-type>
+      </column>
+      <column id="311" parent="31" name="PrizeSituation">
+        <data-type>text</data-type>
+      </column>
+      <column id="312" parent="31" name="PrizeDate">
+        <data-type>datetime</data-type>
+      </column>
+      <column id="313" parent="31" name="ActivityType">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <key id="314" parent="31" name="PRIMARY">
         <columns>ActivityIID</columns>
         <primary>1</primary>
       </key>
-      <column id="202" parent="18" name="id">
+      <column id="315" parent="32" name="id">
         <mandatory>1</mandatory>
         <data-type>bigint(20)</data-type>
       </column>
-      <column id="203" parent="18" name="earningPrice">
+      <column id="316" parent="32" name="earningPrice">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="204" parent="18" name="earningType">
+      <column id="317" parent="32" name="earningType">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="205" parent="18" name="num">
+      <column id="318" parent="32" name="num">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="206" parent="18" name="activityStageId">
+      <column id="319" parent="32" name="activityStageId">
+        <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="207" parent="18" name="activityId">
+      <column id="320" parent="32" name="activityId">
+        <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <index id="208" parent="18" name="FK_57njjdw1rhp1iefcw12jcefmj">
+      <index id="321" parent="32" name="FK_57njjdw1rhp1iefcw12jcefmj">
         <columns>activityId</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="209" parent="18" name="FK_oo5wwwb6nea0xstklqsog5ybs">
+      <index id="322" parent="32" name="FK_oo5wwwb6nea0xstklqsog5ybs">
         <columns>activityStageId</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="210" parent="18" name="PRIMARY">
+      <key id="323" parent="32" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <foreign-key id="211" parent="18" name="FK_57njjdw1rhp1iefcw12jcefmj">
+      <foreign-key id="324" parent="32" name="FK_57njjdw1rhp1iefcw12jcefmj">
         <columns>activityId</columns>
         <ref-key>~.activityverifycomplete.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <foreign-key id="212" parent="18" name="FK_oo5wwwb6nea0xstklqsog5ybs">
+      <foreign-key id="325" parent="32" name="FK_oo5wwwb6nea0xstklqsog5ybs">
         <columns>activityStageId</columns>
         <ref-key>~.activitydetails.PRIMARY</ref-key>
         <cascade-update-rule>restrict</cascade-update-rule>
         <cascade-delete-rule>restrict</cascade-delete-rule>
       </foreign-key>
-      <column id="213" parent="19" name="orderId">
+      <column id="326" parent="33" name="orderId">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="214" parent="19" name="openId">
+      <column id="327" parent="33" name="openId">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="215" parent="19" name="status">
+      <column id="328" parent="33" name="status">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="216" parent="19" name="transferDate">
+      <column id="329" parent="33" name="transferDate">
         <data-type>datetime</data-type>
       </column>
-      <column id="217" parent="19" name="transferLines">
+      <column id="330" parent="33" name="transferLines">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="218" parent="19" name="userId">
+      <column id="331" parent="33" name="userId">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="219" parent="19" name="transferLinesPoundage">
+      <column id="332" parent="33" name="transferLinesPoundage">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <key id="220" parent="19" name="PRIMARY">
+      <key id="333" parent="33" name="PRIMARY">
         <columns>orderId</columns>
         <primary>1</primary>
       </key>
-      <column id="221" parent="20" name="id">
+      <column id="334" parent="34" name="id">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="222" parent="20" name="password">
+      <column id="335" parent="34" name="password">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="223" parent="20" name="userId">
+      <column id="336" parent="34" name="userId">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="224" parent="20" name="userName">
+      <column id="337" parent="34" name="userName">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="225" parent="20" name="userType">
+      <column id="338" parent="34" name="userType">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="226" parent="20" name="IsPerfect">
+      <column id="339" parent="34" name="IsPerfect">
         <mandatory>1</mandatory>
         <data-type>bit(1)</data-type>
       </column>
-      <column id="227" parent="20" name="location">
+      <column id="340" parent="34" name="location">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="228" parent="20" name="mail">
+      <column id="341" parent="34" name="mail">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="229" parent="20" name="realName">
+      <column id="342" parent="34" name="realName">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="230" parent="20" name="sex">
+      <column id="343" parent="34" name="sex">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="231" parent="20" name="career">
+      <column id="344" parent="34" name="career">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="232" parent="20" name="eduInfo">
+      <column id="345" parent="34" name="eduInfo">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="233" parent="20" name="expertise">
+      <column id="346" parent="34" name="expertise">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="234" parent="20" name="identityId">
+      <column id="347" parent="34" name="identityId">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="235" parent="20" name="introduction">
+      <column id="348" parent="34" name="introduction">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="236" parent="20" name="userHeadPortrait">
+      <column id="349" parent="34" name="userHeadPortrait">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="237" parent="20" name="wxOpenId">
+      <column id="350" parent="34" name="wxOpenId">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="238" parent="20" name="alipayId">
+      <column id="351" parent="34" name="alipayId">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="239" parent="20" name="alipayRealName">
+      <column id="352" parent="34" name="alipayRealName">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="240" parent="20" name="IsInvited">
+      <column id="353" parent="34" name="IsInvited">
         <mandatory>1</mandatory>
         <data-type>bit(1)</data-type>
       </column>
-      <column id="241" parent="20" name="userExp">
+      <column id="354" parent="34" name="userExp">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="242" parent="20" name="userInvitecode">
+      <column id="355" parent="34" name="userInvitecode">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="243" parent="20" name="CreateTime">
+      <column id="356" parent="34" name="CreateTime">
         <data-type>datetime</data-type>
       </column>
-      <index id="244" parent="20" name="1">
+      <column id="357" parent="34" name="UserPermissions">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="358" parent="34" name="IsHaremmaster">
+        <mandatory>1</mandatory>
+        <data-type>bit(1)</data-type>
+      </column>
+      <index id="359" parent="34" name="1">
         <columns>userId</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="245" parent="20" name="2">
+      <index id="360" parent="34" name="2">
         <columns>wxOpenId</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="246" parent="20" name="3">
+      <index id="361" parent="34" name="3">
         <columns>alipayId</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="247" parent="20" name="4">
+      <index id="362" parent="34" name="4">
         <columns>identityId</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="248" parent="20" name="5">
+      <index id="363" parent="34" name="5">
         <columns>userInvitecode</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="249" parent="20" name="6">
+      <index id="364" parent="34" name="6">
         <columns>mail</columns>
         <desc-columns></desc-columns>
       </index>
-      <index id="250" parent="20" name="7">
+      <index id="365" parent="34" name="7">
         <columns>identityId</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="251" parent="20" name="PRIMARY">
+      <key id="366" parent="34" name="PRIMARY">
         <columns>id</columns>
         <primary>1</primary>
       </key>
-      <column id="252" parent="21" name="Id">
+      <column id="367" parent="35" name="Id">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="253" parent="21" name="ActivityStageId">
+      <column id="368" parent="35" name="ActivityStageId">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="254" parent="21" name="UserEarningLines">
+      <column id="369" parent="35" name="UserEarningLines">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="255" parent="21" name="UserEarningsDate">
+      <column id="370" parent="35" name="UserEarningsDate">
         <data-type>datetime</data-type>
       </column>
-      <column id="256" parent="21" name="UserID">
+      <column id="371" parent="35" name="UserID">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="257" parent="21" name="UserEarningsType">
+      <column id="372" parent="35" name="UserEarningsType">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="258" parent="21" name="PurchaseType">
+      <column id="373" parent="35" name="PurchaseType">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <index id="259" parent="21" name="UserIDIndex">
+      <index id="374" parent="35" name="UserIDIndex">
         <columns>UserID</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="260" parent="21" name="PRIMARY">
+      <key id="375" parent="35" name="PRIMARY">
         <columns>Id</columns>
         <primary>1</primary>
       </key>
-      <column id="261" parent="22" name="UserID">
+      <column id="376" parent="36" name="UserID">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="262" parent="22" name="WalletLines">
+      <column id="377" parent="36" name="WalletLines">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="263" parent="22" name="ledSecurities">
+      <column id="378" parent="36" name="ledSecurities">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <column id="264" parent="22" name="virtualSecurities">
+      <column id="379" parent="36" name="virtualSecurities">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
         <default-expression>&apos;0&apos;</default-expression>
       </column>
-      <index id="265" parent="22" name="UserIDIndex">
+      <index id="380" parent="36" name="UserIDIndex">
         <columns>UserID</columns>
         <desc-columns></desc-columns>
       </index>
-      <key id="266" parent="22" name="PRIMARY">
+      <key id="381" parent="36" name="PRIMARY">
         <columns>UserID</columns>
         <primary>1</primary>
       </key>
-      <column id="267" parent="23" name="OrderID">
+      <column id="382" parent="37" name="OrderID">
         <mandatory>1</mandatory>
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="268" parent="23" name="OrderDate">
+      <column id="383" parent="37" name="OrderDate">
         <data-type>datetime</data-type>
       </column>
-      <column id="269" parent="23" name="WalletLines">
+      <column id="384" parent="37" name="WalletLines">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="270" parent="23" name="WalletChannel">
+      <column id="385" parent="37" name="WalletChannel">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="271" parent="23" name="userId">
+      <column id="386" parent="37" name="userId">
         <data-type>varchar(255)</data-type>
       </column>
-      <key id="272" parent="23" name="PRIMARY">
+      <key id="387" parent="37" name="PRIMARY">
         <columns>OrderID</columns>
         <primary>1</primary>
       </key>
-      <column id="273" parent="24" name="Id">
+      <column id="388" parent="38" name="Id">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="274" parent="24" name="IsFaliled">
+      <column id="389" parent="38" name="IsFaliled">
         <mandatory>1</mandatory>
         <data-type>bit(1)</data-type>
       </column>
-      <column id="275" parent="24" name="OpenId">
+      <column id="390" parent="38" name="OpenId">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="276" parent="24" name="RealName">
+      <column id="391" parent="38" name="RealName">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="277" parent="24" name="TransferLines">
+      <column id="392" parent="38" name="TransferLines">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="278" parent="24" name="UserId">
+      <column id="393" parent="38" name="UserId">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="279" parent="24" name="WxtransferDate">
+      <column id="394" parent="38" name="WxtransferDate">
         <data-type>datetime</data-type>
       </column>
-      <column id="280" parent="24" name="IsLock">
+      <column id="395" parent="38" name="IsLock">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <column id="281" parent="24" name="ErrorInfo">
+      <column id="396" parent="38" name="ErrorInfo">
         <data-type>varchar(255)</data-type>
       </column>
-      <column id="282" parent="24" name="poundageResult">
+      <column id="397" parent="38" name="poundageResult">
         <mandatory>1</mandatory>
         <data-type>int(11)</data-type>
       </column>
-      <key id="283" parent="24" name="PRIMARY">
+      <key id="398" parent="38" name="PRIMARY">
         <columns>Id</columns>
         <primary>1</primary>
       </key>
-      <argument id="284" parent="25" name="TotalLinePeoples">
+      <argument id="399" parent="39" name="TotalLinePeoples">
         <direction>IN</direction>
         <data-type>bigint(20)</data-type>
       </argument>
-      <argument id="285" parent="25" name="TotalLines">
+      <argument id="400" parent="39" name="TotalLines">
         <direction>IN</direction>
         <data-type>bigint(20)</data-type>
       </argument>
-      <argument id="286" parent="25" name="TicketName">
+      <argument id="401" parent="39" name="TicketName">
         <direction>IN</direction>
         <data-type>varchar(256)</data-type>
       </argument>
-      <argument id="287" parent="26">
+      <argument id="402" parent="40">
         <direction>RETURN</direction>
         <data-type>int(11)</data-type>
       </argument>

@@ -17,7 +17,7 @@ public class HaremmasterMonthRechargeJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        LOGGER.error( "群主每月结算定时器" );
+        LOGGER.info( "群主每月结算定时器" );
         HaremmasterService haremmasterService = ServiceFactory.getService( "HaremmasterService" );
 
         if( haremmasterService != null ){

@@ -818,6 +818,8 @@ public class WalletService extends ServiceBase implements ServiceInterface {
      * @return
      */
     public String HaremmasterTransferNotify(Map<String, String> NotifyInfo){
+        LOGGER.error( NotifyInfo.toString() );
+
         final String Batchno = NotifyInfo.get("batch_no");
         final String Payuserid = NotifyInfo.get("pay_user_id");
         final String Payusername = NotifyInfo.get("pay_user_name");
@@ -839,10 +841,6 @@ public class WalletService extends ServiceBase implements ServiceInterface {
                         LOGGER.error("FaildetailsList == null");
                         return false;
                     }
-
-
-
-
                 }
 
                 if (Successdetails != null) {

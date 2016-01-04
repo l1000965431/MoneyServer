@@ -19,9 +19,7 @@ import com.money.job.HaremmasterMonthDayRechargeJob;
 import com.money.job.HaremmasterMonthRechargeJob;
 import com.money.job.TestJob;
 import com.money.memcach.MemCachService;
-import com.money.model.PreferentiaLotteryModel;
-import com.money.model.SREarningModel;
-import com.money.model.UserModel;
+import com.money.model.*;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.quartz.DateBuilder;
@@ -664,22 +662,46 @@ public class TestConller extends ControllerBase implements IController {
     @ResponseBody
     public void TestClearActivity(HttpServletRequest request) {
         String ActivityID = request.getParameter("activityID");
-        ServiceGroupActivity serviceGroupActivity = ServiceFactory.getService( "ServiceGroupActivity" );
-        serviceGroupActivity.CleanTestActivity( ActivityID );
+        ServiceGroupActivity serviceGroupActivity = ServiceFactory.getService("ServiceGroupActivity");
+        serviceGroupActivity.CleanTestActivity(ActivityID);
     }
 
     @RequestMapping("/TestSettlementMonthDay")
     @ResponseBody
     public void TestSettlementMonthDay() throws JobExecutionException {
         HaremmasterMonthDayRechargeJob haremmasterMonthDayRechargeJob = new HaremmasterMonthDayRechargeJob();
-        haremmasterMonthDayRechargeJob.execute( null );
+        haremmasterMonthDayRechargeJob.execute(null);
     }
 
     @RequestMapping("/TestSettlementMonth")
     @ResponseBody
     public void TestSettlementMonth() throws JobExecutionException {
         HaremmasterMonthRechargeJob haremmasterMonthRechargeJob = new HaremmasterMonthRechargeJob();
-        haremmasterMonthRechargeJob.execute( null );
+        haremmasterMonthRechargeJob.execute(null);
+    }
+
+    @RequestMapping("/InsertQunzhuTestInfo")
+    @ResponseBody
+    public void InsertQunzhuTestInfo(HttpServletRequest request) {
+        int num = Integer.valueOf(request.getParameter("num"));
+
+        for (int i = 0; i < num; ++i) {
+            WalletOrderModel walletOrderModel = new WalletOrderModel();
+            walletOrderModel.setOrderID(UUID.randomUUID().toString());
+            walletOrderModel.setUserId(Long.toString(MoneySeverRandom.getRandomNum(1, num)));
+            walletOrderModel.setWalletChannel("WX");
+            walletOrderModel.setWalletLines(1);
+            walletOrderModel.setOrderDate(MoneyServerDate.StrToDate("2015-12-18 13:55:54"));
+            userDAO.save(walletOrderModel);
+
+            HaremmasterInviteInfoModel haremmasterInviteInfoModel =
+                    new HaremmasterInviteInfoModel();
+
+            haremmasterInviteInfoModel.setInvitedUserId(Integer.toString(i+1));
+            haremmasterInviteInfoModel.setInvitedDate(MoneyServerDate.getDatePreDate());
+            haremmasterInviteInfoModel.setHaremmasterUserId(Long.toString(MoneySeverRandom.getRandomNum(1, 9)));
+            userDAO.save(haremmasterInviteInfoModel);
+        }
     }
 
 }

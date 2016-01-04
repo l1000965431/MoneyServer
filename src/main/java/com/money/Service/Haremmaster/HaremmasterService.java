@@ -14,6 +14,8 @@ import com.money.model.UserModel;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import until.GsonUntil;
@@ -29,6 +31,8 @@ import java.util.List;
 
 @Service("HaremmasterService")
 public class HaremmasterService extends ServiceBase implements ServiceInterface {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HaremmasterService.class);
 
     @Autowired
     GeneraDAO generaDAO;
@@ -65,6 +69,7 @@ public class HaremmasterService extends ServiceBase implements ServiceInterface 
         }).equals(Config.SERVICE_FAILED)) {
             return 0;
         } else {
+            LOGGER.info(userId + "设置群主");
             return 1;
         }
     }
@@ -140,6 +145,22 @@ public class HaremmasterService extends ServiceBase implements ServiceInterface 
     }
 
     /**
+     * 刷新总的邀请人数量
+     *
+     * @param userId
+     */
+    void updateTotalInviteNum(String userId) {
+        String sql = "update haremmaster set TotalInvitePeopleNum=(select count(InvitedUserId) from " +
+                "haremmasterinviteinfo where haremmasterinviteinfo.HaremmasterUserId = ?) where userId=?";
+        Session session = generaDAO.getNewSession();
+        session.createSQLQuery(sql)
+                .setParameter(0, userId)
+                .setParameter(1, userId)
+                .executeUpdate();
+    }
+
+
+    /**
      * 获得群主ID列表
      *
      * @return
@@ -148,7 +169,7 @@ public class HaremmasterService extends ServiceBase implements ServiceInterface 
         String sql = "select userId from haremmaster limit ?,?";
         Session session = generaDAO.getNewSession();
         return session.createSQLQuery(sql)
-                .setParameter(0, page)
+                .setParameter(0, page*pagenum)
                 .setParameter(1, pagenum)
                 .list();
     }
@@ -164,7 +185,7 @@ public class HaremmasterService extends ServiceBase implements ServiceInterface 
         Session session = generaDAO.getNewSession();
         return session.createSQLQuery(sql)
                 .setParameter(0, HaremmasterId)
-                .setParameter(1, page)
+                .setParameter(1, page*pagenum)
                 .setParameter(2, pagenum)
                 .list();
     }
@@ -190,12 +211,13 @@ public class HaremmasterService extends ServiceBase implements ServiceInterface 
      * @return
      */
     int CalculateMonthDayRecharge(String userId, Date InviteDate, Date MonthDate) {
-        String sql = "select sum(WalletLines) from walletorder where userId = ? and ? < OrderDate and date_format(OrderDate,'%Y-%m-%d') = date_format(?,'%Y-%m-%d')";
+        /*String sql = "select sum(WalletLines) from walletorder where userId = ? and ? < OrderDate and date_format(OrderDate,'%Y-%m-%d') = date_format(?,'%Y-%m-%d')";*/
+        String sql = "select sum(WalletLines) from walletorder where userId = ? ";
         Session session = generaDAO.getNewSession();
         BigDecimal re = (BigDecimal) session.createSQLQuery(sql)
                 .setParameter(0, userId)
-                .setParameter(1, InviteDate)
-                .setParameter(2, MonthDate)
+                /*.setParameter(1, InviteDate)
+                .setParameter(2, MonthDate)*/
                 .uniqueResult();
         if (re == null) {
             return 0;
@@ -214,6 +236,8 @@ public class HaremmasterService extends ServiceBase implements ServiceInterface 
             return;
         }
 
+        LOGGER.info("群主每月每日结算");
+
         generaDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
             @Override
             public boolean callback(Session session) throws Exception {
@@ -227,10 +251,10 @@ public class HaremmasterService extends ServiceBase implements ServiceInterface 
                         int HaremmasterInvitedUserIDPagenum = 30;
                         List HaremmasterInvitedUserIDList =
                                 GetHaremmasterInvitedUserIDList(HaremmasterId, HaremmasterInvitedUserIDPage, HaremmasterInvitedUserIDPagenum);
-                        int MonthDayRecharge = 0;
 
                         while (HaremmasterInvitedUserIDList != null
                                 && HaremmasterInvitedUserIDList.size() != 0) {
+                            int MonthDayRecharge = 0;
                             for (int i = 0; i < HaremmasterInvitedUserIDList.size(); ++i) {
                                 Object[] o = (Object[]) HaremmasterInvitedUserIDList.get(i);
 
@@ -243,14 +267,15 @@ public class HaremmasterService extends ServiceBase implements ServiceInterface 
                             updateMonthDayRecharge(MonthDayRecharge, HaremmasterId);
                             int TotalRecharge = GetHaremmasterTotalRecharge(HaremmasterId);
                             updateProportion(TotalRecharge, HaremmasterId);
+                            updateTotalInviteNum(HaremmasterId);
 
-                            HaremmasterInvitedUserIDPage += HaremmasterInvitedUserIDPagenum;
+                            HaremmasterInvitedUserIDPage ++;
                             HaremmasterInvitedUserIDList =
                                     GetHaremmasterInvitedUserIDList(HaremmasterId, HaremmasterInvitedUserIDPage, HaremmasterInvitedUserIDPagenum);
                         }
                     }
 
-                    HaremmasterIdpage += HaremmasterIdpagenum;
+                    HaremmasterIdpage ++;
                     HaremmasterIdList = GetHaremmasterIdList(HaremmasterIdpage, HaremmasterIdpagenum);
                 }
 
@@ -263,6 +288,7 @@ public class HaremmasterService extends ServiceBase implements ServiceInterface 
      * 每月结算
      */
     public void SettlementMonth() {
+        LOGGER.info("群主每月结算");
         generaDAO.excuteTransactionByCallback(new TransactionCallback() {
             @Override
             public void callback(BaseDao basedao) throws Exception {
@@ -342,7 +368,7 @@ public class HaremmasterService extends ServiceBase implements ServiceInterface 
                 alitransferModel.setLines(it.getMonthPushMoney());
                 alitransferModel.setAliEmail(userModel.getAlipayId());
                 alitransferModel.setRealName(userModel.getAlipayRealName());
-                alitransferModel.setExtension( "本月邀请提成打款 总邀请数量:"+it.getTotalInvitePeopleNum()+" 本月邀请人总充值:"+it.getMonthRecharge() );
+                alitransferModel.setExtension("本月邀请提成打款 总邀请数量:" + it.getTotalInvitePeopleNum() + " 本月邀请人总充值:" + it.getMonthRecharge());
                 AlitransferList.add(alitransferModel);
             }
 
@@ -378,6 +404,7 @@ public class HaremmasterService extends ServiceBase implements ServiceInterface 
      * @return
      */
     public int CanelShieldingHaremmaster(String userId) {
+        LOGGER.info(userId + "取消屏蔽群主");
         return SetShieldingHaremmaster(userId, false);
     }
 
@@ -388,6 +415,7 @@ public class HaremmasterService extends ServiceBase implements ServiceInterface 
      * @return
      */
     public int SetShieldingHaremmaster(String userId) {
+        LOGGER.info(userId + "屏蔽群主");
         return SetShieldingHaremmaster(userId, true);
     }
 
@@ -413,6 +441,7 @@ public class HaremmasterService extends ServiceBase implements ServiceInterface 
                     .setParameter(0, userId)
                     .executeUpdate();
             t.commit();
+            LOGGER.info("删除群主:" + userId);
             return 1;
         } catch (Exception e) {
             t.rollback();

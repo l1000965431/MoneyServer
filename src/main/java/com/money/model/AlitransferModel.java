@@ -63,7 +63,8 @@ public class AlitransferModel extends BaseModel {
     /**
      * 扩展参数
      */
-    String extension = "";
+    @Transient
+    String extension = "微聚竞投提现打款";
 
     public int getId() {
         return Id;

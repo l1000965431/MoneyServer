@@ -14,7 +14,6 @@ public class HaremmasterInviteInfoModel extends BaseModel {
      * 被邀请人的用户ID
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     String InvitedUserId;
 
     /**
