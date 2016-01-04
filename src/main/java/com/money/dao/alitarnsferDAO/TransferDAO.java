@@ -33,7 +33,7 @@ public class TransferDAO extends BaseDao {
      * @param AliName  支付宝帐号
      * @return 0失败 >0成功
      */
-    public int Submitalitansfer(String UserId, int Lines,int Poundage, String RealName, String AliName) {
+    public int Submitalitansfer(String UserId, int Lines, int Poundage, String RealName, String AliName) {
 
         AlitransferModel alitransferModel = GetAliTransfer(UserId);
 
@@ -43,9 +43,9 @@ public class TransferDAO extends BaseDao {
             NewalitransferModel.setAliEmail(AliName);
             NewalitransferModel.setRealName(RealName);
             NewalitransferModel.setLines(Lines);
-            NewalitransferModel.setPoundageResult( Poundage );
-            NewalitransferModel.setAlitransferDate( MoneyServerDate.getDateCurDate() );
-            NewalitransferModel.setExtension( "微聚竞投提现打款" );
+            NewalitransferModel.setPoundageResult(Poundage);
+            NewalitransferModel.setAlitransferDate(MoneyServerDate.getDateCurDate());
+            NewalitransferModel.setExtension("微聚竞投提现打款");
             this.saveNoTransaction(NewalitransferModel);
             return 1;
         } else {
@@ -74,7 +74,7 @@ public class TransferDAO extends BaseDao {
 
     }
 
-    public int SubmitaliWxtansfer( String UserId, int Lines,int Poundage, String RealName, String AliName ){
+    public int SubmitaliWxtansfer(String UserId, int Lines, int Poundage, String RealName, String AliName) {
         WxTranferModel wxTranferModel = GetWxTransfer(UserId);
 
         if (wxTranferModel == null) {
@@ -84,8 +84,8 @@ public class TransferDAO extends BaseDao {
             NewwxTranferModel.setOpenId(AliName);
             NewwxTranferModel.setRealName(RealName);
             NewwxTranferModel.setLines(Lines);
-            NewwxTranferModel.setPoundageResult( Poundage );
-            NewwxTranferModel.setWxtransferDate( MoneyServerDate.getDateCurDate() );
+            NewwxTranferModel.setPoundageResult(Poundage);
+            NewwxTranferModel.setWxtransferDate(MoneyServerDate.getDateCurDate());
             this.saveNoTransaction(NewwxTranferModel);
             return 1;
         } else {
@@ -175,13 +175,13 @@ public class TransferDAO extends BaseDao {
 
         while (true) {
             query.setParameter(0, page);
-            List<AliTransferInfo> Sqllist = (List<AliTransferInfo>)query.list();
+            List<AliTransferInfo> Sqllist = (List<AliTransferInfo>) query.list();
 
-            if (Sqllist == null || Sqllist.size() == 0 || Sqllist.get(0).getCountTransfer().equals( BigInteger.ZERO) ) {
+            if (Sqllist == null || Sqllist.size() == 0 || Sqllist.get(0).getCountTransfer().equals(BigInteger.ZERO)) {
                 return list;
             }
 
-            list.add( Sqllist );
+            list.add(Sqllist);
             page += 3000;
         }
     }
@@ -197,14 +197,14 @@ public class TransferDAO extends BaseDao {
         String sql = "select * from alitransfer where TransferLines != 0 and IsFaliled != true limit ? ,3000;";
         Query query = session.createSQLQuery(sql).addEntity(AlitransferModel.class);
 
-        query.setParameter(0, page);
-        List<AlitransferModel> Sqllist = (List<AlitransferModel>)query.list();
+        query.setParameter(0, page * 3000);
+        List<AlitransferModel> Sqllist = (List<AlitransferModel>) query.list();
 
         //锁定列表
         String sql1 = "update alitransfer INNER JOIN"
-                +"(select * from alitransfer where TransferLines != 0 and IsFaliled != true limit ? ,3000)as ali set alitransfer.IsLock=1;";
+                + "(select * from alitransfer where TransferLines != 0 and IsFaliled != true limit ? ,3000)as ali set alitransfer.IsLock=1;";
         query = session.createSQLQuery(sql1);
-        query.setParameter(0, page*3000);
+        query.setParameter(0, page * 3000);
         query.executeUpdate();
 
         return Sqllist;
@@ -221,23 +221,24 @@ public class TransferDAO extends BaseDao {
         String sql = "select * from wxtransfer where TransferLines != 0 and IsFaliled != true limit ? ,1000;";
         Query query = session.createSQLQuery(sql).addEntity(WxTranferModel.class);
 
-        query.setParameter(0, page*1000);
-        List<WxTranferModel> Sqllist = (List<WxTranferModel>)query.list();
+        query.setParameter(0, page * 1000);
+        List<WxTranferModel> Sqllist = (List<WxTranferModel>) query.list();
 
         //锁定列表
         String sql1 = "update wxtransfer INNER JOIN " +
                 "(select * from wxtransfer where TransferLines != 0 and IsFaliled != true limit ? ,1000)as wx set wxtransfer.IsLock=1;";
         query = session.createSQLQuery(sql1);
-        query.setParameter(0, page*1000);
+        query.setParameter(0, page * 1000);
         query.executeUpdate();
         return Sqllist;
     }
 
     /**
      * 获取微信提现申请人数
+     *
      * @return
      */
-    public int GetWxTransferNum(){
+    public int GetWxTransferNum() {
         Session session = this.getNewSession();
         String sql = "select count(Id) from wxtransfer where IsFaliled=FALSE ";
         Query query = session.createSQLQuery(sql);
@@ -247,9 +248,10 @@ public class TransferDAO extends BaseDao {
 
     /**
      * 获取微信提现申请失败订单数
+     *
      * @return
      */
-    public int GetWxFailTransferNum(){
+    public int GetWxFailTransferNum() {
         Session session = this.getNewSession();
         String sql = "select count(Id) from wxtransfer where IsFaliled=TRUE ";
         Query query = session.createSQLQuery(sql);
@@ -259,9 +261,10 @@ public class TransferDAO extends BaseDao {
 
     /**
      * 获取支付宝提现申请人数
+     *
      * @return
      */
-    public int GetAliTransferNum(){
+    public int GetAliTransferNum() {
         Session session = this.getNewSession();
         String sql = "select count(Id) from alitransfer where IsFaliled=FALSE ";
         Query query = session.createSQLQuery(sql);
@@ -271,9 +274,10 @@ public class TransferDAO extends BaseDao {
 
     /**
      * 获取支付宝提现申请失败订单数
+     *
      * @return
      */
-    public int GetAliFailTransferNum(){
+    public int GetAliFailTransferNum() {
         Session session = this.getNewSession();
         String sql = "select count(Id) from alitransfer where IsFaliled=TRUE ";
         Query query = session.createSQLQuery(sql);

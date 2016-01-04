@@ -45,8 +45,8 @@ import java.util.regex.Pattern;
  * Created by liumin on 15/7/6.
  */
 
-@Controller
-@RequestMapping("/Test")
+/*@Controller
+@RequestMapping("/TestLocal")*/
 public class TestConller extends ControllerBase implements IController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestConller.class);
@@ -702,6 +702,13 @@ public class TestConller extends ControllerBase implements IController {
             haremmasterInviteInfoModel.setHaremmasterUserId(Long.toString(MoneySeverRandom.getRandomNum(1, 9)));
             userDAO.save(haremmasterInviteInfoModel);
         }
+    }
+
+    @RequestMapping("/TestHaremmasterTransferNotify")
+    @ResponseBody
+    public void TestHaremmasterTransferNotify(){
+        WalletService walletService = ServiceFactory.getService("WalletService");
+        walletService.HaremmasterTransferNotify(null);
     }
 
 }

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import until.GsonUntil;
 import until.MoneyServerDate;
+import until.UmengPush.UMengMessage;
 import until.UmengPush.UmengSendParameter;
 
 import java.util.*;
@@ -71,6 +72,7 @@ public class UserService extends ServiceBase implements ServiceInterface {
             return state[0];
         }
 
+        PushRegisteredMessage(username);
         return state[0];
     }
 
@@ -441,10 +443,10 @@ public class UserService extends ServiceBase implements ServiceInterface {
                     HaremmasterInviteInfoModel haremmasterInviteInfoModel
                             = new HaremmasterInviteInfoModel();
 
-                    haremmasterInviteInfoModel.setHaremmasterUserId( inviteUserModel.getUserId() );
+                    haremmasterInviteInfoModel.setHaremmasterUserId(inviteUserModel.getUserId());
                     haremmasterInviteInfoModel.setInvitedDate(MoneyServerDate.getDateCurDate());
-                    haremmasterInviteInfoModel.setInvitedUserId( userModel.getUserId() );
-                    userDAO.save( haremmasterInviteInfoModel );
+                    haremmasterInviteInfoModel.setInvitedUserId(userModel.getUserId());
+                    userDAO.save(haremmasterInviteInfoModel);
                 }
 
                 InvitedUserID[0] = inviteUserModel.getUserId();
@@ -524,6 +526,28 @@ public class UserService extends ServiceBase implements ServiceInterface {
         map.put("ledSecurities", Integer.toString(ledSecurities[0]));
         map.put("IsInvited", Boolean.toString(IsInvited[0]));
         return GsonUntil.JavaClassToJson(map);
+    }
+
+    /**
+     * 注册成功发送消息
+     *
+     * @param userId
+     */
+    String PushRegisteredMessage(String userId) {
+        ArrayList<Map<String, String>> MessageBody = new ArrayList<>();
+
+        Map<String, String> map = new HashMap<>();
+        map.put("imgUrl", Config.MessageUrl);
+        map.put("link", "");
+        map.put("messageContent", "欢迎加入微聚竞投!如有任何一问请加官方QQ群:421814586");
+        MessageBody.add(map);
+        String json = GsonUntil.JavaClassToJson(MessageBody);
+
+        UmengSendParameter umengSendParameterRed = new UmengSendParameter(new UMengMessage(userId, "messagebox", json, "注册成功发送消息"));
+        String JsonRed = GsonUntil.JavaClassToJson(umengSendParameterRed);
+        MoneyServerMQManager.SendMessage(new MoneyServerMessage(MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TOPIC,
+                MoneyServerMQ_Topic.MONEYSERVERMQ_PUSH_TAG, JsonRed, "注册成功发送消息"));
+        return json;
     }
 
 }

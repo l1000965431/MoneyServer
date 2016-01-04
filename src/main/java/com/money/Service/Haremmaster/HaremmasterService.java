@@ -211,8 +211,7 @@ public class HaremmasterService extends ServiceBase implements ServiceInterface 
      * @return
      */
     int CalculateMonthDayRecharge(String userId, Date InviteDate, Date MonthDate) {
-        /*String sql = "select sum(WalletLines) from walletorder where userId = ? and ? < OrderDate and date_format(OrderDate,'%Y-%m-%d') = date_format(?,'%Y-%m-%d')";*/
-        String sql = "select sum(WalletLines) from walletorder where userId = ? ";
+        String sql = "select sum(WalletLines) from walletorder where userId = ? and ? < OrderDate and date_format(OrderDate,'%Y-%m-%d') = date_format(?,'%Y-%m-%d')";
         Session session = generaDAO.getNewSession();
         BigDecimal re = (BigDecimal) session.createSQLQuery(sql)
                 .setParameter(0, userId)

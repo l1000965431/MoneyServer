@@ -22,6 +22,8 @@
         <property name="triggers">
             <list>
                 <ref bean="cronTriggerRedis" />
+                <ref bean="cronTriggerHaremmasterMonthDayRecharge" />
+                <ref bean="cronTriggerHaremmasterMonthRecharge" />
             </list>
         </property>
 
@@ -39,5 +41,24 @@
         <property name="cronExpression" value="0 0/5 * * * ?" />
     </bean>
 
+    <!--群主每月每天结算任务-->
+    <bean name="HaremmasterMonthDayRechargeJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.money.job.HaremmasterMonthDayRechargeJob"/>
+    </bean>
+
+    <bean id="cronTriggerHaremmasterMonthDayRecharge" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="HaremmasterMonthDayRechargeJob" />
+        <property name="cronExpression" value="0 0 1 * * ?" />
+    </bean>
+
+    <!--群主每月结算任务-->
+    <bean name="HaremmasterMonthRechargeJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.money.job.HaremmasterMonthRechargeJob"/>
+    </bean>
+
+    <bean id="cronTriggerHaremmasterMonthRecharge" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="HaremmasterMonthDayRechargeJob" />
+        <property name="cronExpression" value="0 0 2 L * ?" />
+    </bean>
 
 </beans>

@@ -225,6 +225,11 @@ public class Config {
     public static final int ADVANCETYPE_ADVANCE = 2;
 
     public static final float Haremmaster_Proportion = 0.005f;
+
+    /**
+     * 注册消息图片网址
+     */
+    public static final String MessageUrl= "http://7xjewm.com1.z0.glb.clouddn.com/RegisteredMessage.jpg";
 }
 
 
