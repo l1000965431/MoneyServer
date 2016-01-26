@@ -1,6 +1,5 @@
 package com.money.controller;
 
-import com.google.gson.Gson;
 import com.money.config.Config;
 import com.money.config.ServerReturnValue;
 import org.apache.http.HttpException;
@@ -123,6 +122,27 @@ public class UserController extends ControllerBase implements IController {
         return userService.userRegister(userName, "", password, userType, inviteCode);
     }
 
+    @RequestMapping("/registerHaremmaster")
+    @ResponseBody
+    public int registerHaremmaster(HttpServletRequest request) {
+        Map<String, String> mapData = DecryptionDataToMapByUserId(request.getParameter("data"),
+                this.initDesKey(request.getHeader("userId")));
+
+        if (mapData == null) {
+            return ServerReturnValue.REQISTEREDUSERNAMEERROR;
+        }
+
+
+        String userName = mapData.get("userId");
+        String code = mapData.get("code");
+        String password = mapData.get("password");
+        int userType = Integer.valueOf(mapData.get("userType"));
+        String inviteCode = mapData.get("inviteCode");
+
+        return userService.userRegisterHaremmaster(userName, code, password, userType, inviteCode);
+    }
+
+
     @RequestMapping("/submitTeleNum")
     @ResponseBody
     public int submitTeleNum(HttpServletRequest request) {
@@ -199,6 +219,7 @@ public class UserController extends ControllerBase implements IController {
 
     /**
      * 解除微信帐号绑定
+     *
      * @param request
      * @return
      */
@@ -269,10 +290,10 @@ public class UserController extends ControllerBase implements IController {
         if (result == 1) {
             response.sendRedirect("../project/BindingResult.jsp?result=1");
             return 1;
-        } else if( result == 3 ) {
+        } else if (result == 3) {
             response.sendRedirect("../project/BindingResult.jsp?result=3");
             return 3;
-        }else{
+        } else {
             response.sendRedirect("../project/BindingResult.jsp?result=2");
             return 2;
         }
@@ -280,28 +301,29 @@ public class UserController extends ControllerBase implements IController {
 
     @RequestMapping("/AddUserExp")
     @ResponseBody
-    public int addUserExp( HttpServletRequest request,HttpServletResponse response ) {
+    public int addUserExp(HttpServletRequest request, HttpServletResponse response) {
 
         String userId = request.getParameter("userId");
         String inviteCode = request.getParameter("inviteCode");
 
         List<Integer> list = userService.addUserExp(userId, 0, inviteCode, Config.AddExpInvite);
-        if( list == null ){
+        if (list == null) {
             return -1;
-        }else{
-            response.addHeader( "UserAddNum", GsonUntil.JavaClassToJson( list ));
+        } else {
+            response.addHeader("UserAddNum", GsonUntil.JavaClassToJson(list));
             return 1;
         }
     }
 
     /**
      * 获取用户设置信息
+     *
      * @param request
      * @return
      */
     @RequestMapping("/getUserSetInfo")
     @ResponseBody
-    public String getUserSetInfo( HttpServletRequest request ){
+    public String getUserSetInfo(HttpServletRequest request) {
         String userId = request.getParameter("userId");
         /*String token = request.getParameter("token");
 
@@ -309,7 +331,7 @@ public class UserController extends ControllerBase implements IController {
             return Config.SERVICE_FAILED;
         }*/
 
-        return userService.getUserSetInfo( userId );
+        return userService.getUserSetInfo(userId);
     }
 
 }

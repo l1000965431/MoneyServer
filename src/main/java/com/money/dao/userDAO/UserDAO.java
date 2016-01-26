@@ -13,7 +13,6 @@ import com.money.model.WalletModel;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,8 @@ public class UserDAO extends BaseDao {
     //0未登录；1，修改信息成功；2，信息不合法;3，token不一致;4,userType有问题 5:身份证号重复 6:邮箱重复
     public int modifyInvestorInfo(String userId, String info) {
         //将信息转换为map形式
-        Map<String, String> map = GsonUntil.jsonToJavaClass(info, new TypeToken<Map<String, String>>(){}.getType());
+        Map<String, String> map = GsonUntil.jsonToJavaClass(info, new TypeToken<Map<String, String>>() {
+        }.getType());
         //有空信息标志位
         boolean infoFlag = true;
         //获取MAP的第一个值，开始遍历，判断信息是否为空
@@ -56,12 +56,12 @@ public class UserDAO extends BaseDao {
         boolean userIsRight = userIsRight(userId);
 
         //查找身份证或者邮箱是否有重复
-        UserModel userModel = getUserByMailOrIdCard( map.get("mail"),map.get("identity") );
-        if( userModel != null ){
-            if( userModel.getIdentityId().equals( map.get("identity") ) ){
+        UserModel userModel = getUserByMailOrIdCard(map.get("mail"), map.get("identity"));
+        if (userModel != null) {
+            if (userModel.getIdentityId().equals(map.get("identity"))) {
                 return 5;
             }
-            if( userModel.getMail().equals( map.get("mail") ) ){
+            if (userModel.getMail().equals(map.get("mail"))) {
                 return 6;
             }
         }
@@ -159,26 +159,58 @@ public class UserDAO extends BaseDao {
         userModel.setWxOpenId(userID);
         userModel.setAlipayId("0");
         userModel.setUserInvitecode(ShareCodeUtil.toSerialCode(ShareCodeUtil.codeToId(userID)));
-        userModel.setCreateTime( MoneyServerDate.getDateCurDate() );
+        userModel.setCreateTime(MoneyServerDate.getDateCurDate());
         saveNoTransaction(userModel);
 
         if (userType == Config.INVESTOR) {
             WalletModel walletModel = new WalletModel();
             walletModel.setUserID(userID);
             saveNoTransaction(walletModel);
-        }else if( userType == Config.BORROWER ){
+        } else if (userType == Config.BORROWER) {
             try {
-                if(userInviteCode( userID,inviteCode ) == 0){
+                if (userInviteCode(userID, inviteCode) == 0) {
                     return ServerReturnValue.REQISTEREDCODEERROR;
                 }
             } catch (ParseException e) {
                 return ServerReturnValue.REQISTEREDCODEERROR;
             }
         }
-
         return ServerReturnValue.REQISTEREDSUCCESS;
-
     }
+
+    //群主注册
+    public int registeredHaremmaster(final String userID,
+                                     final String passWord, final int userType, final String inviteCode) {
+
+        UserModel userModel = new UserModel();
+        //用户注册，存入数据库
+        userModel.setUserId(userID);
+        userModel.setPassword(passWord);
+        userModel.setUserType(userType);
+        userModel.setWxOpenId(userID);
+        userModel.setAlipayId("0");
+        userModel.setUserInvitecode(ShareCodeUtil.toSerialCode(ShareCodeUtil.codeToId(userID)));
+        userModel.setCreateTime(MoneyServerDate.getDateCurDate());
+        saveNoTransaction(userModel);
+
+        if (userType == Config.INVESTOR) {
+            WalletModel walletModel = new WalletModel();
+            walletModel.setUserID(userID);
+            saveNoTransaction(walletModel);
+
+        } else if (userType == Config.BORROWER) {
+            try {
+                if (userInviteCode(userID, inviteCode) == 0) {
+                    return ServerReturnValue.REQISTEREDCODEERROR;
+                }
+            } catch (ParseException e) {
+                return ServerReturnValue.REQISTEREDCODEERROR;
+            }
+        }
+        return ServerReturnValue.REQISTEREDSUCCESS;
+    }
+
+
 
     //验证用户名是否已注册
     public boolean checkUserName(String userName) {
@@ -234,7 +266,7 @@ public class UserDAO extends BaseDao {
         map.put("token", tokenData);
         map.put("time", time);
         //存入缓存
-        MemCachService.MemCachSetMap( Config.UserLoginToken+userName, Config.FAILUER_TIME, map);
+        MemCachService.MemCachSetMap(Config.UserLoginToken + userName, Config.FAILUER_TIME, map);
         return tokenData;
 
     }
@@ -279,7 +311,7 @@ public class UserDAO extends BaseDao {
 
     //根据userName查找缓存中上次token更新时间,判断是否为登录状态
     public boolean tokenTime(String userName, Long time) {
-        String tokenTime = MemCachService.GetMemCachMapByMapKey(Config.UserLoginToken+userName, "time");
+        String tokenTime = MemCachService.GetMemCachMapByMapKey(Config.UserLoginToken + userName, "time");
         Long tokenUpdTime = Long.parseLong(tokenTime);
         //在登录状态
         if ((time - tokenUpdTime) / 1000 < 3600)
@@ -291,11 +323,11 @@ public class UserDAO extends BaseDao {
 
     //查询缓存中是否有token字符串,并验证token字符串是否与客户端传来的相等
     public boolean isTokenExist(String userID, String token) {
-        boolean tokenIsExist = MemCachService.KeyIsExists(Config.UserLoginToken+userID);
+        boolean tokenIsExist = MemCachService.KeyIsExists(Config.UserLoginToken + userID);
 
         //若存在
         if (tokenIsExist) {
-            String memToken = MemCachService.GetMemCachMapByMapKey(Config.UserLoginToken+userID, "token");
+            String memToken = MemCachService.GetMemCachMapByMapKey(Config.UserLoginToken + userID, "token");
             if (token.equals(memToken))
                 return true;
             else
@@ -307,7 +339,7 @@ public class UserDAO extends BaseDao {
     //退出登录
     public boolean quitTokenLand(String userId) {
         //清楚缓存中token
-        MemCachService.RemoveValue(Config.UserLoginToken+userId);
+        MemCachService.RemoveValue(Config.UserLoginToken + userId);
         return true;
     }
 
@@ -349,13 +381,13 @@ public class UserDAO extends BaseDao {
     }
 
 
-    public UserModel getUserByMailOrIdCard( String Mail,String IdCard ){
-        if( Mail ==null || IdCard == null){
+    public UserModel getUserByMailOrIdCard(String Mail, String IdCard) {
+        if (Mail == null || IdCard == null) {
             return null;
         }
         Session session = getNewSession();
         Transaction t = session.beginTransaction();
-        try{
+        try {
 
             Object o = session.createCriteria(UserModel.class)
                     .add(Restrictions.or(Restrictions.eq("mail", Mail), Restrictions.eq("identityId", IdCard)))
@@ -363,12 +395,12 @@ public class UserDAO extends BaseDao {
 
             t.commit();
             UserModel userModel = null;
-            if( o != null ){
-                userModel = (UserModel)o;
+            if (o != null) {
+                userModel = (UserModel) o;
             }
 
             return userModel;
-        }catch ( Exception e ){
+        } catch (Exception e) {
             t.rollback();
             return null;
         }
@@ -536,9 +568,9 @@ public class UserDAO extends BaseDao {
      * @param userId
      * @throws ParseException
      */
-    public int userInviteCode(String userId,String InviteCode) throws ParseException {
+    public int userInviteCode(String userId, String InviteCode) throws ParseException {
 
-        if( userId == null || InviteCode == null || InviteCode.length() == 0 ){
+        if (userId == null || InviteCode == null || InviteCode.length() == 0) {
             return 0;
         }
 
@@ -546,7 +578,7 @@ public class UserDAO extends BaseDao {
         Session session = this.getNewSession();
 
         SQLQuery sqlQuery = session.createSQLQuery(Sql).addEntity(InviteCodeModel.class);
-        sqlQuery.setParameter( 0,InviteCode );
+        sqlQuery.setParameter(0, InviteCode);
         InviteCodeModel inviteCodeModel = (InviteCodeModel) sqlQuery.uniqueResult();
 
         if (inviteCodeModel != null) {
@@ -554,43 +586,42 @@ public class UserDAO extends BaseDao {
             inviteCodeModel.setUserId(userId);
             this.updateNoTransaction(inviteCodeModel);
             return 1;
-        }else{
+        } else {
             return 0;
         }
 
     }
 
 
-    public int AddUserExpByUserId( String userId,int AddExp ){
+    public int AddUserExpByUserId(String userId, int AddExp) {
         String sql = "update User set userExp=userExp+? where userId = ?";
         Session session = this.getNewSession();
         SQLQuery sqlQuery = session.createSQLQuery(sql);
-        sqlQuery.setParameter( 0,AddExp );
-        sqlQuery.setParameter( 1,userId );
+        sqlQuery.setParameter(0, AddExp);
+        sqlQuery.setParameter(1, userId);
 
 
         return sqlQuery.executeUpdate();
     }
 
 
-    public int AddUserExpByInviteCode( String inviteCode,int AddExp ){
+    public int AddUserExpByInviteCode(String inviteCode, int AddExp) {
         String sql = "update User set userExp=userExp+? where userInvitecode = ?";
         Session session = this.getNewSession();
         SQLQuery sqlQuery = session.createSQLQuery(sql);
-        sqlQuery.setParameter( 0,AddExp );
-        sqlQuery.setParameter( 1,inviteCode );
+        sqlQuery.setParameter(0, AddExp);
+        sqlQuery.setParameter(1, inviteCode);
 
 
         return sqlQuery.executeUpdate();
     }
 
-    public int UpdateUserInvited( String userId ){
+    public int UpdateUserInvited(String userId) {
         String sql = "update User set IsInvited=true where userId = ?";
         Session session = this.getNewSession();
         SQLQuery sqlQuery = session.createSQLQuery(sql);
-        sqlQuery.setParameter( 0,userId );
+        sqlQuery.setParameter(0, userId);
 
         return sqlQuery.executeUpdate();
     }
-
 }

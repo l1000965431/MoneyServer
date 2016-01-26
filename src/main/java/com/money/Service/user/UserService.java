@@ -58,15 +58,9 @@ public class UserService extends ServiceBase implements ServiceInterface {
 
                     return false;
                 }
-                //判断手机验证码是否输入正确
-                if (userDAO.checkTeleCode(username, code)) {
-                    state[0] = userDAO.registered(username, password, userType, inviteCode);
-                    return true;
-                } else {
-                    state[0] = ServerReturnValue.REQISTEREDCODEERROR;
-                    return false;
-                }
 
+                state[0] = userDAO.registeredHaremmaster(username, password, userType, inviteCode);
+                return true;
             }
         }) != Config.SERVICE_SUCCESS) {
             return state[0];
@@ -75,6 +69,40 @@ public class UserService extends ServiceBase implements ServiceInterface {
         PushRegisteredMessage(username);
         return state[0];
     }
+
+
+    public int userRegisterHaremmaster(final String username, final String code,
+                                       final String password, final int userType, final String inviteCode) {
+        //用户名 密码合法性
+
+        if (!userDAO.userIsRight(username) || !userDAO.passwordIsRight(password)) {
+            return ServerReturnValue.REQISTEREDUSERNAMEERROR;
+        }
+
+        if (code == null || code.length() == 0) {
+            return ServerReturnValue.REQISTEREDFAILED;
+        }
+
+        final int[] state = new int[1];
+        if (userDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
+            public boolean callback(Session session) throws Exception {
+                if (userDAO.checkUserName(username)) {
+                    state[0] = ServerReturnValue.REQISTEREDUSERNAMEREPEAT;
+                    return false;
+                }
+
+                state[0] = userDAO.registeredHaremmaster(username, password, userType, inviteCode);
+                AddHaremmasterInveite(username, code);
+                return true;
+            }
+        }) != Config.SERVICE_SUCCESS) {
+            return state[0];
+        }
+
+        PushRegisteredMessage(username);
+        return state[0];
+    }
+
 
     //用户注册-提交手机号，验证是否已注册，发送短信验证码
     //已注册返回2,发送验证码成功返回1,失败返回0,密码不合法返回3
@@ -436,19 +464,6 @@ public class UserService extends ServiceBase implements ServiceInterface {
                     return false;
                 }
 
-                /**
-                 * 如果是群主 添加到群主邀请信息里
-                 */
-                if (inviteUserModel.isHaremmaster()) {
-                    HaremmasterInviteInfoModel haremmasterInviteInfoModel
-                            = new HaremmasterInviteInfoModel();
-
-                    haremmasterInviteInfoModel.setHaremmasterUserId(inviteUserModel.getUserId());
-                    haremmasterInviteInfoModel.setInvitedDate(MoneyServerDate.getDateCurDate());
-                    haremmasterInviteInfoModel.setInvitedUserId(userModel.getUserId());
-                    userDAO.save(haremmasterInviteInfoModel);
-                }
-
                 InvitedUserID[0] = inviteUserModel.getUserId();
                 InviteUserName[0] = userModel.getUserName();
 
@@ -539,7 +554,7 @@ public class UserService extends ServiceBase implements ServiceInterface {
         Map<String, String> map = new HashMap<>();
         map.put("imgUrl", Config.MessageUrl);
         map.put("link", "");
-        map.put("messageContent", "欢迎加入微聚竞投!如有任何一问请加官方QQ群:421814586");
+        map.put("messageContent", "欢迎加入微聚竞投!如有任何疑问请加官方QQ群:421814586");
         MessageBody.add(map);
         String json = GsonUntil.JavaClassToJson(MessageBody);
 
@@ -550,4 +565,26 @@ public class UserService extends ServiceBase implements ServiceInterface {
         return json;
     }
 
+    /**
+     * 增加群主邀请
+     *
+     * @param userId
+     * @param code
+     */
+    void AddHaremmasterInveite(String userId, String code) {
+        UserModel inviteUserModel = userDAO.getUSerModelByInviteCodeNoTransaction(code);
+
+        /**
+         * 如果是群主 添加到群主邀请信息里
+         */
+        if (inviteUserModel.isHaremmaster()) {
+            HaremmasterInviteInfoModel haremmasterInviteInfoModel
+                    = new HaremmasterInviteInfoModel();
+
+            haremmasterInviteInfoModel.setHaremmasterUserId(inviteUserModel.getUserId());
+            haremmasterInviteInfoModel.setInvitedDate(MoneyServerDate.getDateCurDate());
+            haremmasterInviteInfoModel.setInvitedUserId(userId);
+            userDAO.saveNoTransaction(haremmasterInviteInfoModel);
+        }
+    }
 }
