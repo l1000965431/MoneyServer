@@ -1,8 +1,7 @@
 package com.money.job;
 
-import com.money.dao.BaseDao;
 import com.money.dao.GeneraDAO;
-import com.money.memcach.MemCachService;
+import until.memcach.MemCachService;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.quartz.Job;

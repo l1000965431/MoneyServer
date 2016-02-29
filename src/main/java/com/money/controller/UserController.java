@@ -17,6 +17,7 @@ import until.WxOauth2Token;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +39,7 @@ public class UserController extends ControllerBase implements IController {
 
     @RequestMapping("/passWordLogin")
     @ResponseBody
-    public String Login(HttpServletRequest request) {
+    public String Login(HttpServletRequest request, HttpSession session) {
 
         Map<String, String> mapData = DecryptionDataToMapByUserId(request.getParameter("data"),
                 this.initDesKey(request.getHeader("userId")));
@@ -51,7 +52,7 @@ public class UserController extends ControllerBase implements IController {
         String UserName = mapData.get("userId");
         String PassWord = mapData.get("password");
 
-        String LoginResult = userService.userLand(UserName, PassWord);
+        String LoginResult = userService.userLand(UserName, PassWord,session);
 
         Map<String, Object> map = new HashMap();
         map.put("token", LoginResult);
@@ -67,38 +68,43 @@ public class UserController extends ControllerBase implements IController {
         return GsonUntil.JavaClassToJson(map);
     }
 
+    @RequestMapping(value="/openidLogin" ,params={"openid"})
+    public String openidLogin(HttpServletRequest request,HttpSession session){
+        String openid = request.getParameter("openid");
+        return userService.userLandByOpenId(openid,session);
+    }
+
     @RequestMapping("/tokenLogin")
     @ResponseBody
-    public int tokenLogin(HttpServletRequest request) {
+    public int tokenLogin(HttpServletRequest request,HttpSession session) {
         String token = request.getParameter("token");
         String userId = request.getParameter("userId");
-        return userService.tokenLand(userId, token);
+        return userService.tokenLand(userId, token,session);
     }
 
     @RequestMapping("/perfectInfo")
     @ResponseBody
-    public int perfectInfo(HttpServletRequest request) {
+    public int perfectInfo(HttpServletRequest request,HttpSession session) {
         String userID = request.getParameter("userID");
         String token = request.getParameter("token");
         String info = request.getParameter("info");
-        return userService.perfectInfo(userID, token, info);
+        return userService.perfectInfo(userID, token, info,session);
     }
 
     @RequestMapping("/changeInfo")
     @ResponseBody
-    public int changeInfo(HttpServletRequest request) {
+    public int changeInfo(HttpServletRequest request,HttpSession session) {
         String token = request.getParameter("token");
         String info = request.getParameter("info");
         String userType = request.getParameter("userType");
-        return userService.changeInfo(token, info, userType);
+        return userService.changeInfo(token, info, userType,session);
     }
 
     @RequestMapping("/quitLogin")
     @ResponseBody
-    public boolean quitLogin(HttpServletRequest request,
-                             HttpServletResponse response) {
+    public boolean quitLogin(HttpServletRequest request,HttpSession session) {
         String userID = request.getParameter("userId");
-        return userService.quitLand(userID);
+        return userService.quitLand(userID,session);
     }
 
     @RequestMapping("/register")
@@ -118,8 +124,33 @@ public class UserController extends ControllerBase implements IController {
         String password = mapData.get("password");
         int userType = Integer.valueOf(mapData.get("userType"));
         String inviteCode = mapData.get("inviteCode");
+        String openid = request.getParameter("openid");
 
-        return userService.userRegister(userName, "", password, userType, inviteCode);
+        return userService.userRegister(userName, "", password, userType, inviteCode,openid);
+    }
+
+    /**
+     * openId注册
+     * @param request
+     * @return
+     */
+    @RequestMapping("/registerByOpenId")
+    public String registerByOpenId(HttpServletRequest request) {
+
+        String userName = request.getParameter("userId");
+        String code = request.getParameter( "code" );
+        String password = request.getParameter("password");
+        int userType = Integer.valueOf(request.getParameter("userType"));
+        String inviteCode = request.getParameter("inviteCode");
+        String openid = request.getParameter("openid");
+
+        int state = userService.userRegister(userName, code, password, userType, inviteCode,openid);
+
+        if(state == 0){
+
+        }
+
+        return "http://www.baidu.com";
     }
 
     @RequestMapping("/registerHaremmaster")
@@ -160,7 +191,7 @@ public class UserController extends ControllerBase implements IController {
 
     @RequestMapping("/changPassword")
     @ResponseBody
-    public int sendPasswochangPasswordrdCode(HttpServletRequest request) {
+    public int sendPasswochangPasswordrdCode(HttpServletRequest request,HttpSession session) {
 
         Map<String, String> mapData = DecryptionDataToMapByUserId(request.getParameter("data"),
                 this.initDesKey(request.getHeader("userId")));
@@ -173,7 +204,7 @@ public class UserController extends ControllerBase implements IController {
         //String code = request.getParameter( "code" );
         String newPassword = mapData.get("newPassword");
         String oldPassword = mapData.get("oldPassword");
-        return userService.changPassword(userName, "", newPassword, oldPassword);
+        return userService.changPassword(userName, "", newPassword, oldPassword,session);
     }
 
     @RequestMapping("/RetrievePassword")
@@ -271,6 +302,36 @@ public class UserController extends ControllerBase implements IController {
         response.sendRedirect("../project/WxBinding.jsp?openId=" + wxOauth2Token.getOpenId());
         //response.sendRedirect("../project/WxBinding.jsp?openId=" + "asdjkaznxcjkakls9840234");
         return;
+    }
+
+    /**
+     * 获取openId
+     * @param request
+     * @return
+     */
+    @RequestMapping("/getStrOpenId")
+    @ResponseBody
+    public String getStrOpenId(HttpServletRequest request){
+        String code = request.getParameter("code");
+
+        if(code==null){
+            return null;
+        }
+
+        WxOauth2Token wxOauth2Token;
+        try {
+            wxOauth2Token = wxBinding.getOauth2AccessToken(Config.WXAPPID, Config.WXAPPSECRET, code);
+        } catch (IOException e) {
+            return null;
+        } catch (HttpException e) {
+            return null;
+        }
+
+        if (wxOauth2Token == null) {
+            return null;
+        }
+
+        return wxOauth2Token.getOpenId();
     }
 
     @RequestMapping("/BindingWxOpenId")

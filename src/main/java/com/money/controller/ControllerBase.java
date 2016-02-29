@@ -8,6 +8,7 @@ import until.DESCoder;
 import until.GsonUntil;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Map;
@@ -84,12 +85,12 @@ public class ControllerBase implements IController {
      * @param token
      * @return
      */
-    protected boolean UserIsLand(String userId, String token) {
+    protected boolean UserIsLand(String userId, String token, HttpSession session) {
         if (token == null || token.length() == 0) {
             return false;
         }
 
-        return userService.tokenLand(userId, token) == 1;
+        return userService.tokenLand(userId, token,session) == 1;
     }
 
     /**

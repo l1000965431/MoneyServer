@@ -1,5 +1,8 @@
 package com.money.controller;
 
+import com.money.Service.Wxservice.Wxservice;
+import org.apache.http.HttpException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -7,6 +10,7 @@ import until.Coder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +23,9 @@ import java.util.Arrays;
 @Controller
 @RequestMapping("/Wx")
 public class WxController {
+
+    @Autowired
+    Wxservice wxservice;
 
     @RequestMapping("/FocusonWx")
     @ResponseBody
@@ -51,8 +58,24 @@ public class WxController {
 
     }
 
+    /**
+     * 微信SDK签名
+     */
+    @RequestMapping(value = "/WxSign",params = {"timestamp","nonceStr","url"})
+    @ResponseBody
+    String WxSign(HttpServletRequest request) throws IOException, HttpException {
+        String time = request.getParameter("timestamp");
+        String nonceStr = request.getParameter("nonceStr");
+        String Url = request.getParameter("url");
+        String Ticket = wxservice.getWxTicket();
 
+        return wxservice.sign(Ticket,nonceStr,time,Url);
+    }
 
-
+    @RequestMapping(value = "/WxNonceStr")
+    @ResponseBody
+    String WxNonceStr() throws IOException, HttpException {
+        return wxservice.create_nonce_str();
+    }
 
 }

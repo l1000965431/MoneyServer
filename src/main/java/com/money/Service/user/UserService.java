@@ -24,6 +24,7 @@ import until.MoneyServerDate;
 import until.UmengPush.UMengMessage;
 import until.UmengPush.UmengSendParameter;
 
+import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**
@@ -41,9 +42,19 @@ public class UserService extends ServiceBase implements ServiceInterface {
     @Autowired
     WalletService walletService;
 
-    //用户注册，判断验证码是否正确，正确则完成用户注册
+    /**
+     * //用户注册，判断验证码是否正确，正确则完成用户注册
+     *
+     * @param username
+     * @param code
+     * @param password
+     * @param userType
+     * @param inviteCode
+     * @param openid     微信的opneid
+     * @return
+     */
     public int userRegister(final String username, final String code,
-                            final String password, final int userType, final String inviteCode) {
+                            final String password, final int userType, final String inviteCode, final String openid) {
         //用户名 密码合法性
 
         if (!userDAO.userIsRight(username) || !userDAO.passwordIsRight(password)) {
@@ -60,6 +71,12 @@ public class UserService extends ServiceBase implements ServiceInterface {
                 }
 
                 state[0] = userDAO.registeredHaremmaster(username, password, userType, inviteCode);
+
+                //如果有openid 则绑定微信帐号
+                if (openid != null || !openid.equals("")) {
+                    BindingUserId(openid, username, password);
+                }
+
                 return true;
             }
         }) != Config.SERVICE_SUCCESS) {
@@ -123,15 +140,15 @@ public class UserService extends ServiceBase implements ServiceInterface {
     }
 
     //退出登录
-    public boolean quitLand(String userId) {
-        return userDAO.quitTokenLand(userId);
+    public boolean quitLand(String userId,HttpSession session) {
+        return userDAO.quitTokenLand(userId,session);
     }
 
     //使用用户名密码登录
-    public String userLand(String username, String password) {
+    public String userLand(String username, String password, HttpSession session) {
         boolean userIsExist = userDAO.checkPassWord(username, password);
         if (userIsExist) {
-            String tokenData = userDAO.landing(username, password);
+            String tokenData = userDAO.landing(username, password, session);
             if (tokenData == null) {
                 return ServerReturnValue.LANDFAILED;
             } else {
@@ -141,15 +158,46 @@ public class UserService extends ServiceBase implements ServiceInterface {
             return ServerReturnValue.LANDUSERERROR;
     }
 
+    /**
+     * 微信登录
+     * @param openid
+     * @param session
+     * @return
+     */
+    public String userLandByOpenId(String openid,HttpSession session){
+        UserModel userModel = userDAO.getUSerModelByOpenId(openid);
+
+        //跳转注册
+        if(userModel == null){
+            return "http://www.360.com";
+        }
+        String UserId = userModel.getUserId();
+        String re = userDAO.landing(UserId, openid, session);
+
+        if(re.length() > 8){
+            //跳转登录成功 如果没有绑定帐号 自动绑定
+            if(!userModel.getWxOpenId().equals(UserId)){
+                userDAO.BindingOpenId(openid,userModel);
+            }
+
+
+            return "http://www.baidu.com";
+        }else{
+            //跳转登录失败
+            return "http://www.weijujingtou.com";
+        }
+    }
+
     //用户token登陆,0登录失败，1已登录，2登录成功,3使用用户名密码登录或token不正确
-    public int tokenLand(String userID, String token) {
+    public int tokenLand(String userID, String token, HttpSession session) {
 
         //查看缓存中是否含有token,且客户端参数是否与token一样
-        boolean tokenExist = userDAO.isTokenExist(userID, token);
+        boolean tokenExist = userDAO.isTokenExist(userID, token, session);
         //若存在，查询用户登录状态，否则,应该使用用户名密码登录，返回3
         if (tokenExist) {
+            return Config.ALREADLAND;
             //比对缓存token上次更新时间，判断用户是否已登录
-            Long orderTime = System.currentTimeMillis();
+            /*Long orderTime = System.currentTimeMillis();
             String time = Long.toString(orderTime);
             Long timeLong = Long.parseLong(time);
             boolean landFlag = userDAO.tokenTime(userID, timeLong);
@@ -157,17 +205,27 @@ public class UserService extends ServiceBase implements ServiceInterface {
                 return Config.ALREADLAND;
             } else {
                 return Config.USEPASSWORD;//userDAO.tokenLand(userID, time);
-            }
+            }*/
         } else {
             return Config.USEPASSWORD;
         }
+    }
 
+    //openid登录,0登录失败，1已登录，2登录成功,3使用用户名密码登录或token不正确
+    public int openidLand(HttpSession session){
+        boolean tokenExist = userDAO.isTokenExist("", "", session);
+        //若存在，查询用户登录状态，否则,应该使用用户名密码登录，返回3
+        if (tokenExist) {
+            return Config.ALREADLAND;
+        } else {
+            return Config.USEPASSWORD;
+        }
     }
 
     //完善信息 0未登录；1，修改信息成功；2，信息不合法;3，token不一致;4,userType有问题 5:身份证号重复 6:邮箱重复
-    public int perfectInfo(String username, String token, String info) {
+    public int perfectInfo(String username, String token, String info, HttpSession session) {
         //查看缓存中是否含有token,且客户端参数是否与token一样
-        int flag = tokenLand(username, token);
+        int flag = tokenLand(username, token, session);
 
         if (flag == 1) {
             //比对缓存token上次更新时间，判断用户是否已登录
@@ -185,23 +243,23 @@ public class UserService extends ServiceBase implements ServiceInterface {
     }
 
     //修改信息,0未登录；1，修改信息成功；2，信息不合法;3,tooken不一致;4,userType有问题
-    public int changeInfo(String userName, String token, String info) {
+    public int changeInfo(String userName, String token, String info, HttpSession session) {
         //查看缓存中是否含有token,且客户端参数是否与token一样
-        boolean tokenExist = userDAO.isTokenExist(userName, token);
+        boolean tokenExist = userDAO.isTokenExist(userName, token, session);
 
         if (tokenExist) {
             //比对缓存token上次更新时间，判断用户是否已登录
-            Long orderTime = System.currentTimeMillis();
+/*            Long orderTime = System.currentTimeMillis();
             String time = Long.toString(orderTime);
             Long timeLong = Long.parseLong(time);
             boolean landFlag = userDAO.tokenTime(userName, timeLong);
-            if (landFlag) {
-                //根据username,查找用户类型
-                return userDAO.changeInvestorInfo(userName, info);
-            } else
-                return Config.NOT_LAND;
+            if (landFlag) {*/
+            //根据username,查找用户类型
+            return userDAO.changeInvestorInfo(userName, info);
+/*            } else
+                return Config.NOT_LAND;*/
         } else
-            return Config.TOKEN_FAILED;
+            return Config.NOT_LAND;
 
     }
 
@@ -224,9 +282,9 @@ public class UserService extends ServiceBase implements ServiceInterface {
     }
 
     //比对验证码，修改密码
-    public int changPassword(String userName, String code, String newPassWord, String oldPassWord) {
+    public int changPassword(String userName, String code, String newPassWord, String oldPassWord, HttpSession session) {
         if (userDAO.checkTeleCode(userName, code)) {
-            if (userDAO.changePassword(userName, newPassWord, oldPassWord)) {
+            if (userDAO.changePassword(userName, newPassWord, oldPassWord, session)) {
                 return 1;
             } else {
                 return 0;
@@ -275,6 +333,10 @@ public class UserService extends ServiceBase implements ServiceInterface {
      */
     public UserModel getUserInfo(String UserID) {
         return userDAO.getUSerModel(UserID);
+    }
+
+    public UserModel getUserInfoByOpenId(String openid){
+        return userDAO.getUSerModelByOpenId(openid);
     }
 
     public UserModel getUserInfoNoTransaction(String UserID) {
@@ -408,8 +470,8 @@ public class UserService extends ServiceBase implements ServiceInterface {
      * @param userId
      * @return
      */
-    public String getUserToken(String userId) {
-        return userDAO.getUserToken(userId);
+    public String getUserToken(String userId,HttpSession session) {
+        return userDAO.getUserToken(userId,session);
     }
 
 

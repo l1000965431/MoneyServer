@@ -22,6 +22,7 @@ import until.GsonUntil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,14 +133,14 @@ public class ActivityController extends ControllerBase implements IController {
      */
     @RequestMapping("/GetActivityHasInvestment")
     @ResponseBody
-    public String GetActivityHasInvestment(HttpServletRequest request) {
+    public String GetActivityHasInvestment(HttpServletRequest request, HttpSession session) {
         //获取UserID;
         String UserID = request.getParameter("userID");
         String Token = request.getParameter("token");
         int page = Integer.valueOf(request.getParameter("page"));
         int findNum = Integer.valueOf(request.getParameter("findNum"));
 
-        if (!this.UserIsLand(UserID, Token)) {
+        if (!this.UserIsLand(UserID, Token,session)) {
             return Config.STRLANDFAILED;
         }
 
@@ -208,14 +209,14 @@ public class ActivityController extends ControllerBase implements IController {
      */
     @RequestMapping("/getActivityEarnings")
     @ResponseBody
-    public String getActivityEarnings(HttpServletRequest request) {
+    public String getActivityEarnings(HttpServletRequest request,HttpSession session) {
         final String UserID = request.getParameter("userID");
         final String token = request.getParameter("token");
         final int Page = Integer.valueOf(request.getParameter("page"));
         final int FindNum = Integer.valueOf(request.getParameter("findNum"));
 
 
-        if (!this.UserIsLand(UserID, token)) {
+        if (!this.UserIsLand(UserID, token,session)) {
             return Config.STRLANDFAILED;
         }
 

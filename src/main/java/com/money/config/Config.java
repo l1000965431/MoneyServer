@@ -230,6 +230,31 @@ public class Config {
      * 注册消息图片网址
      */
     public static final String MessageUrl= "http://7xjewm.com1.z0.glb.clouddn.com/RegisteredMessage.jpg";
+
+    /**
+     * session中用户信息的key
+     */
+    public static final String SessionUserKey="userinfo";
+
+    /**
+     * 加盟代理费 单位:分
+     */
+    public static int League = 0;
+
+    /**
+     * 加盟费分成比例
+     */
+    public static int LeagueDividedinto=0;
+
+    /**
+     * 普通充值
+     */
+    public static final int PayType_Normal = 1;
+
+    /**
+     * 加盟充值
+     */
+    public static final int PayType_League = 2;
 }
 
 

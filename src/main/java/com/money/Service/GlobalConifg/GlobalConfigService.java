@@ -73,6 +73,12 @@ public class GlobalConfigService extends ServiceBase implements ServiceInterface
                 case "MaxVirtualSecuritiesBuy":
                     Config.MaxVirtualSecuritiesBuy = Integer.valueOf(entry.getValue());
                     break;
+                case "League":
+                    Config.League=Integer.valueOf(entry.getValue());
+                    break;
+                case "LeagueDividedinto":
+                    Config.LeagueDividedinto=Integer.valueOf(entry.getValue());
+                    break;
             }
         }
     }

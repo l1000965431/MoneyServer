@@ -6,7 +6,7 @@ import com.money.config.Config;
 import com.money.config.ServerReturnValue;
 import com.money.dao.BaseDao;
 import com.money.dao.TransactionCallback;
-import com.money.memcach.MemCachService;
+import until.memcach.MemCachService;
 import com.money.model.InviteCodeModel;
 import com.money.model.UserModel;
 import com.money.model.WalletModel;
@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import until.*;
 
+import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -104,7 +105,7 @@ public class UserDAO extends BaseDao {
     }
 
     //修改密码
-    public boolean changePassword(String userID, String newPassWord, String oldPassWord) {
+    public boolean changePassword(String userID, String newPassWord, String oldPassWord,HttpSession session) {
         UserModel userModel = this.getUSerModel(userID);
 
         if (userModel == null) {
@@ -258,15 +259,26 @@ public class UserDAO extends BaseDao {
     }
 
     //登录，查询DB
-    public String landing(String userName, String passWord) {
+    public String landing(String userName, String openid,HttpSession session ) {
+
         String tokenData = Token.create(userName);
-        Long orderTime = System.currentTimeMillis();
+        Map<String,String> map = new HashMap<>();
+        map.put("token",tokenData);
+        map.put("userid",userName);
+
+        if(openid != null){
+            map.put("openid",openid);
+        }
+
+        session.setAttribute(Config.SessionUserKey,map);
+
+        /*Long orderTime = System.currentTimeMillis();
         String time = Long.toString(orderTime);
         Map<String, String> map = new HashMap<String, String>();
         map.put("token", tokenData);
         map.put("time", time);
         //存入缓存
-        MemCachService.MemCachSetMap(Config.UserLoginToken + userName, Config.FAILUER_TIME, map);
+        MemCachService.MemCachSetMap(Config.UserLoginToken + userName, Config.FAILUER_TIME, map);*/
         return tokenData;
 
     }
@@ -322,12 +334,21 @@ public class UserDAO extends BaseDao {
     }
 
     //查询缓存中是否有token字符串,并验证token字符串是否与客户端传来的相等
-    public boolean isTokenExist(String userID, String token) {
-        boolean tokenIsExist = MemCachService.KeyIsExists(Config.UserLoginToken + userID);
+    public boolean isTokenExist(String userID, String token,HttpSession session) {
+
+        Map<String,String> map = (Map<String,String>)session.getAttribute(Config.SessionUserKey);
+
+
+        boolean tokenIsExist = map==null?false:true;
 
         //若存在
         if (tokenIsExist) {
-            String memToken = MemCachService.GetMemCachMapByMapKey(Config.UserLoginToken + userID, "token");
+            //如果不传token则只检测session是否存在
+            if("".equals(token)){
+                return true;
+            }
+
+            String memToken = map.get("token");
             if (token.equals(memToken))
                 return true;
             else
@@ -337,9 +358,9 @@ public class UserDAO extends BaseDao {
     }
 
     //退出登录
-    public boolean quitTokenLand(String userId) {
+    public boolean quitTokenLand(String userId,HttpSession session) {
         //清楚缓存中token
-        MemCachService.RemoveValue(Config.UserLoginToken + userId);
+        session.removeAttribute(Config.SessionUserKey);
         return true;
     }
 
@@ -552,14 +573,33 @@ public class UserDAO extends BaseDao {
         }
     }
 
+    //1:绑定成功 2:绑定失败 3:已经绑定
+    public int BindingOpenId(String openId, UserModel userModel) {
+        if (userModel == null) {
+            return 2;
+        }
+
+        if (!userModel.getWxOpenId().equals(userModel.getUserId())) {
+            return 3;
+        }
+
+        userModel.setWxOpenId(openId);
+        if (this.update(userModel)) {
+            return 1;
+        } else {
+            return 2;
+        }
+    }
+
     /**
      * 获得用户token
      *
      * @param UserId
      * @return
      */
-    public String getUserToken(String UserId) {
-        return MemCachService.GetMemCachMapByMapKey(UserId, "token");
+    public String getUserToken(String UserId,HttpSession session) {
+        Map<String,String> map = (Map<String,String>)session.getAttribute(Config.SessionUserKey);
+        return map.get("token");
     }
 
     /**

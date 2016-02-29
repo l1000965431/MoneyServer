@@ -11,7 +11,7 @@ import com.money.config.Config;
 import com.money.config.MoneyServerMQ_Topic;
 import com.money.dao.TransactionSessionCallback;
 import com.money.dao.activityPreferentialDAO.ActivityPreferentialDAO;
-import com.money.memcach.MemCachService;
+import until.memcach.MemCachService;
 import com.money.model.*;
 import org.hibernate.Session;
 import org.quartz.SchedulerException;

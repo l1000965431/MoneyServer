@@ -25,6 +25,7 @@ import until.GsonUntil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -62,7 +63,7 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
     @Token(remove = true)
     //-1:重新登录 1:期或票不够 2:钱不够 3:本期不够 预购后边的期 100:支付成功 103:支付成功客户端需要刷新104:微卷不够 105:错误 106:返回当前剩余值
     //  MessageType:1:判断本期 2:不判断本期
-    public int PurchaseActivity(HttpServletRequest request,HttpServletResponse response) {
+    public int PurchaseActivity(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
         final String UserID = request.getParameter("UserID");
         final String token = request.getParameter("token");
         final String InstallmentActivityID = request.getParameter("InstallmentActivityID");
@@ -77,7 +78,7 @@ public class PurchaseInAdvanceController extends ControllerBase implements ICont
             return ServerReturnValue.PERFECTERROR;
         }
 
-        if (!this.UserIsLand(UserID, token)) {
+        if (!this.UserIsLand(UserID, token,session)) {
             return Config.LANDFAILED;
         }
 

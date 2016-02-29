@@ -1,7 +1,7 @@
 package com.money.Filter;
 
 import com.money.annotation.Token;
-import com.money.memcach.MemCachService;
+import until.memcach.MemCachService;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -54,11 +54,11 @@ public class TokenInterceptor extends HandlerInterceptorAdapter {
         if (serverToken == null || serverToken.equals("") ) {
             return true;
         }
-        String clinetToken = request.getParameter("UrlToken");
-        if (clinetToken == null) {
+        String clientToken = request.getParameter("UrlToken");
+        if (clientToken == null) {
             return false;
         }
-        if (!serverToken.equals(clinetToken)) {
+        if (!serverToken.equals(clientToken)) {
             return true;
         }
         return false;

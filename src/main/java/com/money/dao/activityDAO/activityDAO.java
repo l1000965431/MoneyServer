@@ -3,7 +3,7 @@ package com.money.dao.activityDAO;
 import com.money.config.Config;
 import com.money.dao.BaseDao;
 import com.money.dao.TransactionCallback;
-import com.money.memcach.MemCachService;
+import until.memcach.MemCachService;
 import com.money.model.ActivityDetailModel;
 import com.money.model.ActivityDynamicModel;
 import com.money.model.ActivityVerifyCompleteModel;

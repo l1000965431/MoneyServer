@@ -11,7 +11,6 @@ import com.money.config.MoneyServerMQ_Topic;
 import com.money.dao.TransactionSessionCallback;
 import com.money.dao.alitarnsferDAO.TransferDAO;
 import com.money.dao.userDAO.UserDAO;
-import com.money.memcach.MemCachService;
 import com.money.model.*;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -24,6 +23,7 @@ import until.MoneyServerDate;
 import until.MoneyServerOrderID;
 import until.MoneySeverRandom;
 import until.UmengPush.UmengSendParameter;
+import until.memcach.MemCachService;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -112,19 +112,44 @@ public class WalletService extends ServiceBase implements ServiceInterface {
         }
 
         UserID = mapMetadata.get("UserID").toString();
+
         Double nLinse = (Double) mapobject.get("amount");
         final int Lines = (nLinse.intValue() / 100);
         final String OrderID = mapobject.get("order_no").toString();
         final String ChannelID = mapobject.get("channel").toString();
+        int payType = Integer.valueOf(mapMetadata.get("UserID").toString());
 
-        final String finalUserID = UserID;
+        switch (payType) {
+            case Config.PayType_Normal:
+                return PayTypeNormal(UserID, Lines, ChannelID, OrderID, mapdata);
+
+            case Config.PayType_League:
+                //加盟费用逻辑
+                PayTypeJoinAgint();
+                break;
+        }
+
+
+        return 0;
+    }
+
+    /**
+     * 普通充值逻辑
+     * @param UserID
+     * @param Lines
+     * @param ChannelID
+     * @param OrderID
+     * @param mapdata
+     * @return
+     */
+    int PayTypeNormal(final String UserID, final int Lines, final String ChannelID, final String OrderID, final Map<String, Object> mapdata) {
         if (generaDAO.excuteTransactionByCallback(new TransactionSessionCallback() {
             public boolean callback(Session session) throws Exception {
-                if (RechargeWallet(finalUserID, Lines) == 0) {
+                if (RechargeWallet(UserID, Lines) == 0) {
                     LOGGER.error("充值失败RechargeWallet", mapdata);
                     return false;
                 }
-                InsertWalletOrder(OrderID, finalUserID, Lines, ChannelID);
+                InsertWalletOrder(OrderID, UserID, Lines, ChannelID);
                 return true;
             }
         }) != Config.SERVICE_SUCCESS) {
@@ -144,9 +169,18 @@ public class WalletService extends ServiceBase implements ServiceInterface {
 
 
         return Config.SENDCODE_SUCESS;
+    }
 
+    /**
+     *
+     * @return
+     * @throws Exception
+     */
+    public void PayTypeJoinAgint(){
 
     }
+
+
 
     public int TestRechargeWallet(final String UserID, final int Lines) throws Exception {
 
@@ -820,11 +854,11 @@ public class WalletService extends ServiceBase implements ServiceInterface {
      */
     public String HaremmasterTransferNotify(Map<String, String> NotifyInfo) {
 
-        if(NotifyInfo==null){
+        if (NotifyInfo == null) {
             return Config.SERVICE_FAILED;
         }
 
-        LOGGER.error( NotifyInfo.toString() );
+        LOGGER.error(NotifyInfo.toString());
 
         final String Batchno = NotifyInfo.get("batch_no");
         final String Payuserid = NotifyInfo.get("pay_user_id");

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>SharTest</title>
+    <script src="./js/zepto.min.js"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"> </script>
+</head>
+<body>
+<script>
+
+    var timestamp = (new Date()).valueOf();
+    var url=this.location.href;
+    var nonceStr="";
+    var sign = "";
+
+    $.ajax({
+        url: "http://localhost:8080/Wx/WxNonceStr",
+        async: false,//改为同步方式
+        type: "POST",
+        data: {},
+        success: function (courseDT4) {
+            nonceStr = courseDT4;
+        }
+    });
+
+    $.ajax({
+        url: "http://localhost:8080/Wx/WxSign",
+        async: false,//改为同步方式
+        type: "POST",
+        data: {timestamp:timestamp,nonceStr:nonceStr,url:url},
+        success: function (courseDT4) {
+            sign = courseDT4;
+        }
+    });
+
+
+    wx.config({
+        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        appId: 'wx287d8a1f932dc864', // 必填，公众号的唯一标识
+        timestamp: timestamp, // 必填，生成签名的时间戳
+        nonceStr: nonceStr, // 必填，生成签名的随机串
+        signature: sign,// 必填，签名，见附录1
+        jsApiList: ['onMenuShareTimeline'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+    });
+</script>
+
+</body>
+</html>

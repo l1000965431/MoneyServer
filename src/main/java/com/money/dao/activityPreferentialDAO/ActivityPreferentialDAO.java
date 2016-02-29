@@ -3,7 +3,7 @@ package com.money.dao.activityPreferentialDAO;
 import com.google.gson.reflect.TypeToken;
 import com.money.config.Config;
 import com.money.dao.BaseDao;
-import com.money.memcach.MemCachService;
+import until.memcach.MemCachService;
 import com.money.model.*;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -12,7 +12,6 @@ import until.BeanTransfersUntil;
 import until.GsonUntil;
 import until.MoneyServerDate;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;

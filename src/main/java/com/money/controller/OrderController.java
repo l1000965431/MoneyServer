@@ -14,6 +14,7 @@ import until.Adapter.OrderGsonAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -29,7 +30,7 @@ public class OrderController extends ControllerBase {
 
     @RequestMapping("/getOrderByUserID")
     @ResponseBody
-    public String getOrderByUserID( HttpServletRequest request, HttpServletResponse response ){
+    public String getOrderByUserID(HttpServletRequest request, HttpServletResponse response, HttpSession session){
 
         String UserID = request.getParameter( "userID" );
         String Token = request.getParameter( "token" );
@@ -40,7 +41,7 @@ public class OrderController extends ControllerBase {
             return "";
         }
 
-        int tokenLand = userService.tokenLand( UserID,Token );
+        int tokenLand = userService.tokenLand( UserID,Token,session );
         if( tokenLand != 1 && tokenLand != 2 ){
             response.setHeader( "response", ServerReturnValue.LANDFAILED );
             return "";

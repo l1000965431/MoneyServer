@@ -6,6 +6,7 @@ import com.money.Service.Lottery.LotteryService;
 import com.money.Service.PurchaseInAdvance.PurchaseInAdvance;
 import com.money.Service.ServiceFactory;
 import com.money.Service.Wallet.WalletService;
+import com.money.Service.Wxservice.Wxservice;
 import com.money.Service.activity.ActivityService;
 import com.money.Service.activityPreferential.ActivityPreferentialService;
 import com.money.Service.user.Token;
@@ -18,7 +19,10 @@ import com.money.dao.userDAO.UserDAO;
 import com.money.job.HaremmasterMonthDayRechargeJob;
 import com.money.job.HaremmasterMonthRechargeJob;
 import com.money.job.TestJob;
-import com.money.memcach.MemCachService;
+import org.apache.http.HttpException;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import until.memcach.MemCachService;
 import com.money.model.*;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -28,13 +32,13 @@ import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import until.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
@@ -45,8 +49,8 @@ import java.util.regex.Pattern;
  * Created by liumin on 15/7/6.
  */
 
-/*@Controller
-@RequestMapping("/TestLocal")*/
+@Controller
+@RequestMapping("/TestLocal")
 public class TestConller extends ControllerBase implements IController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestConller.class);
@@ -356,9 +360,9 @@ public class TestConller extends ControllerBase implements IController {
         return activityPreferentialService.JoinActivityPreferential(Integer.valueOf(ActivityID), UserId, 0);
     }
 
-    @RequestMapping("/TestGlobalConfig")
+    @RequestMapping(value = "/TestGlobalConfig")
     @ResponseBody
-    String TestGlobalConfig() throws Exception {
+    Map<String,Integer> TestGlobalConfig() throws Exception {
         Map<String, Integer> map = new HashMap<>();
         map.put("AddExpInvite", Config.AddExpInvite);
         map.put("AddVirtualSecuritiesInvite", Config.AddVirtualSecuritiesInvite);
@@ -366,8 +370,10 @@ public class TestConller extends ControllerBase implements IController {
         map.put("AddVirtualSecuritiesSelf", Config.AddVirtualSecuritiesSelf);
         map.put("MaxVirtualSecurities", Config.MaxVirtualSecurities);
         map.put("MaxVirtualSecuritiesBuy", Config.MaxVirtualSecuritiesBuy);
+        map.put("League",Config.League);
+        map.put("LeagueDividedinto",Config.LeagueDividedinto);
 
-        return GsonUntil.JavaClassToJson(map);
+        return map;
     }
 
     @RequestMapping("/TestGetUserModelByIdCard")
@@ -381,7 +387,7 @@ public class TestConller extends ControllerBase implements IController {
 
     @RequestMapping("/TestUserLogin")
     @ResponseBody
-    void TestUserLogin(HttpServletRequest request) throws Exception {
+    void TestUserLogin(HttpServletRequest request, HttpSession session) throws Exception {
         Map<String, String> mapData = DecryptionDataToMapByUserId(request.getParameter("data"),
                 this.initDesKey(request.getHeader("userId")));
 
@@ -393,7 +399,7 @@ public class TestConller extends ControllerBase implements IController {
         String UserName = mapData.get("userId");
         String PassWord = mapData.get("password");
 
-        userService.userLand(UserName, PassWord);
+        userService.userLand(UserName, PassWord,session);
         Long orderTime = System.currentTimeMillis();
         String time = Long.toString(orderTime);
         Map<String, String> map = new HashMap<>();
@@ -417,11 +423,11 @@ public class TestConller extends ControllerBase implements IController {
 
     @RequestMapping("/TestPasswordLogin")
     @ResponseBody
-    String TestPasswordLogin(HttpServletRequest request) {
+    String TestPasswordLogin(HttpServletRequest request,HttpSession session) {
         String UserName = request.getParameter("userId");
         String PassWord = request.getParameter("password");
 
-        String LoginResult = userService.userLand(UserName, PassWord);
+        String LoginResult = userService.userLand(UserName, PassWord,session);
 
         String tokenData = Token.create(UserName);
         Long orderTime = System.currentTimeMillis();
@@ -453,16 +459,16 @@ public class TestConller extends ControllerBase implements IController {
         int Lines = Integer.valueOf(request.getParameter("lines"));
         String ChannelID = request.getParameter("channelid");
 
-        return PingPlus.CreateChargeParams(UserID, Lines, ChannelID, "", "充值", "null", Long.toString(System.currentTimeMillis()));
+        return PingPlus.CreateChargeParams(UserID, Lines, ChannelID, "", "充值", "null", Long.toString(System.currentTimeMillis()),"",1);
     }
 
     @RequestMapping("/TestPrefactInfo")
     @ResponseBody
-    int TestPrefactInfo(HttpServletRequest request) {
+    int TestPrefactInfo(HttpServletRequest request,HttpSession session) {
         String userID = request.getParameter("userID");
         String token = request.getParameter("token");
         String info = request.getParameter("info");
-        return userService.perfectInfo(userID, token, info);
+        return userService.perfectInfo(userID, token, info,session);
     }
 
     @RequestMapping("/TestRig")
@@ -473,8 +479,9 @@ public class TestConller extends ControllerBase implements IController {
         String password = request.getParameter("password");
         int userType = Integer.valueOf(request.getParameter("userType"));
         String inviteCode = request.getParameter("inviteCode");
+        String openid = request.getParameter("openid");
 
-        return userService.userRegister(userName, "", password, userType, inviteCode);
+        return userService.userRegister(userName, "", password, userType, inviteCode,openid);
     }
 
     @RequestMapping("/TestInsertWxTransferInfo")
@@ -709,6 +716,34 @@ public class TestConller extends ControllerBase implements IController {
     public void TestHaremmasterTransferNotify(){
         WalletService walletService = ServiceFactory.getService("WalletService");
         walletService.HaremmasterTransferNotify(null);
+    }
+
+    @RequestMapping("/TestWxTicket")
+    @ResponseBody
+    public String TestWxTicket() throws IOException, HttpException {
+        Wxservice wxservice = ServiceFactory.getService("Wxservice");
+        return wxservice.getWxTicket();
+    }
+
+    @RequestMapping("/TestWxSign")
+    @ResponseBody
+    public String TestWxSign() throws IOException, HttpException {
+        Wxservice wxservice = ServiceFactory.getService("Wxservice");
+        return wxservice.sign( wxservice.getWxTicket(),wxservice.create_nonce_str(),wxservice.create_timestamp(),"www.weijujingtou.com/index.jsp" );
+    }
+
+    @RequestMapping("/TestHttpSessionUserinfo")
+    @ResponseBody
+    public String TestHttpSessionUserinfo(HttpSession session) {
+
+        Map<String,String> map1 = new HashMap<>();
+        map1.put("token",UUID.randomUUID().toString());
+        map1.put("user","15810356658");
+        session.setAttribute(Config.SessionUserKey,map1);
+
+        Map<String,String> map = (Map<String,String>)session.getAttribute(Config.SessionUserKey);
+
+        return GsonUntil.JavaClassToJson(map);
     }
 
 }

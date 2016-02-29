@@ -18,6 +18,7 @@ import until.PingPlus;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -48,11 +49,11 @@ public class WalletController extends ControllerBase {
      */
     @RequestMapping("/getWalletBalance")
     @ResponseBody
-    public int getWalletBalance(HttpServletRequest request) {
+    public int getWalletBalance(HttpServletRequest request, HttpSession session) {
         String userId = request.getParameter("userId");
         String token = request.getParameter("token");
 
-        if (!this.UserIsLand(userId, token)) {
+        if (!this.UserIsLand(userId, token,session)) {
             return Config.LANDFAILED;
         }
 
@@ -93,7 +94,39 @@ public class WalletController extends ControllerBase {
 
         String ChannelID = (String) mapJson.get("channel");
         String order_no = (String) mapJson.get("order_no");
-        return PingPlus.CreateChargeParams(UserID, (int) Lines, ChannelID, "", "充值", "null", order_no);
+        return PingPlus.CreateChargeParams(UserID, (int) Lines, ChannelID, "", "充值", "null", order_no,"",Config.PayType_Normal);
+    }
+
+    /**
+     * 微信内充值 区别与手机客户端充值 未来将做同一
+     * @param request
+     * @return
+     */
+    @RequestMapping("/RechargeWalletByOpenid")
+    @ResponseBody
+    public String RechargeWalletByOpenid(HttpServletRequest request){
+        String json = this.getrequestReader(request);
+
+        if (json == null) {
+            return null;
+        }
+
+        Map<String, Object> mapJson = GsonUntil.jsonToJavaClass(json, new TypeToken<Map<String, Object>>() {
+        }.getType());
+
+        String openid = (String) mapJson.get("open_id");
+        String ChannelID = (String) mapJson.get("channel");
+        String order_no = (String) mapJson.get("order_no");
+        UserModel userModel = userService.getUserInfoByOpenId(openid);
+        if(userModel == null){
+            return null;
+        }
+        double Lines = (Double) mapJson.get("amount");
+        if (Lines != Config.League){
+            return null;
+        }
+
+       return PingPlus.CreateChargeParams(userModel.getUserId(), (int) Lines, ChannelID, "", "加盟费充值", "null", order_no,openid,Config.PayType_League);
     }
 
 
@@ -181,8 +214,31 @@ public class WalletController extends ControllerBase {
         } catch (AuthenticationException e) {
             return 0;
         }*/
+    }
 
+    /**
+     * 微信公众号提现
+     * @param session
+     * @return
+     */
+    public String WxTransferWallet(HttpServletRequest request,HttpSession session){
+        if(userService.openidLand(session) != Config.USEPASSWORD){
+            //重新登录
 
+        }
+
+        String userId = request.getParameter("userId");
+        String orderId = request.getParameter("orderId");
+        int Lines = Integer.valueOf(request.getParameter("lines"));
+
+        Map<String,String> map = (Map<String,String>)session.getAttribute(Config.SessionUserKey);
+        String openid = map.get("openid");
+
+        if (!walletService.IsWalletEnoughTransaction(userId, Lines)) {
+            return "";
+        }
+
+        PingPlus.CreateTransferMap(Lines, openid, userId, orderId, orderId + "_" + transferInfo.get(0) + "_" + userId);
     }
 
     /**
